@@ -8,6 +8,12 @@ public class PlayerMovement : MonoBehaviour
     private float _moveSpeed = 5f;  // 移動速度
     [SerializeField]
     private float _jumpForce = 5f;  // ジャンプ力
+    [SerializeField]
+    private float _ray = 1f;        // 地面を検出するレイの長さ
+    [SerializeField]
+    private Transform _groundCheck; // 足元の空オブジェクト
+    [SerializeField]
+    private LayerMask _groundLayer; // 地面のタグ
     private Rigidbody2D _rb;
     private Vector2 _movement;      // 自機
     private PlayerInputActions _inputActions;
@@ -43,17 +49,16 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         _rb.velocity = new Vector2(_movement.x * _moveSpeed, _rb.velocity.y);
-    }
 
-    /// <summary>
-    /// 地面に着地したらジャンプ可能にする
-    /// </summary>
-    /// <param name="collision">衝突したオブジェクト</param>
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
+        //地面チェック
+        RaycastHit2D hit = Physics2D.Raycast(_groundCheck.position, Vector2.down, _ray, _groundLayer);
+        if (hit.collider != null && hit.collider.CompareTag("Ground"))
         {
             _isCanJump = true;
+        }
+        else
+        {
+            _isCanJump= false;
         }
     }
 
