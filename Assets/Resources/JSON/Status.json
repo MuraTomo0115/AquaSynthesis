@@ -1,0 +1,19 @@
+{
+    "characters": [
+        {
+            "id": "player",
+            "maxHealth": 100,
+            "attackPower": 10
+        },
+        {
+            "id": "enemy1",
+            "maxHealth": 50,
+            "attackPower": 5
+        },
+        {
+            "id": "enemy2",
+            "maxHealth": 80,
+            "attackPower": 10
+        }
+    ]
+}
