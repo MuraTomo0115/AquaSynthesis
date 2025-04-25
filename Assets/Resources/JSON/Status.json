@@ -3,7 +3,8 @@
         {
             "id": "player",
             "maxHealth": 100,
-            "attackPower": 10
+            "attackPower": 10,
+            "attackRange": 1.5
         },
         {
             "id": "enemy1",
