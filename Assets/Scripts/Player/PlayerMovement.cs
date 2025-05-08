@@ -4,31 +4,30 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField]
-    private float     _moveSpeed = 5f;  // 移動速度
-    [SerializeField]
-    private float     _jumpForce = 5f;  // ジャンプ力
-    [SerializeField]
-    private float     _ray = 1f;        // 地面を検出するレイの長さ
-    [SerializeField]
-    private Transform _groundCheck; // 足元の空オブジェクト
-    [SerializeField]
-    private           LayerMask _groundLayer; // 地面のタグ
-    private           Rigidbody2D _rb;
-    private           Vector2 _movement;      // 自機
-    private           PlayerInputActions _inputActions;
-    private bool      _isCanJump = true;
-    private Animator  _animator;
-    private SpriteRenderer _spriteRenderer;
-    private bool _canAttack = true;
-    [SerializeField]
-    private GameObject attackSensor;
-    private Character _charaState;
+    [SerializeField] private float      _moveSpeed = 5f;  // 移動速度
+    [SerializeField] private float      _jumpForce = 5f;  // ジャンプ力
+    [SerializeField] private float      _ray = 1f;        // 地面を検出するレイの長さ
+    [SerializeField] private Transform  _groundCheck;     // 足元の空オブジェクト
+    [SerializeField] private LayerMask  _groundLayer;     // 地面のタグ
+    [SerializeField] private GameObject _attackSensor;
+    [SerializeField] private GameObject _bullet;
+    [SerializeField] private Transform  _firePoint;
+    [SerializeField] private float      _pistolCoolTime = 1f;
+    private Rigidbody2D                 _rb;
+    private Vector2                     _movement;        // 自機
+    private PlayerInputActions          _inputActions;
+    private Character                   _charaState;
+    private Animator                    _animator;
+    private SpriteRenderer              _spriteRenderer;
+    private bool                        _is_CanJump = true;
+    private bool                        _canAdjacentAttack = true;
+    private bool                        _canPistolAttack = true;
+    public Character CharaState =>      _charaState;
 
     private void Awake()
     {
         _inputActions = new PlayerInputActions();
-        attackSensor.gameObject.SetActive(false);
+        _attackSensor.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -45,6 +44,7 @@ public class PlayerMovement : MonoBehaviour
         _inputActions.Player.Jump.performed += ctx => Jump();
         // 攻撃
         _inputActions.Player.Attack.performed += ctx => Attack();
+        _inputActions.Player.Pistol.performed += ctx => Pistol();
     }
 
     private void Start()
@@ -77,24 +77,26 @@ public class PlayerMovement : MonoBehaviour
         if (_movement.x > 0.01f)
         {
             _spriteRenderer.flipX = false; // 右向き
-            attackSensor.transform.localScale = new Vector2(transform.localScale.x, transform.localScale.y);
+            _attackSensor.transform.localScale = new Vector2(transform.localScale.x, transform.localScale.y);
+            _firePoint.localPosition = new Vector2(Mathf.Abs(_firePoint.localPosition.x), _firePoint.localPosition.y);
         }
         else if (_movement.x < -0.01f)
         {
             _spriteRenderer.flipX = true; // 左向き
-            attackSensor.transform.localScale = new Vector2(-transform.localScale.x, transform.localScale.y);
+            _attackSensor.transform.localScale = new Vector2(-transform.localScale.x, transform.localScale.y);
+            _firePoint.localPosition = new Vector2(-Mathf.Abs(_firePoint.localPosition.x), _firePoint.localPosition.y);
         }
 
         // 地面チェック
         RaycastHit2D hit = Physics2D.Raycast(_groundCheck.position, Vector2.down, _ray, _groundLayer);
         if (hit.collider != null && hit.collider.CompareTag("Ground"))
         {
-            _isCanJump = true;
+            _is_CanJump = true;
             _animator.SetBool("isGround", true);
         }
         else
         {
-            _isCanJump = false;
+            _is_CanJump = false;
             _animator.SetBool("isGround", false);
         }
     }
@@ -105,30 +107,70 @@ public class PlayerMovement : MonoBehaviour
     private void Jump()
     {
         // フラグが無効の場合ジャンプしない
-        if (!_isCanJump) return;
+        if (!_is_CanJump) return;
 
         // ForceMode2Dを使用し、瞬発的にジャンプ
         _animator.SetTrigger("Jump");
         _rb.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
-        _isCanJump = false;
+        _is_CanJump = false;
     }
 
     private void Attack()
     {
-        if (!_canAttack) return; // 攻撃が許可されていなければ中断
+        if (!_canAdjacentAttack) return; // 攻撃が許可されていなければ中断
 
         _animator.SetTrigger("AttackSword");
     }
 
+    private void Pistol()
+    {
+        if (!_canPistolAttack) return;
+
+        // 本素材導入時までコメントアウト
+        //_animator.SetTrigger("AttackPistol");
+
+        //本素材導入時、アニメーションパスで発火させる
+        ShootPistol();
+    }
+
+    /// <summary>
+    /// 本素材導入時、アニメーションパスで発火させる
+    /// </summary>
+    private void ShootPistol()
+    {
+        // Bullet を生成
+        GameObject bullet = Instantiate(_bullet, _firePoint.position, Quaternion.identity);
+
+        // 弾に向きを伝える
+        Vector2 direction = _spriteRenderer.flipX ? Vector2.left : Vector2.right;
+        Bullet bulletScript = bullet.GetComponent<Bullet>();
+        bulletScript.SetDirection(direction);
+
+        // Bullet に PlayerMovement を渡す
+        bulletScript.SetPlayerMovement(this);
+
+        _canPistolAttack = false;
+
+        Invoke(nameof(CanPistol), _pistolCoolTime);
+    }
+
+    /// <summary>
+    /// 本素材導入時削除。ピストﾙクールタイム
+    /// </summary>
+    private void CanPistol()
+    {
+        _canPistolAttack = true;
+    }
+
     public void trueAttack()
     {
-        _canAttack = true;
+        _canAdjacentAttack = true;
         _animator.SetBool("isAttack", true );
     }
 
     public void falseAttack()
     {
-        _canAttack = false;
+        _canAdjacentAttack = false;
         _animator.SetBool("isAttack", false);
     }
 
@@ -146,25 +188,25 @@ public class PlayerMovement : MonoBehaviour
 
     public void StartAttack()
     {
-        attackSensor.gameObject.SetActive(true);
+        _attackSensor.gameObject.SetActive(true);
 
         // プレイヤーの向きに合わせて攻撃判定のスケールを変更
         if (_spriteRenderer.flipX)
         {
             // 左向き（反転）
-            attackSensor.transform.localScale = new Vector3(-1, 1, 1);
+            _attackSensor.transform.localScale = new Vector3(-1, 1, 1);
         }
         else
         {
             // 右向き
-            attackSensor.transform.localScale = new Vector3(1, 1, 1);
+            _attackSensor.transform.localScale = new Vector3(1, 1, 1);
         }
     }
 
     public void EndAttack()
     {
         // 攻撃判定を無効化
-        attackSensor.transform.localScale = new Vector3(0, 0, 0); // スケールをリセット
-        attackSensor.gameObject.SetActive(false); // 非表示
+        _attackSensor.transform.localScale = new Vector3(0, 0, 0); // スケールをリセット
+        _attackSensor.gameObject.SetActive(false); // 非表示
     }
 }

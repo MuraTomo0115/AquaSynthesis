@@ -8,6 +8,7 @@ public class CharacterData
     public string id;            // キャラクターID（player, enemy1, etc.）
     public int maxHealth;        // 最大HP
     public int attackPower;      // 攻撃力
+    public int pistolPower;     // プレイヤーのみのステータス。ピストル攻撃力
 }
 
 [System.Serializable]
@@ -118,9 +119,16 @@ public class CharacterManager : MonoBehaviour
         }
 
         // デバッグログにデータを表示
-        Debug.Log($"{data.id} : 最大HP = {data.maxHealth}, 攻撃力 = {data.attackPower}");
+        Debug.Log($"{data.id} : 最大HP = {data.maxHealth}, 攻撃力 = {data.attackPower}, ピストル = {data.pistolPower}");
 
         // キャラクターにデータを設定
-        character.SetStats(data.maxHealth, data.attackPower);
+        if (data.pistolPower > 0)
+        {
+            character.SetStats(data.maxHealth, data.attackPower, data.pistolPower);
+        }
+        else
+        {
+            character.SetStats(data.maxHealth, data.attackPower);
+        }
     }
 }
