@@ -215,7 +215,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 78382910}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.38, y: -2.85, z: 0}
+  m_LocalPosition: {x: 2.26, y: -2.94, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -791,7 +791,7 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  attackSensor: {fileID: 0}
+  attackSensor: {fileID: 2073804032}
 --- !u!1 &1578178696
 GameObject:
   m_ObjectHideFlags: 0
@@ -835,6 +835,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2073804033}
   - component: {fileID: 2073804034}
+  - component: {fileID: 2073804035}
   m_Layer: 0
   m_Name: AttackSensor
   m_TagString: Untagged
@@ -866,7 +867,7 @@ PolygonCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -893,6 +894,18 @@ PolygonCollider2D:
       - {x: 1.4993609, y: 0.98763466}
       - {x: 1.3140962, y: 1.2677612}
       - {x: 0.8185599, y: 1.5332842}
+--- !u!114 &2073804035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073804032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6c63facb151a3049963e20c46bdb669, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2086316841
 GameObject:
   m_ObjectHideFlags: 0

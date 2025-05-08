@@ -24,17 +24,9 @@ public class Character : MonoBehaviour
         _currentHealth = maxHp;
     }
 
-    public void TakeDamage(int damage)
+    public void HitAttack(int damage)
     {
-        _currentHealth -= damage;
-        _currentHealth = Mathf.Clamp(_currentHealth, 0, _maxHealth);
-
-        Debug.Log($"{_characterId} took {damage} damage! HP: {_currentHealth}");
-
-        if (_currentHealth <= 0)
-        {
-            Die();
-        }
+        Debug.Log(_characterId + "はダメージを" + damage + "食らいました");
     }
 
     private void Die()

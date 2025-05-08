@@ -63,7 +63,7 @@ public class CharacterManager : MonoBehaviour
                 }
 
                 // IDでデータを読み込む
-                LoadCharacterDataFromJson(characterId);
+                LoadCharacterDataFromJson(characterId, enemy);
             }
             else
             {
@@ -86,7 +86,7 @@ public class CharacterManager : MonoBehaviour
             else
             {
                 // プレイヤーのIDでデータを読み込む
-                LoadCharacterDataFromJson(characterId);
+                LoadCharacterDataFromJson(characterId, playerCharacter);
             }
         }
         else
@@ -95,7 +95,7 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
-    private void LoadCharacterDataFromJson(string id)
+    private void LoadCharacterDataFromJson(string id, Character character)
     {
         // JSONの読み込み
         TextAsset json = Resources.Load<TextAsset>("JSON/Status");
@@ -120,6 +120,7 @@ public class CharacterManager : MonoBehaviour
         // デバッグログにデータを表示
         Debug.Log($"{data.id} : 最大HP = {data.maxHealth}, 攻撃力 = {data.attackPower}");
 
-        maxHealth = data.maxHealth;
+        // キャラクターにデータを設定
+        character.SetStats(data.maxHealth, data.attackPower);
     }
 }
