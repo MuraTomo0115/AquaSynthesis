@@ -23,10 +23,12 @@ public class PlayerMovement : MonoBehaviour
     private bool _canAttack = true;
     [SerializeField]
     private GameObject attackSensor;
+    private Character _charaState;
 
     private void Awake()
     {
         _inputActions = new PlayerInputActions();
+        attackSensor.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -50,6 +52,7 @@ public class PlayerMovement : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _charaState = GetComponent<Character>();
     }
 
     /// <summary>
@@ -74,12 +77,12 @@ public class PlayerMovement : MonoBehaviour
         if (_movement.x > 0.01f)
         {
             _spriteRenderer.flipX = false; // 右向き
-            attackSensor.transform.localScale = new Vector2(-transform.localScale.x, transform.localScale.y);
+            attackSensor.transform.localScale = new Vector2(transform.localScale.x, transform.localScale.y);
         }
         else if (_movement.x < -0.01f)
         {
             _spriteRenderer.flipX = true; // 左向き
-            attackSensor.transform.localScale = new Vector2(transform.localScale.x, transform.localScale.y);
+            attackSensor.transform.localScale = new Vector2(-transform.localScale.x, transform.localScale.y);
         }
 
         // 地面チェック
@@ -129,13 +132,39 @@ public class PlayerMovement : MonoBehaviour
         _animator.SetBool("isAttack", false);
     }
 
+    public void OwnAttackHit(Collider2D other)
+    {
+        // 敵のCharacterコンポーネントを取得
+        Character hitObject = other.GetComponent<Character>();
+
+        if (hitObject != null)
+        {
+            hitObject.HitAttack(_charaState.AttackPower);
+            //Debug.Log(_charaState.AttackPower + " 敵は " + hitObject.AttackPower);
+        }
+    }
+
     public void StartAttack()
     {
         attackSensor.gameObject.SetActive(true);
+
+        // プレイヤーの向きに合わせて攻撃判定のスケールを変更
+        if (_spriteRenderer.flipX)
+        {
+            // 左向き（反転）
+            attackSensor.transform.localScale = new Vector3(-1, 1, 1);
+        }
+        else
+        {
+            // 右向き
+            attackSensor.transform.localScale = new Vector3(1, 1, 1);
+        }
     }
 
     public void EndAttack()
     {
-        attackSensor.gameObject.SetActive(false);
+        // 攻撃判定を無効化
+        attackSensor.transform.localScale = new Vector3(0, 0, 0); // スケールをリセット
+        attackSensor.gameObject.SetActive(false); // 非表示
     }
 }

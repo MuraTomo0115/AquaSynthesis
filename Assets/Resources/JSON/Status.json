@@ -14,7 +14,7 @@
         {
             "id": "enemy2",
             "maxHealth": 80,
-            "attackPower": 10
+            "attackPower": 12
         }
     ]
 }
