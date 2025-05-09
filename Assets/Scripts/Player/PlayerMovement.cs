@@ -13,8 +13,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private GameObject _bullet;
     [SerializeField] private Transform  _firePoint;
     [SerializeField] private float      _pistolCoolTime = 1f;
+    [SerializeField] float              _offset = 0.2f;
     private Rigidbody2D                 _rb;
-    private Vector2                     _movement;        // 自機
+    private Vector2                     _movement;
     private PlayerInputActions          _inputActions;
     private Character                   _charaState;
     private Animator                    _animator;
@@ -88,17 +89,17 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // 地面チェック
-        RaycastHit2D hit = Physics2D.Raycast(_groundCheck.position, Vector2.down, _ray, _groundLayer);
-        if (hit.collider != null && hit.collider.CompareTag("Ground"))
-        {
-            _is_CanJump = true;
-            _animator.SetBool("isGround", true);
-        }
-        else
-        {
-            _is_CanJump = false;
-            _animator.SetBool("isGround", false);
-        }
+        Vector2 center = _groundCheck.position;
+        Vector2 left = center + Vector2.left * _offset;
+        Vector2 right = center + Vector2.right * _offset;
+        RaycastHit2D hitCenter = Physics2D.Raycast(center, Vector2.down, _ray, _groundLayer);
+        RaycastHit2D hitLeft = Physics2D.Raycast(left, Vector2.down, _ray, _groundLayer);
+        RaycastHit2D hitRight = Physics2D.Raycast(right, Vector2.down, _ray, _groundLayer);
+
+        bool isGrounded = (hitCenter.collider != null || hitLeft.collider != null || hitRight.collider != null);
+
+        _is_CanJump = isGrounded;
+        _animator.SetBool("isGround", isGrounded);
     }
 
     /// <summary>
