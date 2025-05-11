@@ -28,43 +28,48 @@ public class Menu : MonoBehaviour
         }
     }
 
-    private void OpenMenu()
-    {
-        // 逆再生の影響をリセット
-        ResetAnimationState();
+	private void OpenMenu()
+	{
+		ResetAnimationState();
 
-        if (_menuAnim.clip != null)
-            _menuAnim.Play(); // 自身のアニメーション
+		if (_menuAnim.clip != null)
+			_menuAnim.Play();
 
-        _is_open = true;
-    }
+		_is_open = true;  // 先にtrueにしておく
 
-    private void CloseMenu()
-    {
-        // アニメーションを逆再生するために一度停止
-        _menuAnim.Stop();
+		StartCoroutine(WaitForAnimationToEndAndPause());  // 別のコルーチン
+	}
 
-        // 自身のアニメーションも逆再生
-        AnimationState stateMenu = _menuAnim[_menuAnim.clip.name];
-        stateMenu.time = stateMenu.length;  // アニメーションの終わりから始める
-        stateMenu.speed = -1f;  // 逆再生
+	private void CloseMenu()
+	{
+		_menuAnim.Stop();
 
-        // アニメーションを逆再生
-        _menuAnim.Play();
+		AnimationState stateMenu = _menuAnim[_menuAnim.clip.name];
+		stateMenu.time = stateMenu.length;
+		stateMenu.speed = -1f;
+		_menuAnim.Play();
 
-        _is_open = false;
+		_is_open = false;
 
-        // アニメーションが終了したらメニューを非表示にする
-        StartCoroutine(WaitForAnimationToEnd());
-    }
+		StartCoroutine(WaitForAnimationToEndAndResume());  // 別のコルーチン
+	}
 
-    private IEnumerator WaitForAnimationToEnd()
-    {
-        yield return new WaitForSeconds(_menuAnim.clip.length);
-        _menuContents.SetActive(false);  // アニメーションが終了したらメニューを非表示にする
-    }
+	// 時間を止める処理
+	private IEnumerator WaitForAnimationToEndAndPause()
+	{
+		yield return new WaitForSecondsRealtime(_menuAnim.clip.length);
+		Time.timeScale = 0f;  // ← アニメーションが終わってから止める
+	}
 
-    private void ResetAnimationState()
+	// 時間を再開する処理
+	private IEnumerator WaitForAnimationToEndAndResume()
+	{
+		yield return new WaitForSecondsRealtime(_menuAnim.clip.length);
+		_menuContents.SetActive(false);
+		Time.timeScale = 1f;
+	}
+
+	private void ResetAnimationState()
     {
         // アニメーションの時間をリセットして逆再生の影響をリセット
         AnimationState stateMenu = _menuAnim[_menuAnim.clip.name];

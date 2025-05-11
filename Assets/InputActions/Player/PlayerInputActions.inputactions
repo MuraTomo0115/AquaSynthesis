@@ -172,6 +172,33 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "ADV",
+            "id": "82587ca8-cfea-4183-8f36-902a45ba016a",
+            "actions": [
+                {
+                    "name": "Advance",
+                    "type": "Button",
+                    "id": "e8f8ec8a-89c2-4cfd-ae18-66e992099b79",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4f98b24e-7edb-4130-b9a9-88a4534135d8",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Advance",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

@@ -185,6 +185,33 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""ADV"",
+            ""id"": ""82587ca8-cfea-4183-8f36-902a45ba016a"",
+            ""actions"": [
+                {
+                    ""name"": ""Advance"",
+                    ""type"": ""Button"",
+                    ""id"": ""e8f8ec8a-89c2-4cfd-ae18-66e992099b79"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""4f98b24e-7edb-4130-b9a9-88a4534135d8"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Advance"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -195,6 +222,9 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
         m_Player_Pistol = m_Player.FindAction("Pistol", throwIfNotFound: true);
+        // ADV
+        m_ADV = asset.FindActionMap("ADV", throwIfNotFound: true);
+        m_ADV_Advance = m_ADV.FindAction("Advance", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -297,11 +327,48 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // ADV
+    private readonly InputActionMap m_ADV;
+    private IADVActions m_ADVActionsCallbackInterface;
+    private readonly InputAction m_ADV_Advance;
+    public struct ADVActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public ADVActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Advance => m_Wrapper.m_ADV_Advance;
+        public InputActionMap Get() { return m_Wrapper.m_ADV; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(ADVActions set) { return set.Get(); }
+        public void SetCallbacks(IADVActions instance)
+        {
+            if (m_Wrapper.m_ADVActionsCallbackInterface != null)
+            {
+                @Advance.started -= m_Wrapper.m_ADVActionsCallbackInterface.OnAdvance;
+                @Advance.performed -= m_Wrapper.m_ADVActionsCallbackInterface.OnAdvance;
+                @Advance.canceled -= m_Wrapper.m_ADVActionsCallbackInterface.OnAdvance;
+            }
+            m_Wrapper.m_ADVActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Advance.started += instance.OnAdvance;
+                @Advance.performed += instance.OnAdvance;
+                @Advance.canceled += instance.OnAdvance;
+            }
+        }
+    }
+    public ADVActions @ADV => new ADVActions(this);
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
         void OnPistol(InputAction.CallbackContext context);
+    }
+    public interface IADVActions
+    {
+        void OnAdvance(InputAction.CallbackContext context);
     }
 }
