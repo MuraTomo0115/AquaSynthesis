@@ -99,10 +99,10 @@ public class CharacterManager : MonoBehaviour
     private void LoadCharacterDataFromJson(string id, Character character)
     {
         // JSONの読み込み
-        TextAsset json = Resources.Load<TextAsset>("JSON/Status");
+        TextAsset json = Resources.Load<TextAsset>("Status/Status");
         if (json == null)
         {
-            Debug.LogError("Stats.json が Resources/JSON フォルダ内に見つかりません！");
+            Debug.LogError("Status.json が Resources/JSON フォルダ内に見つかりません！");
             return;
         }
 

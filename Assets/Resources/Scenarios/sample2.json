@@ -1,0 +1,26 @@
+[
+  {
+    "type": "show",
+    "target": "hero",
+    "sprite": "hero/hero_normal",
+    "side": "left",
+    "transition": "fade"
+  },
+  {
+    "type": "text",
+    "speaker": "主人公",
+    "text": "お前は〇んで貰うぜ！"
+  },
+  {
+    "type": "show",
+    "target": "hero",
+    "sprite": "npcA/hero_smileB",
+    "side": "right",
+    "transition": "fade"
+  },
+  {
+    "type": "text",
+    "speaker": "案内人",
+    "text": "ク〇ガキが！！"
+  }
+]
