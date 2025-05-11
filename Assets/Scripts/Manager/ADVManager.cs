@@ -14,7 +14,7 @@ public class ADVManager : MonoBehaviour
 	public Image imageLeft;
 	public Image imageCenter;
 	public Image imageRight;
-	public Image nextIcon; // ▽アイコン用Image追加
+	public GameObject nextIcon;
 
 	[Header("Scenario")]
 	public string scenarioFileName = "sample";
@@ -33,6 +33,7 @@ public class ADVManager : MonoBehaviour
 
 	private bool isCooldown = false; // クールダウン状態かどうか
 	private float advanceCooldown = 1f; // クールダウン時間 (秒)
+	private bool _is_Play = false;
 
 	void Awake()
 	{
@@ -47,11 +48,15 @@ public class ADVManager : MonoBehaviour
 	void Start()
 	{
 		_advContents.gameObject.SetActive(false);
-		StartScenario(scenarioFileName);
+		// StartScenario(scenarioFileName);
+		inputActions.ADV.StartDemo.performed += ctx => StartScenario(scenarioFileName);
 	}
 
 	public void StartScenario(string scenarioName)
 	{
+		if (_is_Play) return;
+
+		_is_Play = true;
 		// UI初期化＆過去の残りをクリア
 		messageText.text = "";
 		speakerText.text = "";
@@ -127,9 +132,10 @@ public class ADVManager : MonoBehaviour
 		if (steps.Count == 0)
 		{
 			UnityEngine.Debug.Log("シナリオ終了");
+			_is_Play = false;
 
 			// ADVをフェードアウトして非表示にする
-			_canvasGroup.DOFade(0f, 0.5f).OnComplete(() =>
+			_canvasGroup.DOFade(0f, 0.2f).OnComplete(() =>
 			{
 				_advContents.SetActive(false);
 				_canvasGroup.alpha = 1f; // 次回再表示のため透明度リセット

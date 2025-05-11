@@ -1,8 +1,21 @@
 [
   {
+  "type": "show",
+  "target": "hero",
+  "sprite": "hero_normal",
+  "side": "left",
+  "transition": "fade"
+  },
+  {
   "type": "text",
   "speaker": "主人公",
   "text": "ここが…最初の村か。"
+  },
+  {
+  "type": "expression",
+  "target": "hero",
+  "sprite": "hero_smile",
+  "transition": "fade"
   },
   {
   "type": "text",

@@ -197,6 +197,14 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""StartDemo"",
+                    ""type"": ""Button"",
+                    ""id"": ""96b1355e-315b-4018-b1a3-3a94c758d107"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -208,6 +216,28 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Advance"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""974eef50-7613-4a10-99b6-53c23b36ce95"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Advance"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a7bdfed7-7bde-4b63-b74c-84eda7d95516"",
+                    ""path"": ""<Keyboard>/u"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""StartDemo"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -225,6 +255,7 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         // ADV
         m_ADV = asset.FindActionMap("ADV", throwIfNotFound: true);
         m_ADV_Advance = m_ADV.FindAction("Advance", throwIfNotFound: true);
+        m_ADV_StartDemo = m_ADV.FindAction("StartDemo", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -332,11 +363,13 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
     private readonly InputActionMap m_ADV;
     private IADVActions m_ADVActionsCallbackInterface;
     private readonly InputAction m_ADV_Advance;
+    private readonly InputAction m_ADV_StartDemo;
     public struct ADVActions
     {
         private @PlayerInputActions m_Wrapper;
         public ADVActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Advance => m_Wrapper.m_ADV_Advance;
+        public InputAction @StartDemo => m_Wrapper.m_ADV_StartDemo;
         public InputActionMap Get() { return m_Wrapper.m_ADV; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -349,6 +382,9 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 @Advance.started -= m_Wrapper.m_ADVActionsCallbackInterface.OnAdvance;
                 @Advance.performed -= m_Wrapper.m_ADVActionsCallbackInterface.OnAdvance;
                 @Advance.canceled -= m_Wrapper.m_ADVActionsCallbackInterface.OnAdvance;
+                @StartDemo.started -= m_Wrapper.m_ADVActionsCallbackInterface.OnStartDemo;
+                @StartDemo.performed -= m_Wrapper.m_ADVActionsCallbackInterface.OnStartDemo;
+                @StartDemo.canceled -= m_Wrapper.m_ADVActionsCallbackInterface.OnStartDemo;
             }
             m_Wrapper.m_ADVActionsCallbackInterface = instance;
             if (instance != null)
@@ -356,6 +392,9 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 @Advance.started += instance.OnAdvance;
                 @Advance.performed += instance.OnAdvance;
                 @Advance.canceled += instance.OnAdvance;
+                @StartDemo.started += instance.OnStartDemo;
+                @StartDemo.performed += instance.OnStartDemo;
+                @StartDemo.canceled += instance.OnStartDemo;
             }
         }
     }
@@ -370,5 +409,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
     public interface IADVActions
     {
         void OnAdvance(InputAction.CallbackContext context);
+        void OnStartDemo(InputAction.CallbackContext context);
     }
 }
