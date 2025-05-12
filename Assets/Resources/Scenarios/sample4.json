@@ -1,0 +1,49 @@
+[
+  {
+    "type": "show",
+    "target": "hero",
+    "sprite": "hero/hero_smile",
+    "side": "left",
+    "transition": "fade"
+  },
+  {
+    "type": "text",
+    "speaker": "主人公",
+    "text": "お前には〇んで貰うぜ！"
+  },
+  {
+    "type": "expression",
+    "target": "hero",
+    "sprite": "hero/hero_normal",
+    "transition": "fade"
+  },
+  {
+    "type": "show",
+    "target": "npc",
+    "sprite": "npcA/hero_smileB",
+    "side": "right",
+    "transition": "fade"
+  },
+  {
+    "type": "text",
+    "speaker": "秋〇ほうき",
+    "text": "ク〇ガキが！！"
+  },
+  {
+    "type": "text",
+    "speaker": "石破〇",
+    "text": "ちょっと待てぃ...！！！！"
+  },
+  {
+    "type": "show",
+    "target": "npcC",
+    "sprite": "npcC/npcC_normal",
+    "side": "center",
+    "transition": "fade"
+  },
+  {
+    "type": "text",
+    "speaker": "石破〇",
+    "text": "秋〇ほうきのみ消費税100％！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！"
+  }
+]
