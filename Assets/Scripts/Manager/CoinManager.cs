@@ -7,6 +7,9 @@ public class CoinManager : MonoBehaviour
 
     private int _coinCount = 0;
 
+    /// <summary>
+    /// シングルトンのインスタンスを初期化し、ゲームオブジェクトを永続化する
+    /// </summary>
     private void Awake()
     {
         if (Instance == null)
@@ -20,6 +23,10 @@ public class CoinManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 指定された量のコインを追加し、セーブデータに反映する
+    /// </summary>
+    /// <param name="amount">追加するコインの数</param>
     public void AddCoin(int amount)
     {
         _coinCount += amount;
@@ -27,6 +34,9 @@ public class CoinManager : MonoBehaviour
         SaveCoinData();
     }
 
+    /// <summary>
+    /// 現在のコイン枚数をJSON形式で保存する
+    /// </summary>
     private void SaveCoinData()
     {
         CoinData data = new CoinData

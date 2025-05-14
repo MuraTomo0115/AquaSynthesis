@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GoalTrigger : MonoBehaviour
 {
-    void OnTriggerEnter2D(Collider2D other) 
+    private void OnTriggerEnter2D(Collider2D other) 
     {
         Debug.Log("何かに触れた: " + other.name);
 
@@ -13,7 +13,11 @@ public class GoalTrigger : MonoBehaviour
         }
     }
 
-    void StageClear()
+    /// <summary>
+    /// ゲームクリア処理
+    /// 今は仮でアタッチしているオブジェクトを消すのみ
+    /// </summary>
+    private void StageClear()
     {
         Destroy(gameObject);
     }
