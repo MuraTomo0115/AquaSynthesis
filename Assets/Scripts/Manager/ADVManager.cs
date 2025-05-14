@@ -24,16 +24,16 @@ public class ADVManager : MonoBehaviour
 	[SerializeField] private GameObject _advContents;
 
 	private Queue<ScenarioStep> _steps = new Queue<ScenarioStep>();
-	private bool _is_MessageShowing = false;
-	private bool _is_Skipping = false;
+	private bool _isMessageShowing = false;
+	private bool _isSkipping = false;
 	private CanvasGroup _canvasGroup;
 	private System.Action _OnScenarioFinished;
 	private PlayerInputActions _inputActions;
 	private AudioSource _seAudioSource;
-	private bool _is_Cooldown = false;
+	private bool _isCooldown = false;
 	private float _advanceCooldown = 1f;
-	private bool _is_Play = false;
-	private bool _is_Fading = false;
+	private bool _isPlay = false;
+	private bool _isFading = false;
 	private Dictionary<string, string> _targetToSideMap = new Dictionary<string, string>();
 
 	private void Awake()
@@ -60,9 +60,9 @@ public class ADVManager : MonoBehaviour
 	/// <param name="scenarioName">再生するJSONファイル名</param>
 	public void StartScenario(string scenarioName)
 	{
-		if (_is_Play) return;
+		if (_isPlay) return;
 
-		_is_Play = true;
+		_isPlay = true;
 		// UI初期化＆過去の残りをクリア
 		_messageText.text = "";
 		_speakerText.text = "";
@@ -76,8 +76,8 @@ public class ADVManager : MonoBehaviour
 		_fadeOverlay.gameObject.SetActive(false);   // 非表示にしておく
 
 		_steps.Clear(); // シナリオキューをクリア
-		_is_Skipping = false;
-		_is_MessageShowing = false;
+		_isSkipping = false;
+		_isMessageShowing = false;
 
 		_nextIcon.gameObject.SetActive(false);
 		_canvasGroup.alpha = 1f;
@@ -93,14 +93,14 @@ public class ADVManager : MonoBehaviour
 	/// </summary>
 	private void Update()
 	{
-		if (_is_Cooldown || _is_Fading || !_is_Play) return;
+		if (_isCooldown || _isFading || !_isPlay) return;
 
 		bool isAdvancePressed = _inputActions.ADV.Advance.triggered;
 		bool isHoldSpeedUp = _inputActions.ADV.Advance.ReadValue<float>() > 1.0f;
 
-		if (_is_MessageShowing)
+		if (_isMessageShowing)
 		{
-			_is_Skipping = isHoldSpeedUp;
+			_isSkipping = isHoldSpeedUp;
 		}
 		else if (isAdvancePressed)
 		{
@@ -116,9 +116,9 @@ public class ADVManager : MonoBehaviour
 	/// <returns></returns>
 	private IEnumerator AdvanceCooldown()
 	{
-		_is_Cooldown = true;  // クールダウンを開始
+		_isCooldown = true;  // クールダウンを開始
 		yield return new WaitForSeconds(_advanceCooldown); // 指定した時間待機
-		_is_Cooldown = false; // クールダウン終了
+		_isCooldown = false; // クールダウン終了
 	}
 
 	/// <summary>
@@ -149,7 +149,7 @@ public class ADVManager : MonoBehaviour
 		if (_steps.Count == 0)
 		{
 			UnityEngine.Debug.Log("シナリオ終了");
-			_is_Play = false;
+			_isPlay = false;
 
 			_canvasGroup.DOFade(0f, 0.2f).OnComplete(() =>
 			{
@@ -210,7 +210,7 @@ public class ADVManager : MonoBehaviour
 	/// <returns></returns>
 	private IEnumerator FadeOverlay(float targetAlpha, float duration)
 	{
-		_is_Fading = true;
+		_isFading = true;
 		_fadeOverlay.gameObject.SetActive(true);
 
 		yield return _fadeOverlay.DOFade(targetAlpha, duration).WaitForCompletion();
@@ -220,7 +220,7 @@ public class ADVManager : MonoBehaviour
 			_fadeOverlay.gameObject.SetActive(false);
 		}
 
-		_is_Fading = false;
+		_isFading = false;
 		ShowNextStep();
 	}
 
@@ -257,7 +257,7 @@ public class ADVManager : MonoBehaviour
 	/// <returns></returns>
 	private IEnumerator ShowMessage(string speaker, string message)
 	{
-		_is_MessageShowing = true;
+		_isMessageShowing = true;
 		_speakerText.text = speaker;
 		_messageText.text = "";
 
@@ -274,13 +274,13 @@ public class ADVManager : MonoBehaviour
 			else
 			{
 				_messageText.text += message[i];
-				float wait = _is_Skipping ? 0.005f : 0.05f;
+				float wait = _isSkipping ? 0.005f : 0.05f;
 				yield return new WaitForSeconds(wait);
 			}
 		}
 
-		_is_MessageShowing = false;
-		_is_Skipping = false;
+		_isMessageShowing = false;
+		_isSkipping = false;
 
 		// 全文表示後に▼マークを表示
 		_nextIcon.gameObject.SetActive(true);

@@ -34,7 +34,7 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>
     /// InputSystemİ’è
     /// </summary>
-    private void OnEnable()
+    public void OnEnable()
     {
         // InputSystem‚ğ—LŒø‚É‚·‚é
         _inputActions.Player.Enable();
@@ -46,6 +46,15 @@ public class PlayerMovement : MonoBehaviour
         // UŒ‚
         _inputActions.Player.Attack.performed += ctx => Attack();
         _inputActions.Player.Pistol.performed += ctx => Pistol();
+    }
+
+    /// <summary>
+    /// InputSystem‚ğ–³Œø‚É‚·‚é
+    /// </summary>
+    public void DisableInput()
+    {
+        // InputSystem‚ğ–³Œø‚É‚·‚é
+        _inputActions.Player.Disable();
     }
 
     private void Start()

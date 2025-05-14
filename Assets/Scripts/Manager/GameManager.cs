@@ -4,44 +4,43 @@ using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using UnityEngine;
 
+public enum GameState
+{
+    Title,
+    Stage,
+    Menu,
+    GameOver,
+    Clear
+}
+
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private GameObject _menuContents;
-    [SerializeField] private GameObject _menuUI;
-    private string _currentScene;
-    private MenuInputActions _inputActions;
-    private Menu _menu;
+    private GameState                   _gameState;          // ゲームの状態を管理する変数
+    public static GameManager Instance { get; private set; } // シングルトンインスタンス
+    public GameState GameState => _gameState;
 
     private void Awake()
     {
-        _inputActions = new MenuInputActions();
-        DontDestroyOnLoad(this.gameObject);
-        DontDestroyOnLoad(_menuContents.gameObject);
-    }
-
-    private void Start()
-    {
-        _currentScene = SceneManager.GetActiveScene().name;
-        _menu = _menuUI.GetComponent<Menu>();
-
-        if (_currentScene.Contains("Stage"))
+        if (Instance != null && Instance != this)
         {
-            // ステージシーンならMenuInputActionsアクションマップを有効化
-            _inputActions.Menu.Enable();
-            _inputActions.Menu.Open.performed += ctx => OpenMenu();
+            Destroy(this.gameObject);
+            return;
         }
         else
         {
-            // メニュー画面などではMenuInputActionsアクションマップを無効化
-            _inputActions.Menu.Disable();
-            _menuUI.SetActive(false);
+            Instance = this;
         }
+
+        // 現状タイトルがないためステージに設定
+        _gameState = GameState.Stage;
     }
 
-    private void OpenMenu()
+    /// <summary>
+    /// ゲームのステータスを変更する
+    /// </summary>
+    /// <param name="state">変更するステータス</param>
+    public void ChangeState(GameState state)
     {
-        // メニューを表示し、アニメーションなどの処理を呼び出す
-        _menuUI.SetActive(true);
-        _menu.ToggleMenu();
+        _gameState = state;
     }
 }
