@@ -137,7 +137,7 @@ public class PlayerMovement : MonoBehaviour
         if (!_canPistolAttack) return;
 
         // 本素材導入時までコメントアウト
-        //_animator.SetTrigger("AttackPistol");
+       _animator.SetTrigger("AttackPistol");
 
         //本素材導入時、アニメーションパスで発火させる
         ShootPistol();
