@@ -46,8 +46,17 @@ public class CoinManager : MonoBehaviour
 
         string json = JsonUtility.ToJson(data, true);
 
-        // 仮パス（実際には Application.persistentDataPath を使うといい）
-        string path = Application.dataPath + "/coin.json";
+        // Dataフォルダ（Assets/Data）をプロジェクト内に作成し、存在しなければ新規作成
+        string dir = Application.dataPath + "/Data";
+        if (!Directory.Exists(dir))
+        {
+            Directory.CreateDirectory(dir);
+        }
+
+        // JSONファイルの保存パスを設定し、ファイルに書き込む
+        string path = dir + "/coin.json";
+        Debug.Log("コインデータ保存先: " + path);
+
         File.WriteAllText(path, json);
     }
 }
