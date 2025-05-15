@@ -2,7 +2,7 @@
     "characters": [
         {
             "id": "player",
-            "maxHealth": 100,
+            "maxHealth": 10,
             "attackPower": 10,
             "pistolPower": 2
         },
