@@ -43,22 +43,6 @@ public class @MenuInputActions : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Scroll"",
-                    ""type"": ""PassThrough"",
-                    ""id"": ""d229c502-30d2-4950-a406-ff344143457a"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""New action"",
-                    ""type"": ""Button"",
-                    ""id"": ""421db2da-7e2c-4128-9072-cb56e39434fd"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
                     ""name"": ""Vertical"",
                     ""type"": ""Value"",
                     ""id"": ""c92f3ec0-bd12-4a45-b773-699b666ba9bb"",
@@ -114,23 +98,12 @@ public class @MenuInputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""2c933e34-b32c-4737-b293-a5255f628b3c"",
-                    ""path"": ""<Mouse>/scroll"",
+                    ""id"": ""7e0a21c5-fb7f-43a9-a861-83d7ff89cab0"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Scroll"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""6f77904f-c3bf-4916-8739-92964c365e3d"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""New action"",
+                    ""action"": ""Click"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -168,15 +141,37 @@ public class @MenuInputActions : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""13b38a5e-8230-41e0-b66b-ca0de7bf5acf"",
-                    ""path"": ""<Gamepad>/leftStick"",
+                    ""name"": ""2D Vector Controller"",
+                    ""id"": ""3e4d2993-d8f2-4c77-a4a2-4feac00d7106"",
+                    ""path"": ""2DVector(mode=1)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""d387f6cd-a1a2-4acc-91c6-558e889ea6df"",
+                    ""path"": ""<Gamepad>/dpad/left"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Move"",
                     ""isComposite"": false,
-                    ""isPartOfComposite"": false
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""9881966f-f21f-4c05-b43c-791b41d3b8c2"",
+                    ""path"": ""<Gamepad>/dpad/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 },
                 {
                     ""name"": ""2D Vector"",
@@ -210,6 +205,39 @@ public class @MenuInputActions : IInputActionCollection, IDisposable
                     ""action"": ""Vertical"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""2D Vector Controller"",
+                    ""id"": ""0cab0040-35ce-44a6-b8fb-f9f5c69a997d"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Vertical"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""ee262507-b20a-4e0a-9c74-fcbe43d13ead"",
+                    ""path"": ""<Gamepad>/dpad/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Vertical"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""b642e80c-66ad-4bc6-8b56-335ab28e75d4"",
+                    ""path"": ""<Gamepad>/dpad/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Vertical"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -221,8 +249,6 @@ public class @MenuInputActions : IInputActionCollection, IDisposable
         m_Menu_Open = m_Menu.FindAction("Open", throwIfNotFound: true);
         m_Menu_Move = m_Menu.FindAction("Move", throwIfNotFound: true);
         m_Menu_Click = m_Menu.FindAction("Click", throwIfNotFound: true);
-        m_Menu_Scroll = m_Menu.FindAction("Scroll", throwIfNotFound: true);
-        m_Menu_Newaction = m_Menu.FindAction("New action", throwIfNotFound: true);
         m_Menu_Vertical = m_Menu.FindAction("Vertical", throwIfNotFound: true);
     }
 
@@ -276,8 +302,6 @@ public class @MenuInputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Menu_Open;
     private readonly InputAction m_Menu_Move;
     private readonly InputAction m_Menu_Click;
-    private readonly InputAction m_Menu_Scroll;
-    private readonly InputAction m_Menu_Newaction;
     private readonly InputAction m_Menu_Vertical;
     public struct MenuActions
     {
@@ -286,8 +310,6 @@ public class @MenuInputActions : IInputActionCollection, IDisposable
         public InputAction @Open => m_Wrapper.m_Menu_Open;
         public InputAction @Move => m_Wrapper.m_Menu_Move;
         public InputAction @Click => m_Wrapper.m_Menu_Click;
-        public InputAction @Scroll => m_Wrapper.m_Menu_Scroll;
-        public InputAction @Newaction => m_Wrapper.m_Menu_Newaction;
         public InputAction @Vertical => m_Wrapper.m_Menu_Vertical;
         public InputActionMap Get() { return m_Wrapper.m_Menu; }
         public void Enable() { Get().Enable(); }
@@ -307,12 +329,6 @@ public class @MenuInputActions : IInputActionCollection, IDisposable
                 @Click.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnClick;
                 @Click.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnClick;
                 @Click.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnClick;
-                @Scroll.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnScroll;
-                @Scroll.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnScroll;
-                @Scroll.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnScroll;
-                @Newaction.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnNewaction;
-                @Newaction.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnNewaction;
-                @Newaction.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnNewaction;
                 @Vertical.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnVertical;
                 @Vertical.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnVertical;
                 @Vertical.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnVertical;
@@ -329,12 +345,6 @@ public class @MenuInputActions : IInputActionCollection, IDisposable
                 @Click.started += instance.OnClick;
                 @Click.performed += instance.OnClick;
                 @Click.canceled += instance.OnClick;
-                @Scroll.started += instance.OnScroll;
-                @Scroll.performed += instance.OnScroll;
-                @Scroll.canceled += instance.OnScroll;
-                @Newaction.started += instance.OnNewaction;
-                @Newaction.performed += instance.OnNewaction;
-                @Newaction.canceled += instance.OnNewaction;
                 @Vertical.started += instance.OnVertical;
                 @Vertical.performed += instance.OnVertical;
                 @Vertical.canceled += instance.OnVertical;
@@ -347,8 +357,6 @@ public class @MenuInputActions : IInputActionCollection, IDisposable
         void OnOpen(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnClick(InputAction.CallbackContext context);
-        void OnScroll(InputAction.CallbackContext context);
-        void OnNewaction(InputAction.CallbackContext context);
         void OnVertical(InputAction.CallbackContext context);
     }
 }

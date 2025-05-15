@@ -20,8 +20,8 @@
   },
   {
     "type": "show",
-    "target": "mika",
-    "sprite": "mika/mika_normal",
+    "target": "shizuku",
+    "sprite": "Shizuku/shizuku_normal",
     "side": "center",
     "transition": "fade"
   },
