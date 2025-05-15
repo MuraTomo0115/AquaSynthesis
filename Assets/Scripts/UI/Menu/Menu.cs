@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using UnityEngine.EventSystems;
 
 public class Menu : MonoBehaviour
 {
@@ -44,7 +45,6 @@ public class Menu : MonoBehaviour
         _inputActions.Menu.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>().x);
         _inputActions.Menu.Vertical.performed += ctx => OnVertical(ctx.ReadValue<Vector2>().y);
         _inputActions.Menu.Click.performed += ctx => OnClick();
-        _inputActions.Menu.Scroll.performed += ctx => OnScroll(ctx.ReadValue<Vector2>().y);
     }
 
     /// <summary>
@@ -204,6 +204,7 @@ public class Menu : MonoBehaviour
             UpdateSelection();
             StopOutlineBlink();
             _backButtonOutline.enabled = false;
+            EventSystem.current.SetSelectedGameObject(null);
         }
     }
 
