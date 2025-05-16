@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform  _firePoint;
     [SerializeField] private float      _pistolCoolTime = 1f;
     [SerializeField] float              _offset = 0.2f;
+    [SerializeField] private SupportManager _supportManager;
     private Rigidbody2D                 _rb;
     private Vector2                     _movement;
     private PlayerInputActions          _inputActions;
@@ -38,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
     {
         // InputSystem‚ð—LŒø‚É‚·‚é
         _inputActions.Player.Enable();
+        _inputActions.Support.Enable();
         _inputActions.Player.Move.performed += ctx => _movement = ctx.ReadValue<Vector2>();
         // “ü—Í‚ª‚È‚­‚È‚Á‚½ê‡‰Á‚¦‚é—Í‚ð‚O‚É‚·‚é
         _inputActions.Player.Move.canceled += ctx => _movement = Vector2.zero;
@@ -46,6 +48,14 @@ public class PlayerMovement : MonoBehaviour
         // UŒ‚
         _inputActions.Player.Attack.performed += ctx => Attack();
         _inputActions.Player.Pistol.performed += ctx => Pistol();
+        _inputActions.Support.SummonA.performed += ctx => summonsupport1();
+        _inputActions.Support.SummonB.performed += ctx => _supportManager.Summon2();
+    }
+
+    private void summonsupport1()
+    {
+        Debug.Log("InputSystem‚ð—LŒø‚É‚µ‚Ü‚µ‚½");
+        _supportManager.Summon1();
     }
 
     /// <summary>

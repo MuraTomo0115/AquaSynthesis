@@ -229,6 +229,85 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Support",
+            "id": "6797e531-711e-4d82-8dd9-beef860c26c2",
+            "actions": [
+                {
+                    "name": "SummonA",
+                    "type": "Button",
+                    "id": "87c433e1-40d7-474a-b9d7-d00e3a570419",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "SummonB",
+                    "type": "Button",
+                    "id": "96472615-a91b-47e0-8fd0-d96e8eb3eab3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "a924b5ab-6d58-43d2-a7f6-54066406e904",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SummonA",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4b255cdb-204f-4c1e-a633-fca15f0198d3",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SummonA",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1c1bca38-1881-4927-8413-785a1ecf9bb2",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SummonB",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "79bc7405-5533-4b47-b7a9-2a0c2bff9074",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SummonB",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9bd69cca-0ba1-477c-b11b-472f803c79a2",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SummonB",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []
