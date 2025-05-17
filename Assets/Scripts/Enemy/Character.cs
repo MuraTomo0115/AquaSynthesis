@@ -17,7 +17,10 @@ public class Character : MonoBehaviour
     private GameObject           _player;
     private PlayerMovement       _playerMovement;
 
-    public string CharacterId => _characterId;
+	public float HP { get; private set; }
+	public float MaxHP { get; private set; }
+
+	public string CharacterId => _characterId;
     public int AttackPower =>    _attackPower;
     public int CurrentHealth =>  _currentHealth;
     public int MaxHealth =>      _maxHealth;
@@ -40,16 +43,13 @@ public class Character : MonoBehaviour
     public void HitAttack(int damage)
     {
         _currentHealth -= damage;
-        Debug.Log($"{_characterId} はダメージを {damage} 食らいました。残りHP: {_currentHealth}");
+        UnityEngine.Debug.Log($"{_characterId} はダメージを {damage} 食らいました。残りHP: {_currentHealth}");
 
         // 赤くする
-        if (_spriteRenderer != null)
+        if (_spriteRenderer != null && _currentHealth > 0)
             StartCoroutine(FlashRed());
-
-        if (_currentHealth <= 0)
-        {
-            Die();
-        }
+        else if (_spriteRenderer != null && _currentHealth <= 0)
+			Die();
     }
 
     /// <summary>
@@ -103,8 +103,20 @@ public class Character : MonoBehaviour
         Destroy(gameObject, 1.0f); // 死亡アニメーション再生後に削除
     }
 
-    // 敵用など pistolPower が無い場合
-    public void SetStats(int maxHp, int atk)
+	public void Heal(float amount)
+	{
+		// _currentHealthを回復（最大値を超えない）
+		_currentHealth = Mathf.Min(_currentHealth + Mathf.RoundToInt(amount), _maxHealth);
+
+		// HPプロパティも同期（float型で使う場合のみ）
+		HP = _currentHealth;
+		MaxHP = _maxHealth;
+
+		Debug.Log($"{_characterId} healed! Current HP: {_currentHealth}");
+	}
+
+	// 敵用など pistolPower が無い場合
+	public void SetStats(int maxHp, int atk)
     {
         _maxHealth = maxHp;
         _attackPower = atk;

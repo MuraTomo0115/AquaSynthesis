@@ -242,6 +242,52 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Support"",
+            ""id"": ""6797e531-711e-4d82-8dd9-beef860c26c2"",
+            ""actions"": [
+                {
+                    ""name"": ""SummonA"",
+                    ""type"": ""Button"",
+                    ""id"": ""87c433e1-40d7-474a-b9d7-d00e3a570419"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""SummonB"",
+                    ""type"": ""Button"",
+                    ""id"": ""96472615-a91b-47e0-8fd0-d96e8eb3eab3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""a924b5ab-6d58-43d2-a7f6-54066406e904"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SummonA"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1c1bca38-1881-4927-8413-785a1ecf9bb2"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SummonB"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -256,6 +302,10 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         m_ADV = asset.FindActionMap("ADV", throwIfNotFound: true);
         m_ADV_Advance = m_ADV.FindAction("Advance", throwIfNotFound: true);
         m_ADV_StartDemo = m_ADV.FindAction("StartDemo", throwIfNotFound: true);
+        // Support
+        m_Support = asset.FindActionMap("Support", throwIfNotFound: true);
+        m_Support_SummonA = m_Support.FindAction("SummonA", throwIfNotFound: true);
+        m_Support_SummonB = m_Support.FindAction("SummonB", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -399,6 +449,47 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         }
     }
     public ADVActions @ADV => new ADVActions(this);
+
+    // Support
+    private readonly InputActionMap m_Support;
+    private ISupportActions m_SupportActionsCallbackInterface;
+    private readonly InputAction m_Support_SummonA;
+    private readonly InputAction m_Support_SummonB;
+    public struct SupportActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public SupportActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @SummonA => m_Wrapper.m_Support_SummonA;
+        public InputAction @SummonB => m_Wrapper.m_Support_SummonB;
+        public InputActionMap Get() { return m_Wrapper.m_Support; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(SupportActions set) { return set.Get(); }
+        public void SetCallbacks(ISupportActions instance)
+        {
+            if (m_Wrapper.m_SupportActionsCallbackInterface != null)
+            {
+                @SummonA.started -= m_Wrapper.m_SupportActionsCallbackInterface.OnSummonA;
+                @SummonA.performed -= m_Wrapper.m_SupportActionsCallbackInterface.OnSummonA;
+                @SummonA.canceled -= m_Wrapper.m_SupportActionsCallbackInterface.OnSummonA;
+                @SummonB.started -= m_Wrapper.m_SupportActionsCallbackInterface.OnSummonB;
+                @SummonB.performed -= m_Wrapper.m_SupportActionsCallbackInterface.OnSummonB;
+                @SummonB.canceled -= m_Wrapper.m_SupportActionsCallbackInterface.OnSummonB;
+            }
+            m_Wrapper.m_SupportActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @SummonA.started += instance.OnSummonA;
+                @SummonA.performed += instance.OnSummonA;
+                @SummonA.canceled += instance.OnSummonA;
+                @SummonB.started += instance.OnSummonB;
+                @SummonB.performed += instance.OnSummonB;
+                @SummonB.canceled += instance.OnSummonB;
+            }
+        }
+    }
+    public SupportActions @Support => new SupportActions(this);
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -410,5 +501,10 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
     {
         void OnAdvance(InputAction.CallbackContext context);
         void OnStartDemo(InputAction.CallbackContext context);
+    }
+    public interface ISupportActions
+    {
+        void OnSummonA(InputAction.CallbackContext context);
+        void OnSummonB(InputAction.CallbackContext context);
     }
 }

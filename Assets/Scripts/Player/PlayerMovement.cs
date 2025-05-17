@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform  _firePoint;
     [SerializeField] private float      _pistolCoolTime = 1f;
     [SerializeField] float              _offset = 0.2f;
+    [SerializeField] private SupportManager _supportManager;
     private Rigidbody2D                 _rb;
     private Vector2                     _movement;
     private PlayerInputActions          _inputActions;
@@ -38,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
     {
         // InputSystemを有効にする
         _inputActions.Player.Enable();
+        _inputActions.Support.Enable();
         _inputActions.Player.Move.performed += ctx => _movement = ctx.ReadValue<Vector2>();
         // 入力がなくなった場合加える力を０にする
         _inputActions.Player.Move.canceled += ctx => _movement = Vector2.zero;
@@ -46,6 +48,13 @@ public class PlayerMovement : MonoBehaviour
         // 攻撃
         _inputActions.Player.Attack.performed += ctx => Attack();
         _inputActions.Player.Pistol.performed += ctx => Pistol();
+        _inputActions.Support.SummonA.performed += ctx => summonsupport1();
+        _inputActions.Support.SummonB.performed += ctx => _supportManager.Summon2();
+    }
+
+    private void summonsupport1()
+    {
+        _supportManager.Summon1();
     }
 
     /// <summary>
@@ -219,4 +228,9 @@ public class PlayerMovement : MonoBehaviour
         _attackSensor.transform.localScale = new Vector3(0, 0, 0); // スケールをリセット
         _attackSensor.gameObject.SetActive(false); // 非表示
     }
+
+    public void Heal(float healAmount)
+    {
+        _charaState.Heal(healAmount);
+	}
 }

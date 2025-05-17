@@ -1,0 +1,14 @@
+[
+  {
+    "id": "SupportHealer",
+    "name": "ヒーラー",
+    "hp": 100
+  },
+  {
+    "id": "SupportTank",
+    "name": "タンク",
+    "hp": 200,
+    "attack": 5,
+    "speed": 0.8
+  }
+]
