@@ -1,0 +1,6 @@
+{
+  "healRange": 3.0,
+  "healAmount": 1.0,
+  "healInterval": 1.0,
+  "healDuration": 555.0
+}

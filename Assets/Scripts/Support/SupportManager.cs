@@ -35,7 +35,7 @@ public class SupportManager : MonoBehaviour
         {
             statusTable[data.id] = data;
         }
-        SetSelectedSupports("SupportTank", "SupportTank"); // デフォルトのサポートキャラを設定
+        SetSelectedSupports("SupportTank", "SupportHealer"); // デフォルトのサポートキャラを設定
     }
 
     /// <summary>
@@ -53,7 +53,6 @@ public class SupportManager : MonoBehaviour
     /// </summary>
     public void Summon1()
     {
-        Debug.Log("サポート1体目を召喚");
         SummonSupport(supportId1);
     }
 
@@ -62,7 +61,6 @@ public class SupportManager : MonoBehaviour
     /// </summary>
     public void Summon2()
     {
-        Debug.Log("サポート2体目を召喚");
         SummonSupport(supportId2);
     }
 
@@ -77,10 +75,9 @@ public class SupportManager : MonoBehaviour
             return;
         }
 
-        string path = $"Prefabs/{supportId}";
-        GameObject prefab = Resources.Load<GameObject>(path);
-
-        if (prefab == null)
+		string path = $"Prefab/Support/{supportId}";
+		GameObject prefab = Resources.Load<GameObject>(path);
+		if (prefab == null)
         {
             Debug.LogError($"Prefab not found for {supportId}");
             return;
@@ -98,7 +95,6 @@ public class SupportManager : MonoBehaviour
         {
             Debug.LogWarning($"SupportBaseが見つからない、またはステータスが不明: {supportId}");
         }
-        Debug.Log("召喚: " + supportId);
     }
 
     [System.Serializable]

@@ -8,5 +8,6 @@ public class SupportTank : SupportBase
     {
         Debug.Log("SupportTank: 防御アクション実行！");
         // 防御処理を書く
+        EndAct();
     }
 }

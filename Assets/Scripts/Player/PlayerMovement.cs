@@ -54,7 +54,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void summonsupport1()
     {
-        Debug.Log("InputSystemを有効にしました");
         _supportManager.Summon1();
     }
 
@@ -229,4 +228,9 @@ public class PlayerMovement : MonoBehaviour
         _attackSensor.transform.localScale = new Vector3(0, 0, 0); // スケールをリセット
         _attackSensor.gameObject.SetActive(false); // 非表示
     }
+
+    public void Heal(float healAmount)
+    {
+        _charaState.Heal(healAmount);
+	}
 }
