@@ -35,7 +35,7 @@ public class SupportManager : MonoBehaviour
         {
             statusTable[data.id] = data;
         }
-        SetSelectedSupports("SupportTank", "SupportHealer"); // デフォルトのサポートキャラを設定
+        SetSelectedSupports("SupportTank", "SupportKasumi"); // デフォルトのサポートキャラを設定
     }
 
     /// <summary>
