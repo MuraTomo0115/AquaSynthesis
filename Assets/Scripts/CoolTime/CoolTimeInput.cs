@@ -5,18 +5,18 @@ using TMPro;
 
 public class CoolTimeInput : MonoBehaviour
 {
-    public Image coolDownImage;                  // クールタイム表示用の画像（fillAmountを使って円形ゲージにする）
-    public TextMeshProUGUI coolDownText;        // クールタイムの残り時間を表示するテキスト
-    public float coolTime = 5f;                  // クールタイムの長さ（秒）
-    private bool _isCoolingDown = false;          // クールタイム中かどうかの状態管理（private変数は頭に_）
+    [SerializeField] private Image coolDownImage;                  // クールタイム表示用の画像（fillAmountを使って円形ゲージにする）
+    [SerializeField] private TextMeshProUGUI coolDownText;        // クールタイムの残り時間を表示するテキスト
+    [SerializeField] private float coolTime = 5f;                  // クールタイムの長さ（秒）
+    private bool _isCoolingDown = false;                          // クールタイム中かどうかの状態管理（private変数は頭に_）
 
-    public Key triggerKey = Key.Q;                // クールタイム開始トリガーとなるキー（デフォルトはQキー）
+    [SerializeField] private Key triggerKey = Key.Q;              // クールタイム開始トリガーとなるキー（デフォルトはQキー）
 
     /// <summary>
     /// 初期化処理。
     /// クールタイムUIを非表示にし、fillAmountをリセットする
     /// </summary>
-    void Start()
+    private void Start()
     {
         // クールタイムUIを最初は非表示にする
         coolDownImage.gameObject.SetActive(false);
@@ -30,7 +30,7 @@ public class CoolTimeInput : MonoBehaviour
     /// 毎フレーム呼ばれる更新処理。
     /// 指定したキーが押されたらクールタイム処理を開始する
     /// </summary>
-    void Update()
+    private void Update()
     {
         // 指定キーが押されていて、かつクールタイム中でなければクールタイム開始
         if (Keyboard.current[triggerKey].wasPressedThisFrame && !_isCoolingDown)
