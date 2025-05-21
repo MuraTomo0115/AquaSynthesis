@@ -48,6 +48,9 @@ public class Enemy1Movement : MonoBehaviour
         _animator.SetBool("isWithinRange", isCloseEnoughToAttack);
         _animator.SetBool("isCoolTime", _isCoolingDown);
 
+        // スケールの向きでアニメーション側に移動方向を伝える
+        float scaleX = transform.localScale.x;
+       
         if (!_isCoolingDown && isWithinRange)
         {
             if (isCloseEnoughToAttack)
@@ -122,10 +125,11 @@ public class Enemy1Movement : MonoBehaviour
         Vector2 direction = (_player.position - transform.position).normalized;
         _rigidbody2D.velocity = new Vector2(direction.x * _speed, _rigidbody2D.velocity.y);
 
-        // 向き調整（SpriteRendererのflipXを使用）
+        // 向き調整（スケールで制御）
         if (direction.x != 0)
         {
-            _spriteRenderer.flipX = direction.x > 0;
+            float scaleX = direction.x > 0 ? -1f : 1f; // 右が負、左が正になるよう調整
+            transform.localScale = new Vector3(scaleX, transform.localScale.y, transform.localScale.z);
         }
     }
 
