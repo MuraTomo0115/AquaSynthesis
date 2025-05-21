@@ -8207,16 +8207,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e980135b987b704c83a400363aa593e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coolDownImage: {fileID: 400769393}
-  playCoolDownImage: {fileID: 868183889}
-  coolDownText: {fileID: 512558008}
-  playCoolDownText: {fileID: 502642662}
-  recordCoolTime: 5
-  playDuration: 10
-  playCoolTime: 5
-  recordKey: 31
-  playKey: 19
-  playIcon: {fileID: 770745471}
+  _coolDownImage: {fileID: 400769393}
+  _playCoolDownImage: {fileID: 868183889}
+  _coolDownText: {fileID: 512558008}
+  _playCoolDownText: {fileID: 502642662}
+  _recordCoolTime: 5
+  _playDuration: 10
+  _playCoolTime: 5
+  _recordKey: 31
+  _playKey: 19
+  _playIcon: {fileID: 770745471}
 --- !u!1 &1811011980
 GameObject:
   m_ObjectHideFlags: 0

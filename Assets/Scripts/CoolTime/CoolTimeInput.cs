@@ -5,177 +5,178 @@ using TMPro;
 
 public class CoolTimeInput : MonoBehaviour
 {
-    [SerializeField] private Image coolDownImage;
-    [SerializeField] private Image playCoolDownImage;
-    [SerializeField] private TextMeshProUGUI coolDownText;
-    [SerializeField] private TextMeshProUGUI playCoolDownText;
-    [SerializeField] private float recordCoolTime = 5f;
-    [SerializeField] private float playDuration = 10f;
-    [SerializeField] private float playCoolTime = 5f;
+    [SerializeField] private Image _coolDownImage;
+    [SerializeField] private Image _playCoolDownImage;
+    [SerializeField] private TextMeshProUGUI _coolDownText;
+    [SerializeField] private TextMeshProUGUI _playCoolDownText;
+    [SerializeField] private float _recordCoolTime = 5f;
+    [SerializeField] private float _playDuration = 10f;
+    [SerializeField] private float _playCoolTime = 5f;
 
-    [SerializeField] private Key recordKey = Key.Q;
-    [SerializeField] private Key playKey = Key.E;
+    [SerializeField] private Key _recordKey = Key.Q;
+    [SerializeField] private Key _playKey = Key.E;
 
-    [SerializeField] private GameObject playIcon;
+    [SerializeField] private GameObject _playIcon;
 
-    private bool isRecordCoolingDown = false;
-    private bool isPlaying = false;
-    private bool isPlayCoolingDown = false;
-    private bool hasRecorded = false;
+    private bool _isRecordCoolingDown = false;
+    private bool _isPlaying = false;
+    private bool _isPlayCoolingDown = false;
+    private bool _hasRecorded = false;
 
-    private Coroutine playCoroutine = null;
-    private Coroutine playCoolDownCoroutine = null;
+    private Coroutine _playCoroutine = null;
+    private Coroutine _playCoolDownCoroutine = null;
 
-    private int playRepeatCount = 0;
-    private float playCoolTimeCurrent = 0f;
+    private int _playRepeatCount = 0;
+    private float _playCoolTimeCurrent = 0f;
 
+    /// <summary>
+    /// 初期化処理：UIの非表示と初期状態の設定
+    /// </summary>
     private void Start()
     {
-        coolDownImage.gameObject.SetActive(false);
-        coolDownText.gameObject.SetActive(false);
+        _coolDownImage.gameObject.SetActive(false);
+        _coolDownText.gameObject.SetActive(false);
 
-        playCoolDownImage.gameObject.SetActive(false);
-        playCoolDownText.gameObject.SetActive(false);
+        _playCoolDownImage.gameObject.SetActive(false);
+        _playCoolDownText.gameObject.SetActive(false);
 
-        coolDownImage.fillAmount = 0f;
-        playCoolDownImage.fillAmount = 0f;
+        _coolDownImage.fillAmount = 0f;
+        _playCoolDownImage.fillAmount = 0f;
 
-        playIcon.SetActive(true);
+        _playIcon.SetActive(true);
     }
 
+    /// <summary>
+    /// 入力チェック：録画と再生のキー入力を監視
+    /// </summary>
     private void Update()
     {
-        if (Keyboard.current[recordKey].wasPressedThisFrame)
+        if (Keyboard.current[_recordKey].wasPressedThisFrame)
         {
-            if (!isRecordCoolingDown && !isPlaying)
+            if (!_isRecordCoolingDown && !_isPlaying)
             {
-                Debug.Log("記録開始！");
-                hasRecorded = true;
+                _hasRecorded = true;
 
-                // 新たな記録があれば再生クールタイムをキャンセル
-                if (isPlayCoolingDown && playCoolDownCoroutine != null)
+                // 新たに記録された場合、再生のクールタイムを中断してリセット
+                if (_isPlayCoolingDown && _playCoolDownCoroutine != null)
                 {
-                    StopCoroutine(playCoolDownCoroutine);
-                    isPlayCoolingDown = false;
+                    StopCoroutine(_playCoolDownCoroutine);
+                    _isPlayCoolingDown = false;
 
-                    playCoolDownImage.fillAmount = 0f;
-                    playCoolDownImage.gameObject.SetActive(false);
-                    playCoolDownText.gameObject.SetActive(false);
+                    _playCoolDownImage.fillAmount = 0f;
+                    _playCoolDownImage.gameObject.SetActive(false);
+                    _playCoolDownText.gameObject.SetActive(false);
 
-                    playRepeatCount = 0; // カウントもリセット
+                    _playRepeatCount = 0;
                 }
 
-                StartCoroutine(StartRecordCoolDown());
-            }
-            else
-            {
-                Debug.Log("記録不可：クールタイム中または再生中");
+                StartCoroutine(_StartRecordCoolDown());
             }
         }
 
-        if (Keyboard.current[playKey].wasPressedThisFrame)
+        if (Keyboard.current[_playKey].wasPressedThisFrame)
         {
-            if (isPlaying)
+            if (_isPlaying)
             {
-                Debug.Log("再生中断！");
-                StopCoroutine(playCoroutine);
-                isPlaying = false;
+                StopCoroutine(_playCoroutine);
+                _isPlaying = false;
 
-                // 再生UIリセット
-                playCoolDownImage.fillAmount = 0f;
-                playCoolDownText.text = "";
+                _playCoolDownImage.fillAmount = 0f;
+                _playCoolDownText.text = "";
 
-                // クールタイム開始
-                playRepeatCount++;
-                playCoolTimeCurrent = playCoolTime * Mathf.Pow(1.5f, playRepeatCount - 1);
-                playCoolDownCoroutine = StartCoroutine(StartPlayCoolDown());
+                _playRepeatCount++;
+                _playCoolTimeCurrent = _playCoolTime * Mathf.Pow(1.5f, _playRepeatCount - 1);
+                _playCoolDownCoroutine = StartCoroutine(_StartPlayCoolDown());
             }
-            else if (hasRecorded && !isPlayCoolingDown)
+            else if (_hasRecorded && !_isPlayCoolingDown)
             {
-                Debug.Log("再生開始！");
-                playCoroutine = StartCoroutine(StartPlay());
-            }
-            else
-            {
-                Debug.Log("再生不可：記録なし／再生中／クールタイム中");
+                _playCoroutine = StartCoroutine(_StartPlay());
             }
         }
     }
 
-    private System.Collections.IEnumerator StartRecordCoolDown()
+    /// <summary>
+    /// 記録開始後のクールタイム処理
+    /// </summary>
+    private System.Collections.IEnumerator _StartRecordCoolDown()
     {
-        isRecordCoolingDown = true;
+        _isRecordCoolingDown = true;
 
-        coolDownImage.gameObject.SetActive(true);
-        coolDownText.gameObject.SetActive(true);
+        _coolDownImage.gameObject.SetActive(true);
+        _coolDownText.gameObject.SetActive(true);
 
-        float timer = recordCoolTime;
+        float timer = _recordCoolTime;
 
         while (timer > 0f)
         {
             timer -= Time.deltaTime;
-            float ratio = Mathf.Clamp01(timer / recordCoolTime);
-            coolDownImage.fillAmount = ratio;
-            coolDownText.text = timer.ToString("F1");
+            float ratio = Mathf.Clamp01(timer / _recordCoolTime);
+            _coolDownImage.fillAmount = ratio;
+            _coolDownText.text = timer.ToString("F1");
 
             yield return null;
         }
 
-        coolDownImage.fillAmount = 0f;
-        coolDownImage.gameObject.SetActive(false);
-        coolDownText.gameObject.SetActive(false);
+        _coolDownImage.fillAmount = 0f;
+        _coolDownImage.gameObject.SetActive(false);
+        _coolDownText.gameObject.SetActive(false);
 
-        isRecordCoolingDown = false;
+        _isRecordCoolingDown = false;
     }
 
-    private System.Collections.IEnumerator StartPlay()
+    /// <summary>
+    /// 再生処理：指定時間の間、再生状態を維持
+    /// </summary>
+    private System.Collections.IEnumerator _StartPlay()
     {
-        isPlaying = true;
+        _isPlaying = true;
 
-        playCoolDownImage.gameObject.SetActive(true);
-        playCoolDownText.gameObject.SetActive(true);
+        _playCoolDownImage.gameObject.SetActive(true);
+        _playCoolDownText.gameObject.SetActive(true);
 
-        float playTimer = playDuration;
+        float playTimer = _playDuration;
 
         while (playTimer > 0f)
         {
             playTimer -= Time.deltaTime;
-            float ratio = Mathf.Clamp01(playTimer / playDuration);
-            playCoolDownImage.fillAmount = ratio;
-            playCoolDownText.text = playTimer.ToString("F1");
+            float ratio = Mathf.Clamp01(playTimer / _playDuration);
+            _playCoolDownImage.fillAmount = ratio;
+            _playCoolDownText.text = playTimer.ToString("F1");
 
             yield return null;
         }
 
-        isPlaying = false;
+        _isPlaying = false;
 
-        // クールタイム設定（繰り返し再生で増加）
-        playRepeatCount++;
-        playCoolTimeCurrent = playCoolTime * Mathf.Pow(1.5f, playRepeatCount - 1);
+        _playRepeatCount++;
+        _playCoolTimeCurrent = _playCoolTime * Mathf.Pow(1.5f, _playRepeatCount - 1);
 
-        playCoolDownCoroutine = StartCoroutine(StartPlayCoolDown());
+        _playCoolDownCoroutine = StartCoroutine(_StartPlayCoolDown());
     }
 
-    private System.Collections.IEnumerator StartPlayCoolDown()
+    /// <summary>
+    /// 再生後のクールタイム処理（回数に応じて時間増加）
+    /// </summary>
+    private System.Collections.IEnumerator _StartPlayCoolDown()
     {
-        isPlayCoolingDown = true;
+        _isPlayCoolingDown = true;
 
-        float coolTimer = playCoolTimeCurrent;
+        float coolTimer = _playCoolTimeCurrent;
 
         while (coolTimer > 0f)
         {
             coolTimer -= Time.deltaTime;
-            float ratio = Mathf.Clamp01(coolTimer / playCoolTimeCurrent);
-            playCoolDownImage.fillAmount = ratio;
-            playCoolDownText.text = coolTimer.ToString("F1");
+            float ratio = Mathf.Clamp01(coolTimer / _playCoolTimeCurrent);
+            _playCoolDownImage.fillAmount = ratio;
+            _playCoolDownText.text = coolTimer.ToString("F1");
 
             yield return null;
         }
 
-        playCoolDownImage.fillAmount = 0f;
-        playCoolDownImage.gameObject.SetActive(false);
-        playCoolDownText.gameObject.SetActive(false);
+        _playCoolDownImage.fillAmount = 0f;
+        _playCoolDownImage.gameObject.SetActive(false);
+        _playCoolDownText.gameObject.SetActive(false);
 
-        isPlayCoolingDown = false;
+        _isPlayCoolingDown = false;
     }
 }
