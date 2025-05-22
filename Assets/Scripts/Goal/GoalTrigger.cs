@@ -2,14 +2,13 @@ using UnityEngine;
 
 public class GoalTrigger : MonoBehaviour
 {
-    [SerializeField] private ADVManager _advManager;
-    [SerializeField] private string _scenarioFileName;
-
     private void OnTriggerEnter2D(Collider2D other) 
     {
+        Debug.Log("何かに触れた: " + other.name);
+
         if (other.CompareTag("Player"))
         {
-            _advManager.StartScenario(_scenarioFileName);
+            Debug.Log("ステージクリア！");
             StageClear();
         }
     }

@@ -63,9 +63,8 @@ public class ADVManager : MonoBehaviour
 		if (_isPlay) return;
 
 		_isPlay = true;
-		Time.timeScale = 0f;
-                              // UI初期化＆過去の残りをクリア
-        _messageText.text = "";
+		// UI初期化＆過去の残りをクリア
+		_messageText.text = "";
 		_speakerText.text = "";
 		_imageLeft.sprite = null;
 		_imageCenter.sprite = null;
@@ -97,7 +96,7 @@ public class ADVManager : MonoBehaviour
 		if (_isCooldown || _isFading || !_isPlay) return;
 
 		bool isAdvancePressed = _inputActions.ADV.Advance.triggered;
-		bool isHoldSpeedUp = _inputActions.ADV.Advance.ReadValue<float>() > 0.5f;
+		bool isHoldSpeedUp = _inputActions.ADV.Advance.ReadValue<float>() > 1.0f;
 
 		if (_isMessageShowing)
 		{
@@ -118,9 +117,8 @@ public class ADVManager : MonoBehaviour
 	private IEnumerator AdvanceCooldown()
 	{
 		_isCooldown = true;  // クールダウンを開始
-        yield return new WaitForSecondsRealtime(_advanceCooldown);
-        // 指定した時間待機
-        _isCooldown = false; // クールダウン終了
+		yield return new WaitForSeconds(_advanceCooldown); // 指定した時間待機
+		_isCooldown = false; // クールダウン終了
 	}
 
 	/// <summary>
@@ -152,9 +150,8 @@ public class ADVManager : MonoBehaviour
 		{
 			UnityEngine.Debug.Log("シナリオ終了");
 			_isPlay = false;
-			Time.timeScale = 1f; // ゲームの時間を元に戻す
 
-            _canvasGroup.DOFade(0f, 0.2f).OnComplete(() =>
+			_canvasGroup.DOFade(0f, 0.2f).OnComplete(() =>
 			{
 				_advContents.SetActive(false);
 				_canvasGroup.alpha = 1f;
@@ -216,9 +213,9 @@ public class ADVManager : MonoBehaviour
 		_isFading = true;
 		_fadeOverlay.gameObject.SetActive(true);
 
-        yield return _fadeOverlay.DOFade(targetAlpha, duration).SetUpdate(true).WaitForCompletion();
+		yield return _fadeOverlay.DOFade(targetAlpha, duration).WaitForCompletion();
 
-        if (targetAlpha == 0f)
+		if (targetAlpha == 0f)
 		{
 			_fadeOverlay.gameObject.SetActive(false);
 		}
@@ -244,12 +241,12 @@ public class ADVManager : MonoBehaviour
 		}
 		_seAudioSource.PlayOneShot(clip);
 
-        if (wait)
-        {
-            yield return new WaitForSecondsRealtime(clip.length);
-        }
+		if (wait)
+		{
+			yield return new WaitForSeconds(clip.length);
+		}
 
-        ShowNextStep();
+		ShowNextStep();
 	}
 
 	/// <summary>
@@ -277,9 +274,9 @@ public class ADVManager : MonoBehaviour
 			else
 			{
 				_messageText.text += message[i];
-                float wait = _isSkipping ? 0.005f : 0.05f;
-                yield return new WaitForSecondsRealtime(wait);
-            }
+				float wait = _isSkipping ? 0.005f : 0.05f;
+				yield return new WaitForSeconds(wait);
+			}
 		}
 
 		_isMessageShowing = false;
@@ -392,13 +389,13 @@ public class ADVManager : MonoBehaviour
 
 		if (transition == "fade")
 		{
-            targetImage.DOFade(0f, 0.3f).SetUpdate(true).OnComplete(() =>
-            {
-                targetImage.sprite = newSprite;
-                targetImage.DOFade(1f, 0.3f).SetUpdate(true);
-            });
-        }
-        else
+			targetImage.DOFade(0f, 0.3f).OnComplete(() =>
+			{
+				targetImage.sprite = newSprite;
+				targetImage.DOFade(1f, 0.3f);
+			});
+		}
+		else
 		{
 			targetImage.sprite = newSprite;
 			targetImage.color = new Color(1, 1, 1, 1); // 色を元に戻す
@@ -418,9 +415,9 @@ public class ADVManager : MonoBehaviour
 
 		if (image != null)
 		{
-            image.DOFade(0f, 0.3f).SetUpdate(true); // フェードアウトで非表示にする
-        }
-    }
+			image.DOFade(0f, 0.3f);  // フェードアウトで非表示にする
+		}
+	}
 
 	/// <summary>
 	/// sideからスロットを取得
