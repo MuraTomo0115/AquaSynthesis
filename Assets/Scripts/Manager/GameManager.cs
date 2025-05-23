@@ -31,6 +31,20 @@ public class GameManager : MonoBehaviour
             Instance = this;
         }
 
+        // DB接続・初期化
+        var db = DatabaseManager.Connection;
+        DatabaseManager.Initialize();
+
+        // 例：CharacterStatusテーブルの最初のプレイヤー情報を取得してログ表示
+        var player = db.Table<CharacterStatus>().FirstOrDefault();
+        if (player != null)
+        {
+            Debug.Log($"Player Info - Id:{player.Id}, HP:{player.HP}, AttackPower:{player.AttackPower}, Coin:{player.Coin}, Level:{player.Level}, WeaponId:{player.WeaponId}");
+        }
+        else
+        {
+            Debug.Log("PlayerStatus table is empty.");
+        }
         // 現状タイトルがないためステージに設定
         _gameState = GameState.Stage;
     }
