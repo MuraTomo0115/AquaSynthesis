@@ -5899,7 +5899,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _advManager: {fileID: 907733006}
-  _scenarioFileName: sample2
+  _scenarioFileName: sample
 --- !u!61 &952621308
 BoxCollider2D:
   m_ObjectHideFlags: 0
