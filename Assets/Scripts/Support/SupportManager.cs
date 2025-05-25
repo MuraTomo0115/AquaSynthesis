@@ -45,7 +45,7 @@ public class SupportManager : MonoBehaviour
     {
         supportId1 = id1;
         supportId2 = id2;
-        Debug.Log($"サポート選択: 1={id1}, 2={id2}");
+        //Debug.Log($"サポート選択: 1={id1}, 2={id2}");
     }
 
     /// <summary>

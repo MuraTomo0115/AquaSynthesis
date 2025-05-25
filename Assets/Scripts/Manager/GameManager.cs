@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using UnityEngine;
+using System;
 
 public enum GameState
 {
@@ -18,8 +19,9 @@ public class GameManager : MonoBehaviour
     private GameState                   _gameState;          // ゲームの状態を管理する変数
     public static GameManager Instance { get; private set; } // シングルトンインスタンス
     public GameState GameState => _gameState;
+    [SerializeField] private CharacterManager _characterManager; // キャラクター管理用の参照
 
-    private void Awake()
+	private void Awake()
     {
         if (Instance != null && Instance != this)
         {
@@ -34,12 +36,13 @@ public class GameManager : MonoBehaviour
         // DB接続・初期化
         var db = DatabaseManager.Connection;
         DatabaseManager.Initialize();
+        _characterManager.LoadCharacterStatus();
 
         // 例：CharacterStatusテーブルの最初のプレイヤー情報を取得してログ表示
         var player = db.Table<CharacterStatus>().FirstOrDefault();
         if (player != null)
         {
-            Debug.Log($"Player Info - Id:{player.Id}, HP:{player.HP}, AttackPower:{player.AttackPower}, Coin:{player.Coin}, Level:{player.Level}, WeaponId:{player.WeaponId}");
+            //Debug.Log($"Player Info - Id:{player.Id}, HP:{player.HP}, AttackPower:{player.AttackPower}, Coin:{player.Coin}, Level:{player.Level}, WeaponId:{player.WeaponId}");
         }
         else
         {

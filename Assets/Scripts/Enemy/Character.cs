@@ -5,7 +5,7 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
     [SerializeField]
-    private string _characterId;
+    private string _characterName;
 
     private int                  _maxHealth;
     private int                  _currentHealth;
@@ -20,7 +20,7 @@ public class Character : MonoBehaviour
 	public float HP { get; private set; }
 	public float MaxHP { get; private set; }
 
-	public string CharacterId => _characterId;
+	public string CharacterName => _characterName;
     public int AttackPower =>    _attackPower;
     public int CurrentHealth =>  _currentHealth;
     public int MaxHealth =>      _maxHealth;
@@ -43,7 +43,7 @@ public class Character : MonoBehaviour
     public void HitAttack(int damage)
     {
         _currentHealth -= damage;
-        UnityEngine.Debug.Log($"{_characterId} はダメージを {damage} 食らいました。残りHP: {_currentHealth}");
+        UnityEngine.Debug.Log($"{_characterName} はダメージを {damage} 食らいました。残りHP: {_currentHealth}");
 
         // 赤くする
         if (_spriteRenderer != null && _currentHealth > 0)
@@ -112,7 +112,7 @@ public class Character : MonoBehaviour
 		HP = _currentHealth;
 		MaxHP = _maxHealth;
 
-		Debug.Log($"{_characterId} healed! Current HP: {_currentHealth}");
+		Debug.Log($"{_characterName} healed! Current HP: {_currentHealth}");
 	}
 
 	// 敵用など pistolPower が無い場合

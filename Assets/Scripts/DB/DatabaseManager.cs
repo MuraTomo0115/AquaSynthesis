@@ -20,7 +20,9 @@ public class TableInfo
 /// </summary>
 public class DatabaseManager
 {
-    private static SQLiteConnection _connection;
+    private const bool _debugMode = false; // デバッグモードフラグ（テーブルの削除等に使用）
+
+	private static SQLiteConnection _connection;
 
     public static SQLiteConnection Connection
     {
@@ -44,6 +46,11 @@ public class DatabaseManager
 
     public static void Initialize()
     {
+        if(_debugMode)
+        {
+           // ResetCharacterStatusTable();
+		}
+
         Migrate();
     }
 
@@ -105,39 +112,98 @@ public class DatabaseManager
                                 .Select(c => c.name)
                                 .ToList();
 
-        if (!columns.Contains("Exp"))
+		// Expカラムが存在しない場合、追加する処理の例
+		// 例えば、経験値を追加したい場合などに使用
+		if (!columns.Contains("Exp"))
         {
-            Connection.Execute("ALTER TABLE CharacterStatus ADD COLUMN Exp INTEGER DEFAULT 0;");
-        }
+            //Connection.Execute("ALTER TABLE CharacterStatus ADD COLUMN Exp INTEGER DEFAULT 100;");
+		}
     }
 
-    public static List<CharacterStatus> GetAllCharacters()
-    {
-        return Connection.Query<CharacterStatus>("SELECT * FROM CharacterStatus");
-    }
+	/// CharacterStatusテーブルの全レコードを取得
+	/// </summary>
+	public static List<CharacterStatus> GetAllCharacters()
+	{
+		return Connection.Query<CharacterStatus>("SELECT * FROM CharacterStatus");
+	}
 
-    public static List<EnemyStatus> GetAllEnemies()
-    {
-        return Connection.Query<EnemyStatus>("SELECT * FROM EnemyStatus");
-    }
+	/// <summary>
+	/// EnemyStatusテーブルの全レコードを取得
+	/// </summary>
+	public static List<EnemyStatus> GetAllEnemies()
+	{
+		return Connection.Query<EnemyStatus>("SELECT * FROM EnemyStatus");
+	}
 
-    public static List<PistolStatus> GetAllPistols()
-    {
-        return Connection.Query<PistolStatus>("SELECT * FROM PistolStatus");
-    }
+	/// <summary>
+	/// PistolStatusテーブルの全レコードを取得
+	/// </summary>
+	public static List<PistolStatus> GetAllPistols()
+	{
+		return Connection.Query<PistolStatus>("SELECT * FROM PistolStatus");
+	}
 
-    public static void InsertEnemy(EnemyStatus enemy)
-    {
-        // INSERT～:どのテーブルのどのカラムにデータを入れるか指定 VALUES:実際にどんな値を入れるか指定(?はプレースホルダー)
+	/// <summary>
+	/// EnemyStatusテーブルに新しい敵データを挿入
+	/// </summary>
+	/// <param name="enemy">挿入するEnemyStatusオブジェクト</param>
+	public static void InsertEnemy(EnemyStatus enemy)
+	{
+		// INSERT～:どのテーブルのどのカラムにデータを入れるか指定 VALUES:実際にどんな値を入れるか指定(?はプレースホルダー)
+		Connection.Execute(
+			"INSERT INTO EnemyStatus (HP, AttackPower) VALUES (?, ?)",
+			enemy.HP, enemy.AttackPower);
+	}
+
+	/// <summary>
+	/// PistolStatusテーブルに新しいピストルデータを挿入
+	/// </summary>
+	/// <param name="pistol">挿入するPistolStatusオブジェクト</param>
+	public static void InsertPistol(PistolStatus pistol)
+	{
+		Connection.Execute(
+			"INSERT INTO PistolStatus (AttackPower, DisableTime) VALUES (?, ?)",
+			pistol.AttackPower, pistol.DisableTime);
+	}
+
+	private static void ResetCharacterStatusTable()
+	{
+        Connection.Execute("DROP TABLE IF EXISTS CharacterStatus;");
+        Connection.Execute("DROP TABLE IF EXISTS EnemyStatus;");
+
+		Connection.Execute(@"
+        CREATE TABLE CharacterStatus (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            Name TEXT NOT NULL DEFAULT 'Shizuku',
+            HP INTEGER NOT NULL,
+            AttackPower INTEGER NOT NULL,
+            Coin INTEGER NOT NULL DEFAULT 0,
+            Level INTEGER NOT NULL DEFAULT 1,
+            WeaponId INTEGER
+        );
+
+    ");
+        Connection.Execute(@"
+		CREATE TABLE EnemyStatus(
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            Name TEXT NOT NULL,
+            HP INTEGER NOT NULL,
+            AttackPower INTEGER NOT NULL
+        );
+    ");
+
+		Connection.Execute(
+			"INSERT INTO CharacterStatus (HP, AttackPower, Coin, Level, WeaponId) VALUES (?, ?, ?, ?, ?);",
+			10, 3, 0, 1, null);
+
         Connection.Execute(
-            "INSERT INTO EnemyStatus (HP, AttackPower) VALUES (?, ?)",
-            enemy.HP, enemy.AttackPower);
-    }
+            "INSERT INTO EnemyStatus (Name, HP, AttackPower) VALUES (?, ?, ?);",
+            "TestEnemy1", 10, 2);
 
-    public static void InsertPistol(PistolStatus pistol)
-    {
         Connection.Execute(
-            "INSERT INTO PistolStatus (AttackPower, DisableTime)",
-            pistol.AttackPower, pistol.DisableTime);
-    }
+            "INSERT INTO EnemyStatus (Name, HP, AttackPower) VALUES (?, ?, ?);",
+            "TestEnemy2", 25, 5);
+
+		UnityEngine.Debug.Log("CharacterStatusテーブルをリセットしました。初期データを挿入しました。");
+	}
 }

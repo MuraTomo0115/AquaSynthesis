@@ -2198,6 +2198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d2ef37df506351469675178ca92c7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _characterManager: {fileID: 344712227}
 --- !u!1 &1332752392
 GameObject:
   m_ObjectHideFlags: 0
@@ -2631,7 +2632,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938b323c97307b6449b6282f7a76c142, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterId: player
+  _characterName: Shizuku
 --- !u!114 &1533654420
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3622,7 +3623,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938b323c97307b6449b6282f7a76c142, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterId: enemy1
+  _characterName: TestEnemy2
 --- !u!114 &739269552290860584
 MonoBehaviour:
   m_ObjectHideFlags: 0
