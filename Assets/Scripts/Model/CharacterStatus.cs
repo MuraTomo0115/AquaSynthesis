@@ -4,7 +4,8 @@ public class CharacterStatus
 {
     [PrimaryKey, AutoIncrement]
     public int Id { get; set; }
-    public int HP { get; set; } // HP
+    public string Name { get; set; }
+	public int HP { get; set; } // HP
     public int AttackPower { get; set; } // UŒ‚—Í
     public int Coin { get; set; } // ƒRƒCƒ“‚Ì”
     public int Level { get; set; } // ƒŒƒxƒ‹
