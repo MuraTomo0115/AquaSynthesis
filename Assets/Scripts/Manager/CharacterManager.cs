@@ -105,7 +105,7 @@ public class CharacterManager : MonoBehaviour
 			if (playerData != null)
             {
                 character.SetStats(playerData.HP, playerData.AttackPower, pistolData.AttackPower);
-                Debug.Log($"プレイヤーのステータスを設定: HP={playerData.HP}, AttackPower={playerData.AttackPower}");
+                Debug.Log($"プレイヤーのステータスを設定: HP={playerData.HP}, AttackPower={playerData.AttackPower}, Level={playerData.Level}");
                 Debug.Log($"ピストルの攻撃力を設定: PistolPower={pistolData.AttackPower}");
 			}
             else
