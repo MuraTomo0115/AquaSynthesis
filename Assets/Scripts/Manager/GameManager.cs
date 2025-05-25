@@ -52,6 +52,41 @@ public class GameManager : MonoBehaviour
         _gameState = GameState.Stage;
     }
 
+    private void Update()
+    {
+        // InputSystemでJキー押下を検知
+        if (Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame)
+        {
+            Debug.Log("Jキーが押されました（デバッグ用レベルアップ）");
+            LevelUpPlayer();
+        }
+    }
+
+    private void LevelUpPlayer()
+    {
+        // プレイヤーの現在データ取得
+        var player = DatabaseManager.GetAllCharacters().Find(c => c.Name == "Shizuku"); // 例: 名前で検索
+        if (player != null)
+        {
+            // ステータス上昇例（HP+10, 攻撃力+2, レベル+1）
+            int newHP = player.HP + 10;
+            int newAtk = player.AttackPower + 2;
+            int newLevel = player.Level + 1;
+
+            // DBを更新
+            DatabaseManager.UpdatePlayerStatus(player.Id, newHP, newAtk, newLevel);
+
+            Debug.Log($"レベルアップ！ 新HP:{newHP}, 新攻撃力:{newAtk}, 新レベル:{newLevel}");
+
+            // 画面上のキャラクターにも反映したい場合は、再読込やSetStats呼び出しを追加
+            _characterManager.LoadCharacterStatus();
+        }
+        else
+        {
+            Debug.LogWarning("プレイヤーデータが見つかりません");
+        }
+    }
+
     /// <summary>
     /// ゲームのステータスを変更する
     /// </summary>

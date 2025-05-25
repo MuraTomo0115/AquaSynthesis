@@ -24,31 +24,31 @@ public class DatabaseManager
 
 	private static SQLiteConnection _connection;
 
-    public static SQLiteConnection Connection
-    {
-        get
-        {
-            if (_connection == null)
-            {
-                // 書き込み可能な場所に DB ファイルを作成（なければ）
-                string dbPath = Path.Combine(Application.persistentDataPath, "game.db");
+	public static SQLiteConnection Connection
+	{
+		get
+		{
+			if (_connection == null)
+			{
+				// StreamingAssetsにDBファイルを作成
+				string dbPath = Path.Combine(Application.streamingAssetsPath, "game.db");
 
-                // SQLite 接続（読み書き・新規作成モード）
-                _connection = new SQLiteConnection(dbPath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create);
+				// SQLite 接続（読み書き・新規作成モード）
+				_connection = new SQLiteConnection(dbPath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create);
 
-                // テーブルが無ければ作成
-                CreateTables();
-            }
+				// テーブルが無ければ作成
+				CreateTables();
+			}
 
-            return _connection;
-        }
-    }
+			return _connection;
+		}
+	}
 
-    public static void Initialize()
+	public static void Initialize()
     {
         if(_debugMode)
         {
-           // ResetCharacterStatusTable();
+            //ResetCharacterStatusTable();
 		}
 
         Migrate();
@@ -166,6 +166,23 @@ public class DatabaseManager
 			pistol.AttackPower, pistol.DisableTime);
 	}
 
+	/// <summary>
+	/// CharacterStatusテーブルのプレイヤーステータスを更新
+	/// </summary>
+	/// <param name="id">更新するプレイヤーのID</param>
+	/// <param name="newHP">新しいHP</param>
+	/// <param name="newAttackPower">新しい攻撃力</param>
+	/// <param name="newLevel">新しいレベル</param>
+	public static void UpdatePlayerStatus(int id, int newHP, int newAttackPower, int newLevel)
+	{
+		Connection.Execute(
+			"UPDATE CharacterStatus SET HP = ?, AttackPower = ?, Level = ? WHERE Id = ?",
+			newHP, newAttackPower, newLevel, id);
+	}
+
+	/// <summary>
+	/// デバッグ用にテーブルをリセットする処理
+	/// </summary>
 	private static void ResetCharacterStatusTable()
 	{
         Connection.Execute("DROP TABLE IF EXISTS CharacterStatus;");
