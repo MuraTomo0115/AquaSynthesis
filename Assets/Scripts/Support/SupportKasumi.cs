@@ -10,6 +10,7 @@ public class SupportKasumiStatus
 	public float healAmount;
 	public float healInterval;
 	public float healDuration;
+    public float availableTime;
 }
 
 public class SupportKasumi : SupportBase
@@ -18,6 +19,7 @@ public class SupportKasumi : SupportBase
 	private float _healAmount;
 	private float _healInterval;
 	private float _healDuration;
+	private float _availableTime;
 	private float _innerRadius;
     private CircleCollider2D _shieldCollider;
 
@@ -30,7 +32,7 @@ public class SupportKasumi : SupportBase
     protected override void Awake()
 	{
 		base.Awake();
-		LoadKasumiStatus();
+		LoadKasumiStatusFromTable();
         _shieldCollider = GetComponent<CircleCollider2D>();
 
         if (_shieldCollider != null)
@@ -41,25 +43,26 @@ public class SupportKasumi : SupportBase
     }
 
     /// <summary>
-    /// JSONファイルからステータスを読み込む
+    /// SupportStatusテーブルからステータスを読み込む
     /// </summary>
-    private void LoadKasumiStatus()
-	{
-		TextAsset json = Resources.Load<TextAsset>("Status/KasumiStatus");
-		if (json != null)
-		{
-			SupportKasumiStatus status = JsonUtility.FromJson<SupportKasumiStatus>(json.text);
-			_healRange = status.healRange;
-			_healAmount = status.healAmount;
-			_healInterval = status.healInterval;
-			_healDuration = status.healDuration;
-			Debug.Log(_healAmount + " " + _healInterval + " " + _healDuration + " " + _healRange);
-		}
-		else
-		{
-			Debug.LogWarning("SupportKasumiStatus.jsonが見つかりません。");
-		}
-	}
+    private void LoadKasumiStatusFromTable()
+    {
+        // "Kasumi" という名前でDBから取得
+        var status = DatabaseManager.GetSupportStatusByName("Kasumi");
+        if (status != null)
+        {
+            _healRange = status.HealRange ?? 0f;
+            _healAmount = status.HealAmount ?? 0f;
+            _healInterval = status.HealInterval ?? 0f;
+            _healDuration = status.HealDuration ?? 0f;
+            _availableTime = status.AvailableTime; // 追加
+            Debug.Log($"{_healAmount} {_healInterval} {_healDuration} {_healRange} {_availableTime}");
+        }
+        else
+        {
+            Debug.LogWarning("SupportStatusテーブルにKasumiのデータがありません。");
+        }
+    }
 
     /// <summary>
     /// 回復・シールド範囲に入ったときの処理
@@ -111,6 +114,7 @@ public class SupportKasumi : SupportBase
     private void OnEnable()
 	{
 		healCoroutine = StartCoroutine(HealNearbyPlayers());
+        StartCoroutine(AvailableTimeWatcher());
 	}
 
     /// <summary>
@@ -158,6 +162,20 @@ public class SupportKasumi : SupportBase
 		}
 		EndAct();
 	}
+
+    /// <summary>
+    /// 出現可能時間を監視し、0になったらEndActを呼ぶ
+    /// </summary>
+    private IEnumerator AvailableTimeWatcher()
+    {
+        float timer = _availableTime;
+        while (timer > 0f)
+        {
+            yield return null;
+            timer -= Time.deltaTime;
+        }
+        EndAct();
+    }
 
     /// <summary>
     /// Gizmosを描画する（エディタ上でのデバッグ用）
