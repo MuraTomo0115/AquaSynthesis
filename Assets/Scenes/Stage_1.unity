@@ -1096,6 +1096,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Brown Off (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 7655653070179938529, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7655653070179938530, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -1229,6 +1233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d2ef37df506351469675178ca92c7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _characterManager: {fileID: 740543899}
 --- !u!4 &256778637 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4865070853759243335, guid: d66a2aa3a1f161349b5d7e6560600d02, type: 3}
@@ -2589,7 +2594,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938b323c97307b6449b6282f7a76c142, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterId: player
+  _characterName: 
 --- !u!114 &577869743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3931,6 +3936,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Brown Off (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 7655653070179938529, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7655653070179938530, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
       propertyPath: m_RootOrder
       value: 7
@@ -4451,6 +4460,10 @@ PrefabInstance:
     - target: {fileID: 7655653070179938529, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
       propertyPath: m_Name
       value: Brown Off (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7655653070179938529, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7655653070179938530, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
       propertyPath: m_RootOrder
@@ -5207,6 +5220,10 @@ PrefabInstance:
     - target: {fileID: 7655653070179938529, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
       propertyPath: m_Name
       value: Brown Off
+      objectReference: {fileID: 0}
+    - target: {fileID: 7655653070179938529, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7655653070179938530, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
       propertyPath: m_RootOrder
@@ -6416,6 +6433,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Brown Off (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 7655653070179938529, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7655653070179938530, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -7007,7 +7028,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938b323c97307b6449b6282f7a76c142, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterId: enemy1
+  _characterName: 
 --- !u!95 &1535712424
 Animator:
   serializedVersion: 3
@@ -7948,9 +7969,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 787729661}
     m_Modifications:
+    - target: {fileID: 7655653070179938528, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
+      propertyPath: m_UsedByEffector
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7655653070179938529, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
       propertyPath: m_Name
       value: Brown Off (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7655653070179938529, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7655653070179938530, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
       propertyPath: m_RootOrder
@@ -8464,6 +8493,10 @@ PrefabInstance:
     - target: {fileID: 7655653070179938529, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
       propertyPath: m_Name
       value: Brown Off
+      objectReference: {fileID: 0}
+    - target: {fileID: 7655653070179938529, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7655653070179938530, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
       propertyPath: m_RootOrder
@@ -9210,7 +9243,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938b323c97307b6449b6282f7a76c142, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterId: enemy1
+  _characterName: 
 --- !u!95 &1958694239
 Animator:
   serializedVersion: 3
@@ -9508,6 +9541,10 @@ PrefabInstance:
     - target: {fileID: 7655653070179938529, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
       propertyPath: m_Name
       value: Brown Off (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7655653070179938529, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7655653070179938530, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
       propertyPath: m_RootOrder
@@ -10016,6 +10053,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Brown Off
       objectReference: {fileID: 0}
+    - target: {fileID: 7655653070179938529, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7655653070179938530, guid: 864351d240d99ea4e8cd1610091403ff, type: 3}
       propertyPath: m_RootOrder
       value: 5
@@ -10138,6 +10179,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: gem-5
       objectReference: {fileID: 0}
+    - target: {fileID: 8875077552437683185, guid: d3d9fdc1e2f879c469431a7124dc0df9, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
     - target: {fileID: 8875077552437683186, guid: d3d9fdc1e2f879c469431a7124dc0df9, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -10182,5 +10227,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8875077552437683196, guid: d3d9fdc1e2f879c469431a7124dc0df9, type: 3}
+      propertyPath: _advManager
+      value: 
+      objectReference: {fileID: 1165737499}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3d9fdc1e2f879c469431a7124dc0df9, type: 3}
