@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private GameObject _bullet;
     [SerializeField] private Transform  _firePoint;
     [SerializeField] private float      _pistolCoolTime = 1f;
+    [SerializeField] private float _invincibleTime = 1f;   // ダメージ後の無敵時間
     [SerializeField] float              _offset = 0.2f;
     [SerializeField] private SupportManager _supportManager;
     private Rigidbody2D                 _rb;
@@ -24,6 +25,10 @@ public class PlayerMovement : MonoBehaviour
     private bool                        _is_CanJump = true;
     private bool                        _canAdjacentAttack = true;
     private bool                        _canPistolAttack = true;
+    private bool                        _isInvincible = false; // 無敵状態かどうか
+    private bool                        _isOnSpike = false; // トゲにいるかどうか
+
+
     public Character CharaState =>      _charaState;
 
     private void Awake()
@@ -220,6 +225,43 @@ public class PlayerMovement : MonoBehaviour
             // 右向き
             _attackSensor.transform.localScale = new Vector3(1, 1, 1);
         }
+    }
+
+    // トゲに触れた瞬間に呼ばれる。トゲに乗っていることを記録
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Spike"))
+        {
+            _isOnSpike = true; // トゲの上にいるフラグを立てる
+        }
+    }
+
+    // トゲから離れた瞬間に呼ばれる。トゲに乗っていないことを記録
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Spike"))
+        {
+            _isOnSpike = false; // トゲの上にいないフラグを立てる
+        }
+    }
+
+    private void Update()
+    {
+        // トゲの上にいて無敵じゃなければダメージを受ける処理
+        if (_isOnSpike && !_isInvincible)
+        {
+            _charaState.HitAttack(3);  // ダメージを与える
+            _isInvincible = true;      // 無敵状態に切り替え
+            StartCoroutine(ResetInvincible());  // 一定時間後に無敵解除
+        }
+    }
+    /// <summary>
+    /// 無敵状態を一定時間後に解除する
+    /// </summary>
+    private IEnumerator ResetInvincible()
+    {
+        yield return new WaitForSeconds(_invincibleTime);
+        _isInvincible = false;
     }
 
     public void EndAttack()
