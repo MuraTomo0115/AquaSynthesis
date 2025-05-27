@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938b323c97307b6449b6282f7a76c142, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterId: enemy1
+  _characterName: TestEnemy2
 --- !u!114 &3485246906663066743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,7 +188,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   _groundCheck: {fileID: 3485246907547066322}
-  _player: {fileID: 0}
+  _player: {fileID: 3485246906737567901}
   _detectionRange: 7
   _attackSensor: {fileID: 3485246906737567900}
   _ray: 0.3

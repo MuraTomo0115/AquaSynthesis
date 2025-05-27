@@ -16,8 +16,9 @@ public class Character : MonoBehaviour
     private Color                _defaultColor;
     private GameObject           _player;
     private PlayerMovement       _playerMovement;
+    private bool _isDead = false; // 死亡したかどうかのフラグ
 
-	public float HP { get; private set; }
+    public float HP { get; private set; }
 	public float MaxHP { get; private set; }
 
 	public string CharacterName => _characterName;
@@ -42,6 +43,8 @@ public class Character : MonoBehaviour
     /// <param name="damage">ダメージ量</param>
     public void HitAttack(int damage)
     {
+        if (_isDead) return; // 死亡してたら処理スキップ
+
         _currentHealth -= damage;
         UnityEngine.Debug.Log($"{_characterName} はダメージを {damage} 食らいました。残りHP: {_currentHealth}");
 
@@ -67,6 +70,9 @@ public class Character : MonoBehaviour
     /// </summary>
     protected virtual void Die()
     {
+        if (_isDead) return; // 念のため多重実行防止
+        _isDead = true;      // フラグON（1回だけ死亡処理）
+
         _animator?.SetTrigger("Die");
 
         if (CompareTag("Player"))
