@@ -230,7 +230,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8413529789942519730, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9.827197
+      value: 115.2
       objectReference: {fileID: 0}
     - target: {fileID: 8413529789942519730, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2630,7 +2630,7 @@ MonoBehaviour:
   _bullet: {fileID: 7696661787290791833, guid: 3183ac645db59ee40928bd80477291eb, type: 3}
   _firePoint: {fileID: 901020039}
   _pistolCoolTime: 0.3
-  _invincibleTime: 3
+  _invincibleTime: 1
   _offset: 0.2
   _supportManager: {fileID: 223359424}
 --- !u!4 &577869749 stripped
@@ -3665,6 +3665,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 767328010}
     m_Modifications:
+    - target: {fileID: 2997775689104477052, guid: 2c84d15d8641eda4fb53d9b38d8218d7, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3432132943174063671, guid: 2c84d15d8641eda4fb53d9b38d8218d7, type: 3}
       propertyPath: m_Name
       value: Spiked Ball (6)
@@ -3736,7 +3740,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5615597093145947513, guid: 2c84d15d8641eda4fb53d9b38d8218d7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.33998418
+      value: -0.3
       objectReference: {fileID: 0}
     - target: {fileID: 5615597093145947513, guid: 2c84d15d8641eda4fb53d9b38d8218d7, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3798,7 +3802,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5615597093145947513, guid: 2c84d15d8641eda4fb53d9b38d8218d7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.39998412
+      value: -0.3
       objectReference: {fileID: 0}
     - target: {fileID: 5615597093145947513, guid: 2c84d15d8641eda4fb53d9b38d8218d7, type: 3}
       propertyPath: m_LocalPosition.z
@@ -9361,7 +9365,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5615597093145947513, guid: 2c84d15d8641eda4fb53d9b38d8218d7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.37998414
+      value: -0.3
       objectReference: {fileID: 0}
     - target: {fileID: 5615597093145947513, guid: 2c84d15d8641eda4fb53d9b38d8218d7, type: 3}
       propertyPath: m_LocalPosition.z
@@ -9716,5 +9720,9 @@ PrefabInstance:
       propertyPath: _advManager
       value: 
       objectReference: {fileID: 1165737499}
+    - target: {fileID: 8875077552437683196, guid: d3d9fdc1e2f879c469431a7124dc0df9, type: 3}
+      propertyPath: _scenarioFileName
+      value: sample
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3d9fdc1e2f879c469431a7124dc0df9, type: 3}
