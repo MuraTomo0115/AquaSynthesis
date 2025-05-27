@@ -15,7 +15,7 @@ public abstract class SupportBase : MonoBehaviour
 	public virtual void Initialize(SupportStatus status)
 	{
 		this.status = status;
-		Debug.Log($"{status.name} initialized with HP: {status.hp}, ATK: {status.attack}");
+		//Debug.Log($"{status.name} initialized with HP: {status.hp}, ATK: {status.attack}");
 	}
 
 	public void EndAct()

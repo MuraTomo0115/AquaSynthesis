@@ -18,34 +18,30 @@ public class SupportManager : MonoBehaviour
 
     private void LoadSupportData()
     {
-        string resourcesPath = "Status/SupportStatus";
-        TextAsset jsonAsset = Resources.Load<TextAsset>(resourcesPath);
-        if (jsonAsset == null)
-        {
-            Debug.LogError($"SupportStatus JSON not found at Resources/{resourcesPath}.json");
-            statusTable = new Dictionary<string, SupportStatus>();
-            return;
-        }
-
-        string json = jsonAsset.text;
-        SupportStatus[] dataArray = JsonUtility.FromJson<SupportStatusArray>("{\"array\":" + json + "}").array;
-
+        // DBから全サポートデータを取得
+        var supportList = DatabaseManager.GetAllSupportStatuses();
         statusTable = new Dictionary<string, SupportStatus>();
-        foreach (var data in dataArray)
+        foreach (var data in supportList)
         {
-            statusTable[data.id] = data;
+            if (string.IsNullOrEmpty(data.Name))
+            {
+                Debug.LogWarning("SupportStatusにnameが設定されていないデータがあります。スキップします。");
+                continue;
+            }
+            statusTable[data.Name] = data;
         }
-        SetSelectedSupports("SupportTank", "SupportKasumi"); // デフォルトのサポートキャラを設定
+        // デフォルトのサポートキャラを設定（例: "Kasumi", "Drone" などDBのnameと一致する値）
+        SetSelectedSupports("Kasumi", "Kasumi");
+        Debug.Log("登録サポート名: " + string.Join(", ", statusTable.Keys));
     }
 
     /// <summary>
-    /// 外部から選択されたサポートキャラのIDを設定する
+    /// 外部から選択されたサポートキャラの名前を設定する
     /// </summary>
-    public void SetSelectedSupports(string id1, string id2)
+    public void SetSelectedSupports(string name1, string name2)
     {
-        supportId1 = id1;
-        supportId2 = id2;
-        //Debug.Log($"サポート選択: 1={id1}, 2={id2}");
+        supportId1 = name1;
+        supportId2 = name2;
     }
 
     /// <summary>
@@ -65,41 +61,35 @@ public class SupportManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 指定IDのサポートキャラを召喚
+    /// 指定名のサポートキャラを召喚
     /// </summary>
-    private void SummonSupport(string supportId)
+    private void SummonSupport(string supportName)
     {
-        if (string.IsNullOrEmpty(supportId))
+        if (string.IsNullOrEmpty(supportName))
         {
-            Debug.LogWarning("召喚IDが設定されていません");
+            Debug.LogWarning("召喚名が設定されていません");
             return;
         }
 
-		string path = $"Prefab/Support/{supportId}";
-		GameObject prefab = Resources.Load<GameObject>(path);
-		if (prefab == null)
+        string path = $"Prefab/Support/{supportName}";
+        GameObject prefab = Resources.Load<GameObject>(path);
+        if (prefab == null)
         {
-            Debug.LogError($"Prefab not found for {supportId}");
+            Debug.LogError($"Prefab not found for {supportName}");
             return;
         }
 
         GameObject instance = Instantiate(prefab, summonPosition.position, Quaternion.identity);
         var support = instance.GetComponent<SupportBase>();
 
-        if (support != null && statusTable.ContainsKey(supportId))
+        if (support != null && statusTable.ContainsKey(supportName))
         {
-            support.Initialize(statusTable[supportId]);
+            support.Initialize(statusTable[supportName]);
             support.Act();
         }
         else
         {
-            Debug.LogWarning($"SupportBaseが見つからない、またはステータスが不明: {supportId}");
+            Debug.LogWarning($"SupportBaseが見つからない、またはステータスが不明: {supportName}");
         }
-    }
-
-    [System.Serializable]
-    private class SupportStatusArray
-    {
-        public SupportStatus[] array;
     }
 }

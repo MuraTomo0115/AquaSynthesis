@@ -20,7 +20,7 @@ public class TableInfo
 /// </summary>
 public class DatabaseManager
 {
-    private const bool _debugMode = false; // デバッグモードフラグ（テーブルの削除等に使用）
+	private const bool _debugMode = false; // デバッグモードフラグ（テーブルの削除等に使用）
 
 	private static SQLiteConnection _connection;
 
@@ -118,7 +118,32 @@ public class DatabaseManager
         {
             //Connection.Execute("ALTER TABLE CharacterStatus ADD COLUMN Exp INTEGER DEFAULT 100;");
 		}
-    }
+
+
+		//// SupportStatusテーブルの再作成
+		Connection.Execute(@"
+            CREATE TABLE IF NOT EXISTS SupportStatus (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Name TEXT NOT NULL,
+                AvailableTime REAL NOT NULL DEFAULT 10,
+                HealRange REAL DEFAULT 3,
+                HealAmount REAL DEFAULT 1,
+                HealInterval REAL DEFAULT 0.5,
+                DroneAttackPower REAL DEFAULT 1,
+                DroneAttackInterval REAL DEFAULT 3,
+                ItemSpawnCount INTEGER DEFAULT 3,
+                GrenadePower REAL DEFAULT 3,
+                GrenadeInterval REAL DEFAULT 2,
+                ChargeSpeed REAL DEFAULT 3
+            );
+        ");
+
+		//// 初期データの挿入
+		Connection.Execute(
+			"INSERT INTO SupportStatus (Name, AvailableTime, HealRange, HealAmount, HealInterval) VALUES (?, ?, ?, ?, ?)",
+			"Kasumi", 10, 3, 1, 2f
+		);
+	}
 
 	/// CharacterStatusテーブルの全レコードを取得
 	/// </summary>
@@ -141,6 +166,26 @@ public class DatabaseManager
 	public static List<PistolStatus> GetAllPistols()
 	{
 		return Connection.Query<PistolStatus>("SELECT * FROM PistolStatus");
+	}
+
+	/// <summary>
+	/// サポートステータスの全レコードを取得
+	/// </summary>
+	/// <returns></returns>
+	public static List<SupportStatus> GetAllSupportStatuses()
+	{
+		return Connection.Query<SupportStatus>("SELECT * FROM SupportStatus");
+	}
+
+	/// <summary>
+	/// サポートステータスを名前で取得
+	/// </summary>
+	/// <param name="name"></param>
+	/// <returns></returns>
+	public static SupportStatus GetSupportStatusByName(string name)
+	{
+		var list = Connection.Query<SupportStatus>("SELECT * FROM SupportStatus WHERE Name = ?", name);
+		return list.FirstOrDefault();
 	}
 
 	/// <summary>
@@ -185,8 +230,8 @@ public class DatabaseManager
 	/// </summary>
 	private static void ResetCharacterStatusTable()
 	{
-        Connection.Execute("DROP TABLE IF EXISTS CharacterStatus;");
-        Connection.Execute("DROP TABLE IF EXISTS EnemyStatus;");
+		Connection.Execute("DROP TABLE IF EXISTS CharacterStatus;");
+		Connection.Execute("DROP TABLE IF EXISTS EnemyStatus;");
 
 		Connection.Execute(@"
         CREATE TABLE CharacterStatus (
@@ -200,7 +245,7 @@ public class DatabaseManager
         );
 
     ");
-        Connection.Execute(@"
+		Connection.Execute(@"
 		CREATE TABLE EnemyStatus(
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             Name TEXT NOT NULL,
@@ -213,14 +258,15 @@ public class DatabaseManager
 			"INSERT INTO CharacterStatus (HP, AttackPower, Coin, Level, WeaponId) VALUES (?, ?, ?, ?, ?);",
 			10, 3, 0, 1, null);
 
-        Connection.Execute(
-            "INSERT INTO EnemyStatus (Name, HP, AttackPower) VALUES (?, ?, ?);",
-            "TestEnemy1", 10, 2);
+		Connection.Execute(
+			"INSERT INTO EnemyStatus (Name, HP, AttackPower) VALUES (?, ?, ?);",
+			"TestEnemy1", 10, 2);
 
-        Connection.Execute(
-            "INSERT INTO EnemyStatus (Name, HP, AttackPower) VALUES (?, ?, ?);",
-            "TestEnemy2", 25, 5);
+		Connection.Execute(
+			"INSERT INTO EnemyStatus (Name, HP, AttackPower) VALUES (?, ?, ?);",
+			"TestEnemy2", 25, 5);
 
+		Connection.Execute("DROP TABLE IF EXISTS SupportStatus;");
 		UnityEngine.Debug.Log("CharacterStatusテーブルをリセットしました。初期データを挿入しました。");
 	}
 }
