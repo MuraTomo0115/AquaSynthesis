@@ -13,12 +13,10 @@ public class SupportStatus
     public float? HealRange { get; set; }         // 回復範囲（半径）
     public float? HealAmount { get; set; }        // 1回の回復量
     public float? HealInterval { get; set; }      // 回復間隔（秒）
-    public float? HealDuration { get; set; }      // 回復効果の持続時間（秒）
 
     // ドローン用ステータス
     public float? DroneAttackPower { get; set; }      // ドローンの攻撃力
     public float? DroneAttackInterval { get; set; }   // ドローンの攻撃間隔（秒）
-    public float? DroneDuration { get; set; }         // ドローンの出現時間（秒）
     public int? ItemSpawnCount { get; set; }          // ドローンが出現時に配置するアイテム数
 
     // グレポン用ステータス

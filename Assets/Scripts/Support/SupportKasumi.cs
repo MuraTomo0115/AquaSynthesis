@@ -9,7 +9,6 @@ public class SupportKasumiStatus
 	public float healRange;
 	public float healAmount;
 	public float healInterval;
-	public float healDuration;
     public float availableTime;
 }
 
@@ -18,7 +17,6 @@ public class SupportKasumi : SupportBase
 	private float _healRange;
 	private float _healAmount;
 	private float _healInterval;
-	private float _healDuration;
 	private float _availableTime;
 	private float _innerRadius;
     private CircleCollider2D _shieldCollider;
@@ -54,9 +52,8 @@ public class SupportKasumi : SupportBase
             _healRange = status.HealRange ?? 0f;
             _healAmount = status.HealAmount ?? 0f;
             _healInterval = status.HealInterval ?? 0f;
-            _healDuration = status.HealDuration ?? 0f;
             _availableTime = status.AvailableTime; // 追加
-            Debug.Log($"{_healAmount} {_healInterval} {_healDuration} {_healRange} {_availableTime}");
+            Debug.Log($"{_healAmount} {_healInterval} {_healRange} {_availableTime}");
         }
         else
         {
@@ -141,27 +138,27 @@ public class SupportKasumi : SupportBase
     /// </summary>
     /// <returns>回復クールタイム</returns>
     private IEnumerator HealNearbyPlayers()
-	{
-		float elapsed = 0f;
-		while (elapsed < _healDuration)
-		{
-			Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, _healRange);
-			foreach (var hit in hits)
-			{
-				if (hit.CompareTag("Player"))
-				{
-					PlayerMovement player = hit.GetComponent<PlayerMovement>();
-					if (player != null)
-					{
-						player.Heal(_healAmount);
-					}
-				}
-			}
-			yield return new WaitForSeconds(_healInterval);
-			elapsed += _healInterval;
-		}
-		EndAct();
-	}
+    {
+        float elapsed = 0f;
+        while (elapsed < _availableTime)
+        {
+            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, _healRange);
+            foreach (var hit in hits)
+            {
+                if (hit.CompareTag("Player"))
+                {
+                    PlayerMovement player = hit.GetComponent<PlayerMovement>();
+                    if (player != null)
+                    {
+                        player.Heal(_healAmount);
+                    }
+                }
+            }
+            yield return new WaitForSeconds(_healInterval);
+            elapsed += _healInterval;
+        }
+        EndAct();
+    }
 
     /// <summary>
     /// 出現可能時間を監視し、0になったらEndActを呼ぶ

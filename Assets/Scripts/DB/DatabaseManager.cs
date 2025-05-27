@@ -119,36 +119,29 @@ public class DatabaseManager
             //Connection.Execute("ALTER TABLE CharacterStatus ADD COLUMN Exp INTEGER DEFAULT 100;");
 		}
 
-		// 後日作業するため、コミット用で一旦終了
-		return;
 
-		// SupportStatusテーブルの削除
-		Connection.Execute("DROP TABLE IF EXISTS SupportStatus;");
-
-		// SupportStatusテーブルの再作成
+		//// SupportStatusテーブルの再作成
 		Connection.Execute(@"
-			CREATE TABLE SupportStatus (
-				Id INTEGER PRIMARY KEY AUTOINCREMENT,
-				Name TEXT NOT NULL,
-				AvailableTime REAL NOT NULL DEFAULT 10,
-				HealRange REAL DEFAULT 3,
-				HealAmount REAL DEFAULT 1,
-				HealInterval REAL DEFAULT 0.5,
-				HealDuration REAL DEFAULT 3,
-				DroneAttackPower REAL,
-				DroneAttackInterval REAL,
-				DroneDuration REAL,
-				ItemSpawnCount INTEGER,
-				GrenadePower REAL,
-				GrenadeInterval REAL,
-				ChargeSpeed REAL
-			);
-		");
+            CREATE TABLE IF NOT EXISTS SupportStatus (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Name TEXT NOT NULL,
+                AvailableTime REAL NOT NULL DEFAULT 10,
+                HealRange REAL DEFAULT 3,
+                HealAmount REAL DEFAULT 1,
+                HealInterval REAL DEFAULT 0.5,
+                DroneAttackPower REAL DEFAULT 1,
+                DroneAttackInterval REAL DEFAULT 3,
+                ItemSpawnCount INTEGER DEFAULT 3,
+                GrenadePower REAL DEFAULT 3,
+                GrenadeInterval REAL DEFAULT 2,
+                ChargeSpeed REAL DEFAULT 3
+            );
+        ");
 
-		// 初期データの挿入
+		//// 初期データの挿入
 		Connection.Execute(
-			"INSERT INTO SupportStatus (Name, AvailableTime, HealRange, HealAmount, HealInterval, HealDuration) VALUES (?, ?, ?, ?, ?, ?)",
-			"Kasumi", 10, 3, 1, 0.5f, 3
+			"INSERT INTO SupportStatus (Name, AvailableTime, HealRange, HealAmount, HealInterval) VALUES (?, ?, ?, ?, ?)",
+			"Kasumi", 10, 3, 1, 2f
 		);
 	}
 
