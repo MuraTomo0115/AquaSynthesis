@@ -35,7 +35,6 @@ public class CoinManager : MonoBehaviour
         if (characters != null && characters.Count > 0)
         {
             _coinCount = characters[0].Coin;
-            Debug.Log("DBからコイン読み込み: " + _coinCount);
         }
         else
         {
@@ -49,7 +48,6 @@ public class CoinManager : MonoBehaviour
     public void AddCoin(int amount)
     {
         _coinCount += amount;
-        Debug.Log("コイン取得！現在のコイン枚数: " + _coinCount);
 
         UpdateCoinUI();
         SaveCoinDataToDatabase();
@@ -68,7 +66,6 @@ public class CoinManager : MonoBehaviour
             DatabaseManager.Connection.Execute(
                 "UPDATE CharacterStatus SET Coin = ? WHERE Id = ?",
                 _coinCount, character.Id);
-            Debug.Log("DBにコインを保存: " + _coinCount);
         }
         else
         {
