@@ -8,8 +8,8 @@
     { "type": "fadein" },
     {
         "type": "show",
-        "target": "sennin",
-        "sprite": "Sennin/sennin_normal",
+        "target": "takuro",
+        "sprite": "takuro/takuro_normal",
         "side": "right",
         "transition": "fade"
     },
@@ -31,9 +31,10 @@
         "text": "はい！"
     },
     {
-        "type": "expression",
-        "target": "kasumi",
-        "sprite": "Kasumi/kasumi_smile",
+        "type": "show",
+        "target": "takeshi",
+        "sprite": "takeshi/takeshi_normal",
+        "side": "left",
         "transition": "fade"
     },
     {
@@ -43,8 +44,8 @@
     },
     {
         "type": "show",
-        "target": "sennin",
-        "sprite": "Sennin/sennin_normal",
+        "target": "takuro",
+        "sprite": "takuro/sennin_normal",
         "side": "right",
         "transition": "fade"
     },
@@ -60,9 +61,9 @@
     },
     {
         "type": "show",
-        "target": "misuzu",
-        "sprite": "Misuzu/misuzu_normal",
-        "side": "center",
+        "target": "hiroshi",
+        "sprite": "hiroshi/hiroshi_normal",
+        "side": "left",
         "transition": "fade"
     },
     {
@@ -72,8 +73,8 @@
     },
     {
         "type": "show",
-        "target": "sennin",
-        "sprite": "Sennin/sennin_normal",
+        "target": "takuro",
+        "sprite": "takuro/takuro_normal",
         "side": "right",
         "transition": "fade"
     },
