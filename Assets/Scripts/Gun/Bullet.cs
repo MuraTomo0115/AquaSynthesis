@@ -40,10 +40,17 @@ public class Bullet : MonoBehaviour
     {
         Character hitObject = other.GetComponent<Character>();
 
-        if (hitObject == null) return;
+        if (hitObject != null)
+        {
+            hitObject.HitAttack(_damage);
+            Destroy(this.gameObject);
+            return;
+        }
 
-        hitObject.HitAttack(_damage);
-
-        Destroy(this.gameObject);
+        // Ground ÉåÉCÉÑÅ[Ç»ÇÁíeÇè¡Ç∑
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            Destroy(this.gameObject);
+        }
     }
 }
