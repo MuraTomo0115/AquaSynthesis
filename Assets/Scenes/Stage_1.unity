@@ -220,6 +220,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy1
       objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066741, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066742, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -265,12 +269,36 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: speed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: _player
       value: 
       objectReference: {fileID: 982982988}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: coolTime
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: attackRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: detectionRange
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066744, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: _characterName
       value: TestEnemy2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906737567900, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246907547066321, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
@@ -686,6 +714,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy1
       objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066741, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066742, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -731,9 +763,33 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: speed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: _player
       value: 
       objectReference: {fileID: 982982988}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: coolTime
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: attackRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: detectionRange
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906737567900, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246907547066321, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
 --- !u!1001 &139266782
@@ -2094,6 +2150,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Boss
       objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066741, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066742, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: m_RootOrder
       value: 5
@@ -2139,12 +2199,36 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: speed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: _player
       value: 
       objectReference: {fileID: 982982988}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: coolTime
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: attackRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: detectionRange
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066744, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: _characterName
       value: TestEnemy2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906737567900, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246907547066321, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
@@ -2259,6 +2343,14 @@ PrefabInstance:
     - target: {fileID: 3238423601163293309, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 8026316697547528240, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
+      propertyPath: _ray
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 8026316697547528240, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
+      propertyPath: _offset
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 8026316697547528240, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
       propertyPath: _supportManager
@@ -5157,6 +5249,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy1 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066741, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066742, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -5202,12 +5298,36 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: speed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: _player
       value: 
       objectReference: {fileID: 982982988}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: coolTime
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: attackRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: detectionRange
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066744, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: _characterName
       value: TestEnemy2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906737567900, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246907547066321, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
@@ -6527,6 +6647,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy1 (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066741, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066742, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -6572,12 +6696,36 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: speed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: _player
       value: 
       objectReference: {fileID: 982982988}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: coolTime
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: attackRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: detectionRange
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066744, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: _characterName
       value: TestEnemy2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906737567900, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246907547066321, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
@@ -7614,6 +7762,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy1
       objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066741, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066742, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: m_RootOrder
       value: 7
@@ -7659,9 +7811,33 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: speed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: _player
       value: 
       objectReference: {fileID: 982982988}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: coolTime
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: attackRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: detectionRange
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906737567900, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246907547066321, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
 --- !u!4 &1766644119 stripped
@@ -8537,6 +8713,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy1
       objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066741, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066742, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -8582,12 +8762,36 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: speed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: _player
       value: 
       objectReference: {fileID: 982982988}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: coolTime
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: attackRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: detectionRange
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066744, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: _characterName
       value: TestEnemy2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906737567900, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246907547066321, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
@@ -8859,6 +9063,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy1
       objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066741, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066742, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -8904,12 +9112,36 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: speed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: _player
       value: 
       objectReference: {fileID: 982982988}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: coolTime
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: attackRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906663066743, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: detectionRange
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 3485246906663066744, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
       propertyPath: _characterName
       value: TestEnemy2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246906737567900, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3485246907547066321, guid: 36317694d6c16494ba6633bcccad1701, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36317694d6c16494ba6633bcccad1701, type: 3}

@@ -391,7 +391,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 5
   _jumpForce: 8
-  _ray: 0.1
+  _ray: 0.05
   _groundCheck: {fileID: 2561806425177550997}
   _groundLayer:
     serializedVersion: 2
@@ -401,7 +401,7 @@ MonoBehaviour:
   _firePoint: {fileID: 6643879991169195801}
   _pistolCoolTime: 0.3
   _invincibleTime: 1
-  _offset: 0.4
+  _offset: 0.2
   _supportManager: {fileID: 0}
 --- !u!1 &4000682774063797656
 GameObject:
