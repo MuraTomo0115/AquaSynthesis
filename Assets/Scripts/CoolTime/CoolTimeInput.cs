@@ -9,6 +9,7 @@ public class CoolTimeInput : MonoBehaviour
     [SerializeField] private Image _playCoolDownImage;
     [SerializeField] private TextMeshProUGUI _coolDownText;
     [SerializeField] private TextMeshProUGUI _playCoolDownText;
+    [SerializeField] private RecordAbility _recordAbility;
     [SerializeField] private float _recordCoolTime = 5f;
     [SerializeField] private float _playDuration = 10f;
     [SerializeField] private float _playCoolTime = 5f;
@@ -56,6 +57,12 @@ public class CoolTimeInput : MonoBehaviour
             if (!_isRecordCoolingDown && !_isPlaying)
             {
                 _hasRecorded = true;
+                
+                if (_recordAbility != null)
+                {
+                    Debug.Log("RecordAbility.StartRecording() を呼び出しました");
+                    _recordAbility.StartRecording();
+                }
 
                 // 新たに記録された場合、再生のクールタイムを中断してリセット
                 if (_isPlayCoolingDown && _playCoolDownCoroutine != null)

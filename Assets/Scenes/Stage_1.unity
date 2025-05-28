@@ -2298,7 +2298,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2941540954094989962, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2941540954094989962, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2674,6 +2674,7 @@ GameObject:
   m_Component:
   - component: {fileID: 609386955}
   - component: {fileID: 609386956}
+  - component: {fileID: 609386957}
   m_Layer: 5
   m_Name: Avirity
   m_TagString: Untagged
@@ -2718,12 +2719,28 @@ MonoBehaviour:
   _playCoolDownImage: {fileID: 302557171}
   _coolDownText: {fileID: 871673253}
   _playCoolDownText: {fileID: 1161338090}
+  _recordAbility: {fileID: 609386957}
   _recordCoolTime: 5
   _playDuration: 10
   _playCoolTime: 5
   _recordKey: 31
   _playKey: 19
   _playIcon: {fileID: 390019132}
+--- !u!114 &609386957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 609386954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5238e20311d7b7947a3cbc65b8f54468, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 982982988}
+  _recordInterval: 0.1
+  _maxRecordLength: 100
 --- !u!1001 &632921134
 PrefabInstance:
   m_ObjectHideFlags: 0
