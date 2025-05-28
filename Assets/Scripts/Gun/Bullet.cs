@@ -36,14 +36,34 @@ public class Bullet : MonoBehaviour
         transform.Translate(_moveDirection * _speed * Time.deltaTime);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    //private void OnTriggerEnter2D(Collider2D other)
+    //{
+    //    //Character hitObject = other.GetComponent<Character>();
+
+    //    //if (hitObject == null) return;
+
+    //    //hitObject.HitAttack(_damage);
+    //    //Destroy(this.gameObject);
+
+    //    //// Ground ÉåÉCÉÑÅ[Ç»ÇÁíeÇè¡Ç∑
+    //    //if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
+    //    //{
+    //    //    Destroy(this.gameObject);
+    //    //}
+    //}
+
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        Character hitObject = other.GetComponent<Character>();
+        if (collision.gameObject.tag == "Enemy")
+        {
+            Character hitObject = collision.gameObject.GetComponent<Character>();
 
-        if (hitObject == null) return;
+            if (hitObject == null) return;
 
-        hitObject.HitAttack(_damage);
+            hitObject.HitAttack(_damage);
+        }
 
         Destroy(this.gameObject);
+        Debug.Log("Bullet hit: " + collision.gameObject.name);
     }
 }
