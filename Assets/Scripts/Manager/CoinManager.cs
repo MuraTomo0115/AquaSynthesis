@@ -1,6 +1,6 @@
 using UnityEngine;
-using System.IO;
-using TMPro; // TextMeshPro用
+using TMPro;
+using System.Collections.Generic;
 
 public class CoinManager : MonoBehaviour
 {
@@ -8,27 +8,19 @@ public class CoinManager : MonoBehaviour
 
     private int _coinCount = 0;
 
-    [SerializeField] private TextMeshProUGUI CoinText; // UI表示用
+    // 今後セーブデータごとに割り振られる予定のID（今は仮に1を使用）
+    private int _currentPlayerId = 1;
 
-    private void Start()
-    {
-        Debug.Log("CoinText は null？: " + (CoinText == null));
-        AddCoin(1); // テスト用
-    }
+    [SerializeField] private TextMeshProUGUI CoinText;
 
-
-    /// <summary>
-    /// シングルトンのインスタンスを初期化し、ゲームオブジェクトを永続化する
-    /// </summary>
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // シーンを跨いでも消えない
-
-            LoadCoinData(); // 起動時に保存データから読み込み
-            UpdateCoinUI(); // UIに反映
+            DontDestroyOnLoad(gameObject); // シーンを跨いでも残す
+            LoadCoinDataFromDatabase();     // コイン読み込み
+            UpdateCoinUI();                 // UI更新
         }
         else
         {
@@ -37,64 +29,58 @@ public class CoinManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 指定された量のコインを追加し、セーブデータに反映する
+    /// 今後セーブデータ選択画面でこのIDが設定される想定
     /// </summary>
-    /// <param name="amount">追加するコインの数</param>
-    public void AddCoin(int amount)
+    public void SetPlayerId(int id)
     {
-        _coinCount += amount;
-        Debug.Log("コイン取得！現在のコイン枚数: " + _coinCount);
-
-        UpdateCoinUI();   // UI更新
-        SaveCoinData();   // 保存
+        _currentPlayerId = id;
     }
 
     /// <summary>
-    /// 現在のコイン枚数をJSON形式で保存する
-    /// 保存場所：Assets/Data/coin.json（※開発用）
+    /// データベースから現在のプレイヤーIDのコインデータを読み込む
     /// </summary>
-    private void SaveCoinData()
+    private void LoadCoinDataFromDatabase()
     {
-        // コイン枚数をデータクラスにセットし、JSON文字列に変換
-        CoinData data = new CoinData
+        List<CharacterStatus> characters = DatabaseManager.GetAllCharacters();
+        var character = characters.Find(c => c.Id == _currentPlayerId);
+
+        if (character != null)
         {
-            totalCoins = _coinCount
-        };
-        string json = JsonUtility.ToJson(data, true);
-
-        // Assets/Data フォルダを作成（なければ）
-        string dir = Application.dataPath + "/Data";
-        if (!Directory.Exists(dir))
-        {
-            Directory.CreateDirectory(dir);
-        }
-
-        // coin.json をそのフォルダ内に保存
-        string path = dir + "/coin.json";
-
-        // 保存パスをデバッグ表示（確認用）
-        Debug.Log("コインデータ保存先: " + path);
-
-        // 実際にファイルに書き込み
-        File.WriteAllText(path, json);
-    }
-
-    /// <summary>
-    /// JSONファイルからコイン数を読み込む（起動時に呼ばれる）
-    /// </summary>
-    private void LoadCoinData()
-    {
-        string path = Application.dataPath + "/Data/coin.json";
-        if (File.Exists(path))
-        {
-            string json = File.ReadAllText(path);
-            CoinData data = JsonUtility.FromJson<CoinData>(json);
-            _coinCount = data.totalCoins;
-            Debug.Log("保存されたコインを読み込み: " + _coinCount);
+            _coinCount = character.Coin;
         }
         else
         {
-            Debug.Log("コインデータが見つかりません。新規作成されます。");
+            Debug.LogWarning($"[Load] CharacterStatus に ID={_currentPlayerId} のレコードが見つかりません。");
+        }
+    }
+
+    /// <summary>
+    /// コインを加算し、UIとデータベースに反映
+    /// </summary>
+    public void AddCoin(int amount)
+    {
+        _coinCount += amount;
+        UpdateCoinUI();
+        SaveCoinDataToDatabase();
+    }
+
+    /// <summary>
+    /// 現在のコインデータをデータベースに保存
+    /// </summary>
+    private void SaveCoinDataToDatabase()
+    {
+        List<CharacterStatus> characters = DatabaseManager.GetAllCharacters();
+        var character = characters.Find(c => c.Id == _currentPlayerId);
+
+        if (character != null)
+        {
+            DatabaseManager.Connection.Execute(
+                "UPDATE CharacterStatus SET Coin = ? WHERE Id = ?",
+                _coinCount, character.Id);
+        }
+        else
+        {
+            Debug.LogWarning($"[Save] CharacterStatus に ID={_currentPlayerId} のレコードが見つかりません。");
         }
     }
 
