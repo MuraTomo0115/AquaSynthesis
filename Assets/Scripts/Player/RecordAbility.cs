@@ -4,56 +4,54 @@ using UnityEngine;
 
 public class RecordAbility : MonoBehaviour
 {
-    [SerializeField] private Transform _target; // 記録する対象（プレイヤーなど）
-    [SerializeField] private float _recordInterval = 0.1f; // 何秒ごとに記録するか
-    [SerializeField] private int _maxRecordLength = 100;   // 最大記録数（フレーム数）
+    [SerializeField] private Transform _target;
+    [SerializeField] private float _recordInterval = 0.1f;
+    [SerializeField] private float _maxRecordTime = 10f;
+    [SerializeField] private GameObject _ghostPrefab;
 
-    private List<FrameData> _recordedFrames = new List<FrameData>();
-    private Coroutine _recordCoroutine = null;
-    private Coroutine _playbackCoroutine = null;
+    private Animator _animator;
 
-    private bool _isRecording = false;
-    private bool _isPlayingBack = false;
-
-    // 記録される1フレーム分の情報
     private struct FrameData
     {
         public Vector3 position;
         public Quaternion rotation;
+        public string animClipName;
 
-        public FrameData(Vector3 pos, Quaternion rot)
+        public FrameData(Vector3 pos, Quaternion rot, string clipName)
         {
             position = pos;
             rotation = rot;
+            animClipName = clipName;
         }
     }
 
-    /// <summary>
-    /// 記録開始
-    /// </summary>
+    private List<FrameData> _savedRecord = new List<FrameData>();
+    private Coroutine _recordCoroutine = null;
+    private Coroutine _playbackCoroutine = null;
+
+    private Transform _ghostInstanceTransform;
+    private Animator _ghostAnimator;
+    private bool _isRecording = false;
+    private bool _isPlayingBack = false;
+
+    private void Awake()
+    {
+        if (_target != null)
+        {
+            _animator = _target.GetComponent<Animator>();
+            if (_animator == null)
+            {
+                Debug.LogWarning("RecordAbility: _targetにAnimatorが見つかりません");
+            }
+        }
+    }
+
     public void StartRecording()
     {
-        if (_isRecording) return;
-
-        StopPlayback();
-        _recordedFrames.Clear();
+        if (_isRecording || _recordCoroutine != null) return;
         _recordCoroutine = StartCoroutine(RecordCoroutine());
     }
 
-    /// <summary>
-    /// 再生開始
-    /// </summary>
-    public void StartPlayback()
-    {
-        if (_isPlayingBack || _recordedFrames.Count == 0) return;
-
-        StopRecording();
-        _playbackCoroutine = StartCoroutine(PlaybackCoroutine());
-    }
-
-    /// <summary>
-    /// 記録停止
-    /// </summary>
     public void StopRecording()
     {
         if (_recordCoroutine != null)
@@ -64,9 +62,41 @@ public class RecordAbility : MonoBehaviour
         _isRecording = false;
     }
 
-    /// <summary>
-    /// 再生停止
-    /// </summary>
+    private IEnumerator RecordCoroutine()
+    {
+        _isRecording = true;
+        _savedRecord.Clear();
+
+        float timer = 0f;
+        while (timer < _maxRecordTime)
+        {
+            timer += _recordInterval;
+
+            string clipName = GetCurrentAnimationClipName();
+
+            _savedRecord.Add(new FrameData(_target.position, _target.rotation, clipName));
+            yield return new WaitForSeconds(_recordInterval);
+        }
+
+        _isRecording = false;
+        _recordCoroutine = null;
+    }
+
+    public void StartPlayback()
+    {
+        if (_isPlayingBack || _savedRecord.Count == 0 || _ghostPrefab == null) return;
+
+        GameObject ghost = Instantiate(_ghostPrefab, _savedRecord[0].position, _savedRecord[0].rotation);
+        _ghostInstanceTransform = ghost.transform;
+        _ghostAnimator = ghost.GetComponent<Animator>();
+        if (_ghostAnimator == null)
+        {
+            Debug.LogWarning("RecordAbility: ゴーストにAnimatorがありません");
+        }
+
+        _playbackCoroutine = StartCoroutine(PlaybackCoroutine(_ghostInstanceTransform, _savedRecord));
+    }
+
     public void StopPlayback()
     {
         if (_playbackCoroutine != null)
@@ -74,36 +104,46 @@ public class RecordAbility : MonoBehaviour
             StopCoroutine(_playbackCoroutine);
             _playbackCoroutine = null;
         }
+
         _isPlayingBack = false;
-    }
 
-    private IEnumerator RecordCoroutine()
-    {
-        _isRecording = true;
-
-        while (true)
+        if (_ghostInstanceTransform != null)
         {
-            if (_recordedFrames.Count >= _maxRecordLength)
-            {
-                _recordedFrames.RemoveAt(0); // 古いデータから削除
-            }
-
-            _recordedFrames.Add(new FrameData(_target.position, _target.rotation));
-            yield return new WaitForSeconds(_recordInterval);
+            Destroy(_ghostInstanceTransform.gameObject);
+            _ghostInstanceTransform = null;
+            _ghostAnimator = null;
         }
     }
 
-    private IEnumerator PlaybackCoroutine()
+    private IEnumerator PlaybackCoroutine(Transform playbackTarget, List<FrameData> framesToPlay)
     {
         _isPlayingBack = true;
 
-        foreach (var frame in _recordedFrames)
+        foreach (var frame in framesToPlay)
         {
-            _target.position = frame.position;
-            _target.rotation = frame.rotation;
+            playbackTarget.position = frame.position;
+            playbackTarget.rotation = frame.rotation;
+
+            if (_ghostAnimator != null && !string.IsNullOrEmpty(frame.animClipName))
+            {
+                _ghostAnimator.CrossFade(frame.animClipName, 0f);
+            }
+
             yield return new WaitForSeconds(_recordInterval);
         }
 
         _isPlayingBack = false;
+    }
+
+    private string GetCurrentAnimationClipName()
+    {
+        if (_animator == null) return null;
+
+        var clips = _animator.GetCurrentAnimatorClipInfo(0);
+        if (clips.Length > 0)
+        {
+            return clips[0].clip.name;
+        }
+        return null;
     }
 }
