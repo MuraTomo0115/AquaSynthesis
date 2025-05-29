@@ -2370,6 +2370,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 69531452d6c006a46b640d9e05d3ab43, type: 3}
+--- !u!1 &468779481 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1289498262432133626, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
+  m_PrefabInstance: {fileID: 470970663}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &470970663
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2780,7 +2785,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 755, y: -596}
+  m_AnchoredPosition: {x: 293, y: -254}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &609386956
@@ -2800,16 +2805,16 @@ MonoBehaviour:
   _playCoolDownImage: {fileID: 302557171}
   _playCoolDownText: {fileID: 1161338090}
   _playIcon: {fileID: 390019132}
-  _recordProgressImage: {fileID: 1678791319}
-  _recordProgressText: {fileID: 871673253}
   _darkOverlay: {fileID: 1657314362}
   _recordAbility: {fileID: 1399427933}
+  _playerTransform: {fileID: 982982988}
   _recordKey: 31
   _playKey: 19
   _recordDuration: 10
   _recordCoolTime: 5
   _playDuration: 10
   _playCoolTime: 5
+  _objectsToKeepRunning: []
 --- !u!1001 &632921134
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6279,6 +6284,21 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1399427937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1399427932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f92f412532e45f94fa0721feccb57027, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _attackSensorPrefab: {fileID: 468779481}
+  _bullet: {fileID: 7696661787290791833, guid: 3183ac645db59ee40928bd80477291eb, type: 3}
+  _firePoint: {fileID: 1785813710}
 --- !u!1 &1411754864
 GameObject:
   m_ObjectHideFlags: 0
@@ -8235,6 +8255,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1775570208}
   m_CullTransparentMesh: 1
+--- !u!4 &1785813710 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6643879991169195801, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
+  m_PrefabInstance: {fileID: 470970663}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1793935204 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7167738908385797330, guid: 69531452d6c006a46b640d9e05d3ab43, type: 3}
@@ -8707,7 +8732,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -760, y: 466}
+  m_AnchoredPosition: {x: -250, y: 115}
   m_SizeDelta: {x: 0, y: 101.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1941623329

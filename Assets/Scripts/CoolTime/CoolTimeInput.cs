@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 
 public class CoolTimeInput : MonoBehaviour
@@ -15,19 +16,18 @@ public class CoolTimeInput : MonoBehaviour
 
     [SerializeField] private GameObject _playIcon;
 
-    [Header("記録中UI")]
-    [SerializeField] private Image _recordProgressImage;
-    [SerializeField] private TextMeshProUGUI _recordProgressText;
-
     [Header("画面暗転用オーバーレイ")]
     [SerializeField] private Image _darkOverlay;
 
     [Header("能力制御")]
     [SerializeField] private RecordAbility _recordAbility;
 
+    [Header("プレイヤー")]
+    [SerializeField] private Transform _playerTransform;
+
     [Header("キー設定")]
     [SerializeField] private Key _recordKey = Key.Q;
-    [SerializeField] private Key _playKey = Key.E;
+    [SerializeField] private Key _playKey = Key.P;
 
     [Header("各種時間設定")]
     [SerializeField] private float _recordDuration = 10f;
@@ -35,36 +35,32 @@ public class CoolTimeInput : MonoBehaviour
     [SerializeField] private float _playDuration = 10f;
     [SerializeField] private float _playCoolTime = 5f;
 
+    [Header("記録中でも動かしたいスクリプト")]
+    [SerializeField] private List<MonoBehaviour> _objectsToKeepRunning = new List<MonoBehaviour>();
+
     private bool _isRecording = false;
     private bool _isRecordCoolingDown = false;
-
     private bool _isPlaying = false;
     private bool _isPlayCoolingDown = false;
-
     private bool _hasRecorded = false;
 
+    private Coroutine _recordCoroutine = null;
     private Coroutine _playCoroutine = null;
     private Coroutine _playCoolDownCoroutine = null;
 
-    private Coroutine _recordCoroutine = null;
     private int _playRepeatCount = 0;
     private float _playCoolTimeCurrent = 0f;
+
+    private Vector3 _playerStartPos;
 
     private void Start()
     {
         _coolDownImage.gameObject.SetActive(false);
         _coolDownText.gameObject.SetActive(false);
-
         _playCoolDownImage.gameObject.SetActive(false);
         _playCoolDownText.gameObject.SetActive(false);
-
-        _recordProgressImage.gameObject.SetActive(false);
-        _recordProgressText.gameObject.SetActive(false);
-
         _coolDownImage.fillAmount = 0f;
         _playCoolDownImage.fillAmount = 0f;
-        _recordProgressImage.fillAmount = 0f;
-
         _playIcon.SetActive(true);
 
         if (_darkOverlay != null)
@@ -77,12 +73,9 @@ public class CoolTimeInput : MonoBehaviour
     {
         if (Keyboard.current[_recordKey].wasPressedThisFrame)
         {
-            if (!_isRecording && !_isRecordCoolingDown && !_isPlaying)
+            if (!_isRecording && !_isRecordCoolingDown && !_isPlaying && !_isPlayCoolingDown)
             {
-                if (_recordCoroutine != null)
-                {
-                    StopCoroutine(_recordCoroutine);
-                }
+                if (_recordCoroutine != null) StopCoroutine(_recordCoroutine);
                 _recordCoroutine = StartCoroutine(_StartRecordMode());
             }
         }
@@ -91,25 +84,13 @@ public class CoolTimeInput : MonoBehaviour
         {
             if (_isPlaying)
             {
-                if (_recordAbility != null)
-                {
-                    _recordAbility.StopPlayback();
-                }
-
-                if (_playCoroutine != null)
-                {
-                    StopCoroutine(_playCoroutine);
-                    _playCoroutine = null;
-                }
-
+                _recordAbility?.StopPlayback();
+                if (_playCoroutine != null) StopCoroutine(_playCoroutine);
                 _isPlaying = false;
 
                 _playRepeatCount++;
                 _playCoolTimeCurrent = _playCoolTime * Mathf.Pow(1.5f, _playRepeatCount - 1);
-                _playCoolDownCoroutine = StartCoroutine(_StartPlayCoolDown());
-
-                _playCoolDownImage.fillAmount = 1f;
-                _playCoolDownText.text = _playCoolTimeCurrent.ToString("F1");
+                StartCoroutine(_StartPlayCoolDown());
             }
             else if (_hasRecorded && !_isPlayCoolingDown)
             {
@@ -122,44 +103,43 @@ public class CoolTimeInput : MonoBehaviour
     {
         _isRecording = true;
 
-        if (_recordAbility != null)
-        {
-            _recordAbility.StartRecording();
-        }
+        _recordAbility?.StartRecording();
 
         if (_darkOverlay != null)
         {
             SetOverlayAlpha(0.5f);
         }
 
-        // 記録中UI表示
-        _recordProgressImage.gameObject.SetActive(true);
-        _recordProgressText.gameObject.SetActive(true);
+        _playerStartPos = _playerTransform.position;
 
-        float timer = _recordDuration;
+        float timer = 0f;
+        _coolDownImage.gameObject.SetActive(true);
+        _coolDownText.gameObject.SetActive(true);
 
-        while (timer > 0f)
+        while (timer < _recordDuration)
         {
-            timer -= Time.deltaTime;
-            float ratio = Mathf.Clamp01(timer / _recordDuration);
-            _recordProgressImage.fillAmount = ratio;
-            _recordProgressText.text = timer.ToString("F1");
+            timer += Time.unscaledDeltaTime;
+
+            float ratio = Mathf.Clamp01((_recordDuration - timer) / _recordDuration);
+            _coolDownImage.fillAmount = ratio;
+            _coolDownText.text = (_recordDuration - timer).ToString("F1");
+
             yield return null;
         }
 
-        // 記録中UI非表示
-        _recordProgressImage.fillAmount = 0f;
-        _recordProgressImage.gameObject.SetActive(false);
-        _recordProgressText.gameObject.SetActive(false);
+        _coolDownImage.fillAmount = 0f;
+        _coolDownImage.gameObject.SetActive(false);
+        _coolDownText.gameObject.SetActive(false);
 
-        _isRecording = false;
-
-        if (_recordAbility != null)
-        {
-            _recordAbility.StopRecording();
-        }
+        _recordAbility?.StopRecording();
 
         _hasRecorded = true;
+        _isRecording = false;
+
+        // 🔽 再生クールタイムのリセット処理
+        _playRepeatCount = 0;
+
+        _playerTransform.position = _playerStartPos;
 
         if (_darkOverlay != null)
         {
@@ -199,10 +179,7 @@ public class CoolTimeInput : MonoBehaviour
     {
         _isPlaying = true;
 
-        if (_recordAbility != null)
-        {
-            _recordAbility.StartPlayback();
-        }
+        _recordAbility?.StartPlayback();
 
         _playCoolDownImage.gameObject.SetActive(true);
         _playCoolDownText.gameObject.SetActive(true);
@@ -221,10 +198,7 @@ public class CoolTimeInput : MonoBehaviour
 
         _isPlaying = false;
 
-        if (_recordAbility != null)
-        {
-            _recordAbility.StopPlayback();
-        }
+        _recordAbility?.StopPlayback();
 
         _playRepeatCount++;
         _playCoolTimeCurrent = _playCoolTime * Mathf.Pow(1.5f, _playRepeatCount - 1);
@@ -257,6 +231,7 @@ public class CoolTimeInput : MonoBehaviour
 
     private void SetOverlayAlpha(float alpha)
     {
+        if (_darkOverlay == null) return;
         Color c = _darkOverlay.color;
         c.a = alpha;
         _darkOverlay.color = c;
