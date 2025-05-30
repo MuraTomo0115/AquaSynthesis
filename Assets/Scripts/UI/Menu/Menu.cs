@@ -20,7 +20,6 @@ public class Menu : MonoBehaviour
     private Outline                          _backButtonOutline;      // 戻るボタンのOutlineコンポーネント
     private Vector3                          _originalBackButtonScale;// 戻るボタンの元のスケール
     private Tween                            _outlineTween;           // Outline点滅用のDOTweenインスタンス
-    private MenuInputActions                 _inputActions;           // 入力アクション管理用
     private Menu                             _menu;                   // メニュークラスのインスタンス
     private PlayerMovement _playerMovement;                           // プレイヤーの移動クラスのインスタンス
 
@@ -41,10 +40,11 @@ public class Menu : MonoBehaviour
         _backButtonOutline.effectColor = OutlineDefaultColor;
         _originalBackButtonScale = _backButton.GetComponent<RectTransform>().localScale;
 
-        _inputActions = new MenuInputActions();
-        _inputActions.Menu.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>().x);
-        _inputActions.Menu.Vertical.performed += ctx => OnVertical(ctx.ReadValue<Vector2>().y);
-        _inputActions.Menu.Click.performed += ctx => OnClick();
+        // InputActionHolderからMenuInputActionsを取得してイベント登録
+        var menuActions = InputActionHolder.Instance.menuInputActions;
+        menuActions.Menu.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>().x);
+        menuActions.Menu.Vertical.performed += ctx => OnVertical(ctx.ReadValue<Vector2>().y);
+        menuActions.Menu.Click.performed += ctx => OnClick();
     }
 
     /// <summary>
@@ -59,8 +59,8 @@ public class Menu : MonoBehaviour
         // プレイヤーの移動クラスを取得
         _playerMovement = _player.GetComponent<PlayerMovement>();
         // ステージシーンならMenuInputActionsアクションマップを有効化
-        _inputActions.Menu.Enable();
-        _inputActions.Menu.Open.performed += ctx => ToggleMenu();
+        InputActionHolder.Instance.menuInputActions.Menu.Enable();
+        InputActionHolder.Instance.menuInputActions.Menu.Open.performed += ctx => ToggleMenu();
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ public class Menu : MonoBehaviour
             CloseMenu();
 
             // プレイヤーの移動を有効化
-            _playerMovement.OnEnable();
+            _playerMovement.OnEnableInput();
         }
         else
         {
@@ -151,7 +151,7 @@ public class Menu : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
-        _inputActions.Menu.Enable();
+        InputActionHolder.Instance.menuInputActions.Menu.Enable();
     }
 
     /// <summary>
@@ -159,7 +159,7 @@ public class Menu : MonoBehaviour
     /// </summary>
     private void OnDisable()
     {
-        _inputActions.Menu.Disable();
+        InputActionHolder.Instance.menuInputActions.Menu.Disable();
     }
 
     /// <summary>

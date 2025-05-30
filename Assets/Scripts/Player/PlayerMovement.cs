@@ -2,59 +2,72 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : InputActionHolder
 {
-    [SerializeField] private float      _moveSpeed = 5f;  // 移動速度
-    [SerializeField] private float      _jumpForce = 5f;  // ジャンプ力
-    [SerializeField] private float      _ray = 1f;        // 地面を検出するレイの長さ
-    [SerializeField] private Transform  _groundCheck;     // 足元の空オブジェクト
-    [SerializeField] private LayerMask  _groundLayer;     // 地面のタグ
-    [SerializeField] private GameObject _attackSensor;
-    [SerializeField] private GameObject _bullet;
-    [SerializeField] private Transform  _firePoint;
-    [SerializeField] private float      _pistolCoolTime = 1f;
-    [SerializeField] private float _invincibleTime = 1f;   // ダメージ後の無敵時間
-    [SerializeField] float              _offset = 0.2f;
+    [SerializeField] private float          _moveSpeed = 5f;  // 移動速度
+    [SerializeField] private float          _jumpForce = 5f;  // ジャンプ力
+    [SerializeField] private float          _ray = 1f;        // 地面を検出するレイの長さ
+    [SerializeField] private Transform      _groundCheck;     // 足元の空オブジェクト
+    [SerializeField] private LayerMask      _groundLayer;     // 地面のタグ
+    [SerializeField] private GameObject     _attackSensor;
+    [SerializeField] private GameObject     _bullet;
+    [SerializeField] private Transform      _firePoint;
+    [SerializeField] private float          _pistolCoolTime = 1f;
+    [SerializeField] private float          _invincibleTime = 1f;   // ダメージ後の無敵時間
+    [SerializeField] private float          _offset = 0.2f;
     [SerializeField] private SupportManager _supportManager;
-    private Rigidbody2D                 _rb;
-    private Vector2                     _movement;
-    private PlayerInputActions          _inputActions;
-    private Character                   _charaState;
-    private Animator                    _animator;
-    private SpriteRenderer              _spriteRenderer;
-    private bool                        _is_CanJump = true;
-    private bool                        _canAdjacentAttack = true;
-    private bool                        _canPistolAttack = true;
-    private bool                        _isInvincible = false; // 無敵状態かどうか
-    private bool                        _isOnSpike = false; // トゲにいるかどうか
+    private Rigidbody2D                     _rb;
+    private Vector2                         _movement;
+    private PlayerInputActions              _playerInputActions;
+    private Character                       _charaState;
+    private Animator                        _animator;
+    private SpriteRenderer                  _spriteRenderer;
+    private bool                            _is_CanJump = true;
+    private bool                            _canAdjacentAttack = true;
+    private bool                            _canPistolAttack = true;
+    private bool                            _isInvincible = false; // 無敵状態かどうか
+    private bool                            _isOnSpike = false; // トゲにいるかどうか
+    private bool                            _inputEventsRegistered = false;
 
-
-    public Character CharaState =>      _charaState;
-
-    private void Awake()
-    {
-        _inputActions = new PlayerInputActions();
-        _attackSensor.gameObject.SetActive(false);
-    }
+    public Character CharaState =>          _charaState;
 
     /// <summary>
     /// InputSystem設定
     /// </summary>
-    public void OnEnable()
+    public void OnEnableInput()
     {
-        // InputSystemを有効にする
-        _inputActions.Player.Enable();
-        _inputActions.Support.Enable();
-        _inputActions.Player.Move.performed += ctx => _movement = ctx.ReadValue<Vector2>();
-        // 入力がなくなった場合加える力を０にする
-        _inputActions.Player.Move.canceled += ctx => _movement = Vector2.zero;
-        // ジャンプする
-        _inputActions.Player.Jump.performed += ctx => Jump();
-        // 攻撃
-        _inputActions.Player.Attack.performed += ctx => Attack();
-        _inputActions.Player.Pistol.performed += ctx => Pistol();
-        _inputActions.Support.SummonA.performed += ctx => summonsupport1();
-        _inputActions.Support.SummonB.performed += ctx => _supportManager.Summon2();
+        if (_inputEventsRegistered) return; // すでに登録済みなら何もしない
+        Debug.Log("Input actions changed for PlayerMovement.");
+
+        _playerInputActions.Player.Enable();
+        _playerInputActions.Support.Enable();
+        _playerInputActions.Player.Move.performed += ctx => _movement = ctx.ReadValue<Vector2>();
+        _playerInputActions.Player.Move.canceled += ctx => _movement = Vector2.zero;
+        _playerInputActions.Player.Jump.performed += ctx => Jump();
+        _playerInputActions.Player.Attack.performed += ctx => Attack();
+        _playerInputActions.Player.Pistol.performed += ctx => Pistol();
+        _playerInputActions.Support.SummonA.performed += ctx => summonsupport1();
+        _playerInputActions.Support.SummonB.performed += ctx => _supportManager.Summon2();
+
+        _inputEventsRegistered = true;
+    }
+
+    public void OnDisable()
+    {
+        if (!_inputEventsRegistered) return; // 登録されていなければ何もしない
+
+        _playerInputActions.Player.Move.performed -= ctx => _movement = ctx.ReadValue<Vector2>();
+        _playerInputActions.Player.Move.canceled -= ctx => _movement = Vector2.zero;
+        _playerInputActions.Player.Jump.performed -= ctx => Jump();
+        _playerInputActions.Player.Attack.performed -= ctx => Attack();
+        _playerInputActions.Player.Pistol.performed -= ctx => Pistol();
+        _playerInputActions.Support.SummonA.performed -= ctx => summonsupport1();
+        _playerInputActions.Support.SummonB.performed -= ctx => _supportManager.Summon2();
+
+        _playerInputActions.Player.Disable();
+        _playerInputActions.Support.Disable();
+
+        _inputEventsRegistered = false;
     }
 
     private void summonsupport1()
@@ -67,12 +80,14 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     public void DisableInput()
     {
-        // InputSystemを無効にする
-        _inputActions.Player.Disable();
+        _playerInputActions.Player.Disable();
     }
 
     private void Start()
     {
+        // InputActionHolderから共有インスタンスを取得
+        _playerInputActions = InputActionHolder.Instance.playerInputActions;
+        _attackSensor.gameObject.SetActive(false);
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -179,7 +194,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// 本素材導入時削除。ピストﾙクールタイム
+    /// 本素材導入時削除。ピストルクールタイム
     /// </summary>
     private void CanPistol()
     {
@@ -189,7 +204,7 @@ public class PlayerMovement : MonoBehaviour
     public void trueAttack()
     {
         _canAdjacentAttack = true;
-        _animator.SetBool("isAttack", true );
+        _animator.SetBool("isAttack", true);
     }
 
     public void falseAttack()
@@ -274,5 +289,12 @@ public class PlayerMovement : MonoBehaviour
     public void Heal(float healAmount)
     {
         _charaState.Heal(healAmount);
-	}
+    }
+
+    public override void ChangeInputActions()
+    {
+        OnDisable(); // 既存イベント解除（重複防止）
+        _playerInputActions = InputActionHolder.Instance.playerInputActions; // 再取得
+        OnEnableInput(); // イベント再登録
+    }
 }
