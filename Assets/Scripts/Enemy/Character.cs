@@ -7,25 +7,25 @@ public class Character : MonoBehaviour
     [SerializeField]
     private string _characterName;
 
-    private int                  _maxHealth;
-    private int                  _currentHealth;
-    private int                  _attackPower;
-    private int                  _pistolPower = 0;
-    protected Animator           _animator;
-    private SpriteRenderer       _spriteRenderer;
-    private Color                _defaultColor;
-    private GameObject           _player;
-    private PlayerMovement       _playerMovement;
+    private int _maxHealth;
+    private int _currentHealth;
+    private int _attackPower;
+    private int _pistolPower = 0;
+    protected Animator _animator;
+    private SpriteRenderer _spriteRenderer;
+    private Color _defaultColor;
+    private GameObject _player;
+    private PlayerMovement _playerMovement;
     private bool _isDead = false; // 死亡したかどうかのフラグ
 
     public float HP { get; private set; }
-	public float MaxHP { get; private set; }
+    public float MaxHP { get; private set; }
 
-	public string CharacterName => _characterName;
-    public int AttackPower =>    _attackPower;
-    public int CurrentHealth =>  _currentHealth;
-    public int MaxHealth =>      _maxHealth;
-    public int PistolPower =>    _pistolPower;
+    public string CharacterName => _characterName;
+    public int AttackPower => _attackPower;
+    public int CurrentHealth => _currentHealth;
+    public int MaxHealth => _maxHealth;
+    public int PistolPower => _pistolPower;
 
     protected virtual void Awake()
     {
@@ -52,7 +52,7 @@ public class Character : MonoBehaviour
         if (_spriteRenderer != null && _currentHealth > 0)
             StartCoroutine(FlashRed());
         else if (_spriteRenderer != null && _currentHealth <= 0)
-			Die();
+            Die();
     }
 
     /// <summary>
@@ -109,20 +109,20 @@ public class Character : MonoBehaviour
         Destroy(gameObject, 1.0f); // 死亡アニメーション再生後に削除
     }
 
-	public void Heal(float amount)
-	{
-		// _currentHealthを回復（最大値を超えない）
-		_currentHealth = Mathf.Min(_currentHealth + Mathf.RoundToInt(amount), _maxHealth);
+    public void Heal(float amount)
+    {
+        // _currentHealthを回復（最大値を超えない）
+        _currentHealth = Mathf.Min(_currentHealth + Mathf.RoundToInt(amount), _maxHealth);
 
-		// HPプロパティも同期（float型で使う場合のみ）
-		HP = _currentHealth;
-		MaxHP = _maxHealth;
+        // HPプロパティも同期（float型で使う場合のみ）
+        HP = _currentHealth;
+        MaxHP = _maxHealth;
 
-		Debug.Log($"{_characterName} healed! Current HP: {_currentHealth}");
-	}
+        Debug.Log($"{_characterName} healed! Current HP: {_currentHealth}");
+    }
 
-	// 敵用など pistolPower が無い場合
-	public void SetStats(int maxHp, int atk)
+    // 敵用など pistolPower が無い場合
+    public void SetStats(int maxHp, int atk)
     {
         _maxHealth = maxHp;
         _attackPower = atk;
@@ -137,5 +137,19 @@ public class Character : MonoBehaviour
         _attackPower = atk;
         _pistolPower = pistol;
         _currentHealth = maxHp;
+    }
+
+    /// <summary>
+    /// 他のCharacterからステータスをコピーする
+    /// </summary>
+    public void CopyStatsFrom(Character other)
+    {
+        if (other == null) return;
+        _maxHealth = other.MaxHealth;
+        _attackPower = other.AttackPower;
+        _pistolPower = other.PistolPower;
+        _currentHealth = other.CurrentHealth;
+        HP = other.HP;
+        MaxHP = other.MaxHP;
     }
 }

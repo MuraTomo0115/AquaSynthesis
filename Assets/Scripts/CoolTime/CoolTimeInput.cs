@@ -7,37 +7,51 @@ using TMPro;
 
 public class CoolTimeInput : MonoBehaviour
 {
+    //================ UI関連 ====================
     [Header("UI関連")]
     [SerializeField] private Image _coolDownImage;
     [SerializeField] private TextMeshProUGUI _coolDownText;
-
     [SerializeField] private Image _playCoolDownImage;
     [SerializeField] private TextMeshProUGUI _playCoolDownText;
-
     [SerializeField] private GameObject _playIcon;
 
+    //================ 画面暗転用 ====================
     [Header("画面暗転用オーバーレイ")]
     [SerializeField] private Image _darkOverlay;
 
+    //================ 能力制御 ====================
     [Header("能力制御")]
     [SerializeField] private RecordAbility _recordAbility;
 
+    //================ プレイヤー関連 ====================
     [Header("プレイヤー")]
     [SerializeField] private Transform _playerTransform;
 
+    //================ キー設定 ====================
     [Header("キー設定")]
     [SerializeField] private Key _recordKey = Key.Q;
     [SerializeField] private Key _playKey = Key.P;
 
+    //================ 時間設定 ====================
     [Header("各種時間設定")]
     [SerializeField] private float _recordDuration = 10f;
     [SerializeField] private float _recordCoolTime = 5f;
     [SerializeField] private float _playDuration = 10f;
     [SerializeField] private float _playCoolTime = 5f;
 
-    [Header("記録中でも動かしたいスクリプト")]
-    [SerializeField] private List<MonoBehaviour> _objectsToKeepRunning = new List<MonoBehaviour>();
+    //================ 記録中に止めたいコンポーネント ====================
+    [Header("記録中に止めたいコンポーネント")]
+    [SerializeField] private List<MonoBehaviour> componentsToDisable;
 
+    //================ 記録中に止めたい親オブジェクト ====================
+    [Header("記録中に止めたい親オブジェクト")]
+    [SerializeField] private GameObject parentToDisable;
+
+    //================ 記録中に無効化したいプレイヤーのColliderや攻撃判定スクリプト ====================
+    [Header("記録中に無効化したいプレイヤーのColliderや攻撃判定スクリプト")]
+    [SerializeField] private List<Behaviour> playerComponentsToDisable;
+
+    //================ 内部状態 ====================
     private bool _isRecording = false;
     private bool _isRecordCoolingDown = false;
     private bool _isPlaying = false;
@@ -52,6 +66,10 @@ public class CoolTimeInput : MonoBehaviour
     private float _playCoolTimeCurrent = 0f;
 
     private Vector3 _playerStartPos;
+
+    // 一時的に無効化したコンポーネントを保持
+    private List<MonoBehaviour> _disabledComponents = new List<MonoBehaviour>();
+    private List<Behaviour> _playerDisabledComponents = new List<Behaviour>();
 
     private void Start()
     {
@@ -71,6 +89,7 @@ public class CoolTimeInput : MonoBehaviour
 
     private void Update()
     {
+        // Qキー押下で記録開始
         if (Keyboard.current[_recordKey].wasPressedThisFrame)
         {
             if (!_isRecording && !_isRecordCoolingDown && !_isPlaying && !_isPlayCoolingDown)
@@ -80,6 +99,7 @@ public class CoolTimeInput : MonoBehaviour
             }
         }
 
+        // Pキー押下で再生開始 or 中断
         if (Keyboard.current[_playKey].wasPressedThisFrame)
         {
             if (_isPlaying)
@@ -99,9 +119,47 @@ public class CoolTimeInput : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 記録モードを開始する
+    /// </summary>
     private IEnumerator _StartRecordMode()
     {
         _isRecording = true;
+
+        // プレイヤーのコライダーや攻撃判定を無効化
+        foreach (var comp in playerComponentsToDisable)
+        {
+            if (comp != null && comp.enabled)
+            {
+                comp.enabled = false;
+                _playerDisabledComponents.Add(comp);
+            }
+        }
+
+        // プレイヤー以外の動きを止める（個別指定分）
+        foreach (var comp in componentsToDisable)
+        {
+            if (comp != null && comp.enabled)
+            {
+                comp.enabled = false;
+                _disabledComponents.Add(comp);
+            }
+        }
+
+        // 親オブジェクト配下の全MonoBehaviourを無効化
+        if (parentToDisable != null)
+        {
+            var components = parentToDisable.GetComponentsInChildren<MonoBehaviour>(true);
+            foreach (var comp in components)
+            {
+                // プレイヤー自身や記録に必要なものは除外（必要なら条件追加）
+                if (comp != null && comp.enabled && comp.gameObject != _playerTransform.gameObject && !_disabledComponents.Contains(comp))
+                {
+                    comp.enabled = false;
+                    _disabledComponents.Add(comp);
+                }
+            }
+        }
 
         _recordAbility?.StartRecording();
 
@@ -136,7 +194,6 @@ public class CoolTimeInput : MonoBehaviour
         _hasRecorded = true;
         _isRecording = false;
 
-        // 🔽 再生クールタイムのリセット処理
         _playRepeatCount = 0;
 
         _playerTransform.position = _playerStartPos;
@@ -146,9 +203,26 @@ public class CoolTimeInput : MonoBehaviour
             SetOverlayAlpha(0f);
         }
 
+        // 止めていたコンポーネントを再度有効化
+        foreach (var comp in _disabledComponents)
+        {
+            if (comp != null) comp.enabled = true;
+        }
+        _disabledComponents.Clear();
+
+        // プレイヤーのコライダーや攻撃判定を再度有効化
+        foreach (var comp in _playerDisabledComponents)
+        {
+            if (comp != null) comp.enabled = true;
+        }
+        _playerDisabledComponents.Clear();
+
         StartCoroutine(_StartRecordCoolDown());
     }
 
+    /// <summary>
+    /// 記録モード終了後のクールタイム処理
+    /// </summary>
     private IEnumerator _StartRecordCoolDown()
     {
         _isRecordCoolingDown = true;
@@ -175,6 +249,9 @@ public class CoolTimeInput : MonoBehaviour
         _isRecordCoolingDown = false;
     }
 
+    /// <summary>
+    /// 再生モードを開始する
+    /// </summary>
     private IEnumerator _StartPlay()
     {
         _isPlaying = true;
@@ -206,6 +283,9 @@ public class CoolTimeInput : MonoBehaviour
         _playCoolDownCoroutine = StartCoroutine(_StartPlayCoolDown());
     }
 
+    /// <summary>
+    /// 再生モード終了後のクールタイム処理
+    /// </summary>
     private IEnumerator _StartPlayCoolDown()
     {
         _isPlayCoolingDown = true;
@@ -229,6 +309,9 @@ public class CoolTimeInput : MonoBehaviour
         _isPlayCoolingDown = false;
     }
 
+    /// <summary>
+    /// 画面暗転用の透明度を設定
+    /// </summary>
     private void SetOverlayAlpha(float alpha)
     {
         if (_darkOverlay == null) return;

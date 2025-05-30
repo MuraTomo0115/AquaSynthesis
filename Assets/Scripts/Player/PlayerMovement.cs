@@ -4,32 +4,35 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private float      _moveSpeed = 5f;  // 移動速度
-    [SerializeField] private float      _jumpForce = 5f;  // ジャンプ力
-    [SerializeField] private float      _ray = 1f;        // 地面を検出するレイの長さ
-    [SerializeField] private Transform  _groundCheck;     // 足元の空オブジェクト
-    [SerializeField] private LayerMask  _groundLayer;     // 地面のタグ
+    [SerializeField] private float _moveSpeed = 5f;  // 移動速度
+    [SerializeField] private float _jumpForce = 5f;  // ジャンプ力
+    [SerializeField] private float _ray = 1f;        // 地面を検出するレイの長さ
+    [SerializeField] private Transform _groundCheck;     // 足元の空オブジェクト
+    [SerializeField] private LayerMask _groundLayer;     // 地面のタグ
     [SerializeField] private GameObject _attackSensor;
     [SerializeField] private GameObject _bullet;
-    [SerializeField] private Transform  _firePoint;
-    [SerializeField] private float      _pistolCoolTime = 1f;
+    [SerializeField] private Transform _firePoint;
+    [SerializeField] private float _pistolCoolTime = 1f;
     [SerializeField] private float _invincibleTime = 1f;   // ダメージ後の無敵時間
-    [SerializeField] float              _offset = 0.2f;
+    [SerializeField] float _offset = 0.2f;
     [SerializeField] private SupportManager _supportManager;
-    private Rigidbody2D                 _rb;
-    private Vector2                     _movement;
-    private PlayerInputActions          _inputActions;
-    private Character                   _charaState;
-    private Animator                    _animator;
-    private SpriteRenderer              _spriteRenderer;
-    private bool                        _is_CanJump = true;
-    private bool                        _canAdjacentAttack = true;
-    private bool                        _canPistolAttack = true;
-    private bool                        _isInvincible = false; // 無敵状態かどうか
-    private bool                        _isOnSpike = false; // トゲにいるかどうか
+    private Rigidbody2D _rb;
+    private Vector2 _movement;
+    private PlayerInputActions _inputActions;
+    private Character _charaState;
+    private Animator _animator;
+    private SpriteRenderer _spriteRenderer;
+    private bool _is_CanJump = true;
+    private bool _canAdjacentAttack = true;
+    private bool _canPistolAttack = true;
+    private bool _isInvincible = false; // 無敵状態かどうか
+    private bool _isOnSpike = false; // トゲにいるかどうか
 
+    // 追加: 攻撃・ピストル発射フラグ
+    public bool DidAttack { get; private set; }
+    public bool DidPistol { get; private set; }
 
-    public Character CharaState =>      _charaState;
+    public Character CharaState => _charaState;
 
     private void Awake()
     {
@@ -123,6 +126,10 @@ public class PlayerMovement : MonoBehaviour
 
         _is_CanJump = isGrounded;
         _animator.SetBool("isGround", isGrounded);
+
+        // 攻撃・ピストル発射フラグをリセット
+        DidAttack = false;
+        DidPistol = false;
     }
 
     /// <summary>
@@ -144,17 +151,16 @@ public class PlayerMovement : MonoBehaviour
         if (!_canAdjacentAttack) return; // 攻撃が許可されていなければ中断
 
         _animator.SetTrigger("AttackSword");
+        DidAttack = true; // 追加
     }
 
     private void Pistol()
     {
         if (!_canPistolAttack) return;
 
-        // 本素材導入時までコメントアウト
         _animator.SetTrigger("AttackPistol");
-
-        //本素材導入時、アニメーションパスで発火させる
         ShootPistol();
+        DidPistol = true; // 追加
     }
 
     /// <summary>
@@ -189,7 +195,7 @@ public class PlayerMovement : MonoBehaviour
     public void trueAttack()
     {
         _canAdjacentAttack = true;
-        _animator.SetBool("isAttack", true );
+        _animator.SetBool("isAttack", true);
     }
 
     public void falseAttack()
@@ -274,5 +280,5 @@ public class PlayerMovement : MonoBehaviour
     public void Heal(float healAmount)
     {
         _charaState.Heal(healAmount);
-	}
+    }
 }

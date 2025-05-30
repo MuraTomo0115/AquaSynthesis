@@ -10,18 +10,26 @@ public class RecordAbility : MonoBehaviour
     [SerializeField] private GameObject _ghostPrefab;
 
     private Animator _animator;
+    private SpriteRenderer _spriteRenderer;
+    private PlayerMovement _playerMovement;
 
     private struct FrameData
     {
         public Vector3 position;
         public Quaternion rotation;
         public string animClipName;
+        public bool isFacingLeft;
+        public bool didAttack;
+        public bool didPistol;
 
-        public FrameData(Vector3 pos, Quaternion rot, string clipName)
+        public FrameData(Vector3 pos, Quaternion rot, string clipName, bool facingLeft, bool attack, bool pistol)
         {
             position = pos;
             rotation = rot;
             animClipName = clipName;
+            isFacingLeft = facingLeft;
+            didAttack = attack;
+            didPistol = pistol;
         }
     }
 
@@ -31,6 +39,7 @@ public class RecordAbility : MonoBehaviour
 
     private Transform _ghostInstanceTransform;
     private Animator _ghostAnimator;
+    private SpriteRenderer _ghostSpriteRenderer;
     private bool _isRecording = false;
     private bool _isPlayingBack = false;
 
@@ -39,9 +48,19 @@ public class RecordAbility : MonoBehaviour
         if (_target != null)
         {
             _animator = _target.GetComponent<Animator>();
+            _spriteRenderer = _target.GetComponent<SpriteRenderer>();
+            _playerMovement = _target.GetComponent<PlayerMovement>();
             if (_animator == null)
             {
                 Debug.LogWarning("RecordAbility: _targetにAnimatorが見つかりません");
+            }
+            if (_spriteRenderer == null)
+            {
+                Debug.LogWarning("RecordAbility: _targetにSpriteRendererが見つかりません");
+            }
+            if (_playerMovement == null)
+            {
+                Debug.LogWarning("RecordAbility: _targetにPlayerMovementが見つかりません");
             }
         }
     }
@@ -73,8 +92,11 @@ public class RecordAbility : MonoBehaviour
             timer += _recordInterval;
 
             string clipName = GetCurrentAnimationClipName();
+            bool isFacingLeft = _spriteRenderer != null ? _spriteRenderer.flipX : false;
+            bool didAttack = _playerMovement != null && _playerMovement.DidAttack;
+            bool didPistol = _playerMovement != null && _playerMovement.DidPistol;
 
-            _savedRecord.Add(new FrameData(_target.position, _target.rotation, clipName));
+            _savedRecord.Add(new FrameData(_target.position, _target.rotation, clipName, isFacingLeft, didAttack, didPistol));
             yield return new WaitForSeconds(_recordInterval);
         }
 
@@ -89,9 +111,14 @@ public class RecordAbility : MonoBehaviour
         GameObject ghost = Instantiate(_ghostPrefab, _savedRecord[0].position, _savedRecord[0].rotation);
         _ghostInstanceTransform = ghost.transform;
         _ghostAnimator = ghost.GetComponent<Animator>();
+        _ghostSpriteRenderer = ghost.GetComponent<SpriteRenderer>();
         if (_ghostAnimator == null)
         {
             Debug.LogWarning("RecordAbility: ゴーストにAnimatorがありません");
+        }
+        if (_ghostSpriteRenderer == null)
+        {
+            Debug.LogWarning("RecordAbility: ゴーストにSpriteRendererがありません");
         }
 
         _playbackCoroutine = StartCoroutine(PlaybackCoroutine(_ghostInstanceTransform, _savedRecord));
@@ -112,12 +139,17 @@ public class RecordAbility : MonoBehaviour
             Destroy(_ghostInstanceTransform.gameObject);
             _ghostInstanceTransform = null;
             _ghostAnimator = null;
+            _ghostSpriteRenderer = null;
         }
     }
 
     private IEnumerator PlaybackCoroutine(Transform playbackTarget, List<FrameData> framesToPlay)
     {
         _isPlayingBack = true;
+
+        var ghostMovement = playbackTarget.GetComponent<GhostMovement>();
+
+        yield return null;
 
         foreach (var frame in framesToPlay)
         {
@@ -127,6 +159,24 @@ public class RecordAbility : MonoBehaviour
             if (_ghostAnimator != null && !string.IsNullOrEmpty(frame.animClipName))
             {
                 _ghostAnimator.CrossFade(frame.animClipName, 0f);
+            }
+
+            if (_ghostSpriteRenderer != null)
+            {
+                _ghostSpriteRenderer.flipX = frame.isFacingLeft;
+            }
+
+            // 攻撃・ピストル発射を明示的に呼ぶ
+            if (ghostMovement != null)
+            {
+                if (frame.didPistol)
+                {
+                    ghostMovement.ShootPistol();
+                }
+                if (frame.didAttack)
+                {
+                    ghostMovement.StartAttack();
+                }
             }
 
             yield return new WaitForSeconds(_recordInterval);

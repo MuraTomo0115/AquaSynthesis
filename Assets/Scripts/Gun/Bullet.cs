@@ -4,18 +4,25 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    [SerializeField] float    _speed = 10f;
-    private int               _damage = 0;
-    private Vector2           _moveDirection;
+    [SerializeField] float _speed = 10f;
+    private int _damage = 0;
+    private Vector2 _moveDirection;
 
     private PlayerMovement _playerMovement;  // PlayerMovement 参照
 
-    // PlayerMovement を設定するメソッド
+    // PlayerMovement を設定するメソッド（プレイヤー発射時用）
     public void SetPlayerMovement(PlayerMovement playerMovement)
     {
         _playerMovement = playerMovement;
     }
 
+    // 攻撃力を直接設定するメソッド（ゴーストや他の発射元用）
+    public void SetDamage(int damage)
+    {
+        _damage = damage;
+    }
+
+    // 弾の進行方向を設定
     public void SetDirection(Vector2 direction)
     {
         _moveDirection = direction.normalized;
@@ -23,11 +30,12 @@ public class Bullet : MonoBehaviour
 
     private void Start()
     {
-        // PlayerMovement からピストルの攻撃力を取得
+        // PlayerMovement からピストルの攻撃力を取得（プレイヤー発射時のみ）
         if (_playerMovement != null)
         {
             _damage = _playerMovement.CharaState.PistolPower;
         }
+        // ゴースト等からはSetDamageで直接セットされる
         Destroy(gameObject, 5f); // 5秒後に自動破棄
     }
 
