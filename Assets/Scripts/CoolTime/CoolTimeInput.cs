@@ -5,74 +5,81 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
+/// <summary>
+/// クールタイム付きの記録・再生入力管理クラス
+/// </summary>
 public class CoolTimeInput : MonoBehaviour
 {
     //================ UI関連 ====================
     [Header("UI関連")]
-    [SerializeField] private Image _coolDownImage;
-    [SerializeField] private TextMeshProUGUI _coolDownText;
-    [SerializeField] private Image _playCoolDownImage;
-    [SerializeField] private TextMeshProUGUI _playCoolDownText;
-    [SerializeField] private GameObject _playIcon;
+    [SerializeField] private Image _coolDownImage; // 記録クールタイム用イメージ
+    [SerializeField] private TextMeshProUGUI _coolDownText; // 記録クールタイム用テキスト
+    [SerializeField] private Image _playCoolDownImage; // 再生クールタイム用イメージ
+    [SerializeField] private TextMeshProUGUI _playCoolDownText; // 再生クールタイム用テキスト
+    [SerializeField] private GameObject _playIcon; // 再生アイコン
 
     //================ 画面暗転用 ====================
     [Header("画面暗転用オーバーレイ")]
-    [SerializeField] private Image _darkOverlay;
+    [SerializeField] private Image _darkOverlay; // 画面暗転用オーバーレイ
 
     //================ 能力制御 ====================
     [Header("能力制御")]
-    [SerializeField] private RecordAbility _recordAbility;
+    [SerializeField] private RecordAbility _recordAbility; // 記録・再生機能
 
     //================ プレイヤー関連 ====================
     [Header("プレイヤー")]
-    [SerializeField] private Transform _playerTransform;
+    [SerializeField] private Transform _playerTransform; // プレイヤーTransform
 
     //================ キー設定 ====================
     [Header("キー設定")]
-    [SerializeField] private Key _recordKey = Key.Q;
-    [SerializeField] private Key _playKey = Key.P;
+    [SerializeField] private Key _recordKey = Key.Q; // 記録キー
+    [SerializeField] private Key _playKey = Key.P; // 再生キー
 
     //================ 時間設定 ====================
     [Header("各種時間設定")]
-    [SerializeField] private float _recordDuration = 10f;
-    [SerializeField] private float _recordCoolTime = 5f;
-    [SerializeField] private float _playDuration = 10f;
-    [SerializeField] private float _playCoolTime = 5f;
+    [SerializeField] private float _recordDuration = 10f; // 記録時間
+    [SerializeField] private float _recordCoolTime = 5f; // 記録クールタイム
+    [SerializeField] private float _playDuration = 10f; // 再生時間
+    [SerializeField] private float _playCoolTime = 5f; // 再生クールタイム
 
     //================ 記録中に止めたいコンポーネント ====================
     [Header("記録中に止めたいコンポーネント")]
-    [SerializeField] private List<MonoBehaviour> componentsToDisable;
+    [SerializeField] private List<MonoBehaviour> componentsToDisable; // 記録中に停止するコンポーネント
 
     //================ 記録中に止めたい親オブジェクト ====================
     [Header("記録中に止めたい親オブジェクト")]
-    [SerializeField] private GameObject parentToDisable;
+    [SerializeField] private GameObject parentToDisable; // 記録中に停止する親オブジェクト
 
     //================ 記録中に無効化したいプレイヤーのColliderや攻撃判定スクリプト ====================
     [Header("記録中に無効化したいプレイヤーのColliderや攻撃判定スクリプト")]
-    [SerializeField] private List<Behaviour> playerComponentsToDisable;
+    [SerializeField] private List<Behaviour> playerComponentsToDisable; // 記録中に無効化するプレイヤーのコンポーネント
 
     //================ 内部状態 ====================
-    private bool _isRecording = false;
-    private bool _isRecordCoolingDown = false;
-    private bool _isPlaying = false;
-    private bool _isPlayCoolingDown = false;
-    private bool _hasRecorded = false;
+    private bool _isRecording = false; // 記録中フラグ
+    private bool _isRecordCoolingDown = false; // 記録クールタイム中フラグ
+    private bool _isPlaying = false; // 再生中フラグ
+    private bool _isPlayCoolingDown = false; // 再生クールタイム中フラグ
+    private bool _hasRecorded = false; // 記録済みフラグ
 
-    private Coroutine _recordCoroutine = null;
-    private Coroutine _playCoroutine = null;
-    private Coroutine _playCoolDownCoroutine = null;
+    private Coroutine _recordCoroutine = null; // 記録コルーチン
+    private Coroutine _playCoroutine = null; // 再生コルーチン
+    private Coroutine _playCoolDownCoroutine = null; // 再生クールタイムコルーチン
 
-    private int _playRepeatCount = 0;
-    private float _playCoolTimeCurrent = 0f;
+    private int _playRepeatCount = 0; // 再生繰り返し回数
+    private float _playCoolTimeCurrent = 0f; // 現在の再生クールタイム
 
-    private Vector3 _playerStartPos;
+    private Vector3 _playerStartPos; // 記録開始時のプレイヤー位置
 
     // 一時的に無効化したコンポーネントを保持
     private List<MonoBehaviour> _disabledComponents = new List<MonoBehaviour>();
     private List<Behaviour> _playerDisabledComponents = new List<Behaviour>();
 
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
     private void Start()
     {
+        // UI初期化
         _coolDownImage.gameObject.SetActive(false);
         _coolDownText.gameObject.SetActive(false);
         _playCoolDownImage.gameObject.SetActive(false);
@@ -81,12 +88,16 @@ public class CoolTimeInput : MonoBehaviour
         _playCoolDownImage.fillAmount = 0f;
         _playIcon.SetActive(true);
 
+        // 画面暗転初期化
         if (_darkOverlay != null)
         {
             SetOverlayAlpha(0f);
         }
     }
 
+    /// <summary>
+    /// 入力監視
+    /// </summary>
     private void Update()
     {
         // Qキー押下で記録開始
@@ -104,16 +115,19 @@ public class CoolTimeInput : MonoBehaviour
         {
             if (_isPlaying)
             {
+                // 再生中にPキーで中断
                 _recordAbility?.StopPlayback();
                 if (_playCoroutine != null) StopCoroutine(_playCoroutine);
                 _isPlaying = false;
 
+                // クールタイム計算
                 _playRepeatCount++;
                 _playCoolTimeCurrent = _playCoolTime * Mathf.Pow(1.5f, _playRepeatCount - 1);
                 StartCoroutine(_StartPlayCoolDown());
             }
             else if (_hasRecorded && !_isPlayCoolingDown)
             {
+                // 記録済みかつクールタイムでなければ再生開始
                 _playCoroutine = StartCoroutine(_StartPlay());
             }
         }
@@ -152,7 +166,7 @@ public class CoolTimeInput : MonoBehaviour
             var components = parentToDisable.GetComponentsInChildren<MonoBehaviour>(true);
             foreach (var comp in components)
             {
-                // プレイヤー自身や記録に必要なものは除外（必要なら条件追加）
+                // プレイヤー自身や記録に必要なものは除外
                 if (comp != null && comp.enabled && comp.gameObject != _playerTransform.gameObject && !_disabledComponents.Contains(comp))
                 {
                     comp.enabled = false;
@@ -161,19 +175,23 @@ public class CoolTimeInput : MonoBehaviour
             }
         }
 
+        // 記録開始
         _recordAbility?.StartRecording();
 
+        // 画面暗転
         if (_darkOverlay != null)
         {
             SetOverlayAlpha(0.5f);
         }
 
+        // プレイヤー位置保存
         _playerStartPos = _playerTransform.position;
 
         float timer = 0f;
         _coolDownImage.gameObject.SetActive(true);
         _coolDownText.gameObject.SetActive(true);
 
+        // 記録時間のカウントダウン
         while (timer < _recordDuration)
         {
             timer += Time.unscaledDeltaTime;
@@ -189,6 +207,7 @@ public class CoolTimeInput : MonoBehaviour
         _coolDownImage.gameObject.SetActive(false);
         _coolDownText.gameObject.SetActive(false);
 
+        // 記録停止
         _recordAbility?.StopRecording();
 
         _hasRecorded = true;
@@ -196,8 +215,10 @@ public class CoolTimeInput : MonoBehaviour
 
         _playRepeatCount = 0;
 
+        // プレイヤー位置を元に戻す
         _playerTransform.position = _playerStartPos;
 
+        // 画面暗転解除
         if (_darkOverlay != null)
         {
             SetOverlayAlpha(0f);
@@ -217,6 +238,7 @@ public class CoolTimeInput : MonoBehaviour
         }
         _playerDisabledComponents.Clear();
 
+        // 記録クールタイム開始
         StartCoroutine(_StartRecordCoolDown());
     }
 
@@ -232,6 +254,7 @@ public class CoolTimeInput : MonoBehaviour
 
         float timer = _recordCoolTime;
 
+        // クールタイムのカウントダウン
         while (timer > 0f)
         {
             timer -= Time.deltaTime;
@@ -256,6 +279,7 @@ public class CoolTimeInput : MonoBehaviour
     {
         _isPlaying = true;
 
+        // 再生開始
         _recordAbility?.StartPlayback();
 
         _playCoolDownImage.gameObject.SetActive(true);
@@ -263,6 +287,7 @@ public class CoolTimeInput : MonoBehaviour
 
         float playTimer = _playDuration;
 
+        // 再生時間のカウントダウン
         while (playTimer > 0f)
         {
             playTimer -= Time.deltaTime;
@@ -275,11 +300,14 @@ public class CoolTimeInput : MonoBehaviour
 
         _isPlaying = false;
 
+        // 再生停止
         _recordAbility?.StopPlayback();
 
+        // クールタイム計算
         _playRepeatCount++;
         _playCoolTimeCurrent = _playCoolTime * Mathf.Pow(1.5f, _playRepeatCount - 1);
 
+        // 再生クールタイム開始
         _playCoolDownCoroutine = StartCoroutine(_StartPlayCoolDown());
     }
 
@@ -292,6 +320,7 @@ public class CoolTimeInput : MonoBehaviour
 
         float coolTimer = _playCoolTimeCurrent;
 
+        // クールタイムのカウントダウン
         while (coolTimer > 0f)
         {
             coolTimer -= Time.deltaTime;

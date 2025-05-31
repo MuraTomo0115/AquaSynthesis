@@ -277,6 +277,10 @@ public class PlayerMovement : MonoBehaviour
         _attackSensor.gameObject.SetActive(false); // 非表示
     }
 
+    /// <summary>
+    /// プレイヤーのHPを回復する
+    /// </summary>
+    /// <param name="healAmount">回復量</param>
     public void Heal(float healAmount)
     {
         _charaState.Heal(healAmount);

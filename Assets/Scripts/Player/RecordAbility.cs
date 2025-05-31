@@ -2,17 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// プレイヤーの動きを記録し、ゴーストとして再生する機能
+/// </summary>
 public class RecordAbility : MonoBehaviour
 {
-    [SerializeField] private Transform _target;
-    [SerializeField] private float _recordInterval = 0.1f;
-    [SerializeField] private float _maxRecordTime = 10f;
-    [SerializeField] private GameObject _ghostPrefab;
+    [SerializeField] private Transform _target; // 記録対象
+    [SerializeField] private float _recordInterval = 0.1f; // 記録間隔（秒）
+    [SerializeField] private float _maxRecordTime = 10f; // 最大記録時間（秒）
+    [SerializeField] private GameObject _ghostPrefab; // ゴーストのプレハブ
 
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     private PlayerMovement _playerMovement;
 
+    /// <summary>
+    /// 1フレーム分の記録データ
+    /// </summary>
     private struct FrameData
     {
         public Vector3 position;
@@ -33,7 +39,7 @@ public class RecordAbility : MonoBehaviour
         }
     }
 
-    private List<FrameData> _savedRecord = new List<FrameData>();
+    private List<FrameData> _savedRecord = new List<FrameData>(); // 記録データ
     private Coroutine _recordCoroutine = null;
     private Coroutine _playbackCoroutine = null;
 
@@ -43,6 +49,9 @@ public class RecordAbility : MonoBehaviour
     private bool _isRecording = false;
     private bool _isPlayingBack = false;
 
+    /// <summary>
+    /// 初期化。_targetから必要なコンポーネントを取得
+    /// </summary>
     private void Awake()
     {
         if (_target != null)
@@ -50,27 +59,21 @@ public class RecordAbility : MonoBehaviour
             _animator = _target.GetComponent<Animator>();
             _spriteRenderer = _target.GetComponent<SpriteRenderer>();
             _playerMovement = _target.GetComponent<PlayerMovement>();
-            if (_animator == null)
-            {
-                Debug.LogWarning("RecordAbility: _targetにAnimatorが見つかりません");
-            }
-            if (_spriteRenderer == null)
-            {
-                Debug.LogWarning("RecordAbility: _targetにSpriteRendererが見つかりません");
-            }
-            if (_playerMovement == null)
-            {
-                Debug.LogWarning("RecordAbility: _targetにPlayerMovementが見つかりません");
-            }
         }
     }
 
+    /// <summary>
+    /// 記録開始
+    /// </summary>
     public void StartRecording()
     {
         if (_isRecording || _recordCoroutine != null) return;
         _recordCoroutine = StartCoroutine(RecordCoroutine());
     }
 
+    /// <summary>
+    /// 記録停止
+    /// </summary>
     public void StopRecording()
     {
         if (_recordCoroutine != null)
@@ -81,6 +84,9 @@ public class RecordAbility : MonoBehaviour
         _isRecording = false;
     }
 
+    /// <summary>
+    /// 記録処理コルーチン
+    /// </summary>
     private IEnumerator RecordCoroutine()
     {
         _isRecording = true;
@@ -96,6 +102,7 @@ public class RecordAbility : MonoBehaviour
             bool didAttack = _playerMovement != null && _playerMovement.DidAttack;
             bool didPistol = _playerMovement != null && _playerMovement.DidPistol;
 
+            // 1フレーム分のデータを保存
             _savedRecord.Add(new FrameData(_target.position, _target.rotation, clipName, isFacingLeft, didAttack, didPistol));
             yield return new WaitForSeconds(_recordInterval);
         }
@@ -104,26 +111,25 @@ public class RecordAbility : MonoBehaviour
         _recordCoroutine = null;
     }
 
+    /// <summary>
+    /// ゴースト再生開始
+    /// </summary>
     public void StartPlayback()
     {
         if (_isPlayingBack || _savedRecord.Count == 0 || _ghostPrefab == null) return;
 
+        // ゴースト生成
         GameObject ghost = Instantiate(_ghostPrefab, _savedRecord[0].position, _savedRecord[0].rotation);
         _ghostInstanceTransform = ghost.transform;
         _ghostAnimator = ghost.GetComponent<Animator>();
         _ghostSpriteRenderer = ghost.GetComponent<SpriteRenderer>();
-        if (_ghostAnimator == null)
-        {
-            Debug.LogWarning("RecordAbility: ゴーストにAnimatorがありません");
-        }
-        if (_ghostSpriteRenderer == null)
-        {
-            Debug.LogWarning("RecordAbility: ゴーストにSpriteRendererがありません");
-        }
 
         _playbackCoroutine = StartCoroutine(PlaybackCoroutine(_ghostInstanceTransform, _savedRecord));
     }
 
+    /// <summary>
+    /// ゴースト再生停止
+    /// </summary>
     public void StopPlayback()
     {
         if (_playbackCoroutine != null)
@@ -134,6 +140,7 @@ public class RecordAbility : MonoBehaviour
 
         _isPlayingBack = false;
 
+        // ゴーストを破棄
         if (_ghostInstanceTransform != null)
         {
             Destroy(_ghostInstanceTransform.gameObject);
@@ -143,6 +150,9 @@ public class RecordAbility : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// ゴースト再生処理コルーチン
+    /// </summary>
     private IEnumerator PlaybackCoroutine(Transform playbackTarget, List<FrameData> framesToPlay)
     {
         _isPlayingBack = true;
@@ -153,20 +163,23 @@ public class RecordAbility : MonoBehaviour
 
         foreach (var frame in framesToPlay)
         {
+            // 位置・回転を再現
             playbackTarget.position = frame.position;
             playbackTarget.rotation = frame.rotation;
 
+            // アニメーション再生
             if (_ghostAnimator != null && !string.IsNullOrEmpty(frame.animClipName))
             {
                 _ghostAnimator.CrossFade(frame.animClipName, 0f);
             }
 
+            // 向きの再現
             if (_ghostSpriteRenderer != null)
             {
                 _ghostSpriteRenderer.flipX = frame.isFacingLeft;
             }
 
-            // 攻撃・ピストル発射を明示的に呼ぶ
+            // 攻撃・ピストル発射を再現
             if (ghostMovement != null)
             {
                 if (frame.didPistol)
@@ -185,6 +198,9 @@ public class RecordAbility : MonoBehaviour
         _isPlayingBack = false;
     }
 
+    /// <summary>
+    /// 現在再生中のアニメーションクリップ名を取得
+    /// </summary>
     private string GetCurrentAnimationClipName()
     {
         if (_animator == null) return null;

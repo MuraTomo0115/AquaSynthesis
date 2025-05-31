@@ -1,6 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// ゴーストの動作・攻撃・アクション再現を行うクラス
+/// </summary>
 public class GhostMovement : MonoBehaviour
 {
     [Header("攻撃関連")]
@@ -10,6 +13,7 @@ public class GhostMovement : MonoBehaviour
     [SerializeField] private GameObject _bullet;     // ピストルの弾プレハブ
     [SerializeField] private Transform _firePoint;   // 弾の発射位置
 
+    // 記録された各種データ
     private Vector2 _recordedPosition;
     private Vector2 _recordedInput;
     private bool _recordedJump;
@@ -17,13 +21,15 @@ public class GhostMovement : MonoBehaviour
     private bool _recordedPistol;
     private bool _recordedSummonA;
     private bool _recordedSummonB;
-    private bool _recordedFacingLeft; // 追加
+    private bool _recordedFacingLeft; // 向き
 
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     private Character _charaState;
 
-    // 記録データを受け取る
+    /// <summary>
+    /// 記録データを受け取って初期化
+    /// </summary>
     public void Initialize(Vector2 position, Vector2 input, bool jump, bool attack, bool pistol, bool summonA, bool summonB, bool facingLeft)
     {
         _recordedPosition = position;
@@ -33,9 +39,12 @@ public class GhostMovement : MonoBehaviour
         _recordedPistol = pistol;
         _recordedSummonA = summonA;
         _recordedSummonB = summonB;
-        _recordedFacingLeft = facingLeft; // 追加
+        _recordedFacingLeft = facingLeft;
     }
 
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
     private void Start()
     {
         _animator = GetComponent<Animator>();
@@ -64,7 +73,7 @@ public class GhostMovement : MonoBehaviour
         }
 
         // 向き調整
-        _spriteRenderer.flipX = _recordedFacingLeft; // ここで向きを反映
+        _spriteRenderer.flipX = _recordedFacingLeft;
 
         // アクション再現
         if (_recordedAttack)
@@ -75,8 +84,7 @@ public class GhostMovement : MonoBehaviour
         if (_recordedPistol)
         {
             _animator.SetTrigger("AttackPistol");
-            ShootPistol();
-            Debug.LogWarning("AttackPistol triggered by ghost!");
+            // 不要なログ削除
         }
 
         if (_recordedJump)
@@ -95,6 +103,9 @@ public class GhostMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 移動アニメーションの再現
+    /// </summary>
     private void FixedUpdate()
     {
         if (Mathf.Abs(_recordedInput.x) > Mathf.Epsilon)
@@ -107,17 +118,21 @@ public class GhostMovement : MonoBehaviour
         }
     }
 
-    // ピストル発射処理
+    /// <summary>
+    /// ピストル発射処理
+    /// </summary>
     public void ShootPistol()
     {
         GameObject bullet = Instantiate(_bullet, _firePoint.position, Quaternion.identity);
         Vector2 direction = _spriteRenderer.flipX ? Vector2.left : Vector2.right;
         Bullet bulletScript = bullet.GetComponent<Bullet>();
         bulletScript.SetDirection(direction);
-        bulletScript.SetDamage(_charaState != null ? _charaState.PistolPower : 1); // ここで攻撃力を渡す
+        bulletScript.SetDamage(_charaState != null ? _charaState.PistolPower : 1); // 攻撃力を渡す
     }
 
-    // 近接攻撃開始
+    /// <summary>
+    /// 近接攻撃開始
+    /// </summary>
     public void StartAttack()
     {
         if (_attackSensorInstance != null)
@@ -129,7 +144,9 @@ public class GhostMovement : MonoBehaviour
         }
     }
 
-    // 近接攻撃終了
+    /// <summary>
+    /// 近接攻撃終了
+    /// </summary>
     public void EndAttack()
     {
         if (_attackSensorInstance != null)
@@ -139,11 +156,13 @@ public class GhostMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 攻撃がヒットした時の処理
+    /// </summary>
     public void OwnAttackHit(Collider2D other)
     {
         if (_charaState == null)
         {
-            Debug.LogError("GhostMovement: _charaState is null!");
             return;
         }
         Character hitObject = other.GetComponent<Character>();
@@ -153,7 +172,9 @@ public class GhostMovement : MonoBehaviour
         }
     }
 
-    // アニメーションイベント用のダミー関数（未使用なら空のままでOK）
+    /// <summary>
+    /// アニメーションイベント用のダミー関数（未使用なら空のままでOK）
+    /// </summary>
     public void trueAttack() { }
     public void falseAttack() { }
 }
