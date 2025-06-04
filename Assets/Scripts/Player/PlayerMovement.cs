@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _ray = 1f;        // 地面を検出するレイの長さ
     [SerializeField] private Transform _groundCheck;     // 足元の空オブジェクト
     [SerializeField] private LayerMask _groundLayer;     // 地面のタグ
+    [SerializeField] private LayerMask _spikeLayer;      // ★Spike用LayerMask（ここに移動）
     [SerializeField] private GameObject _attackSensor;
     [SerializeField] private GameObject _bullet;
     [SerializeField] private Transform _firePoint;
@@ -33,6 +34,11 @@ public class PlayerMovement : MonoBehaviour
     public bool DidPistol { get; private set; }
 
     public Character CharaState => _charaState;
+
+    /// <summary>
+    /// 記録中かどうか
+    /// </summary>
+    public bool IsRecording { get; set; } // ★追加
 
     private void Awake()
     {
@@ -180,7 +186,11 @@ public class PlayerMovement : MonoBehaviour
         bulletScript.SetPlayerMovement(this);
 
         _canPistolAttack = false;
+        // Bullet に PlayerMovement を渡す（この行は重複なので1回でOK）
+        bulletScript.SetPlayerMovement(this);
 
+        // 記録中フラグを渡す
+        bulletScript.SetIsRecording(IsRecording);
         Invoke(nameof(CanPistol), _pistolCoolTime);
     }
 
@@ -206,13 +216,17 @@ public class PlayerMovement : MonoBehaviour
 
     public void OwnAttackHit(Collider2D other)
     {
+        // スパイクなら攻撃判定をスキップ
+        if (((1 << other.gameObject.layer) & _spikeLayer) != 0)
+        {
+            return;
+        }
+
         // 敵のCharacterコンポーネントを取得
         Character hitObject = other.GetComponent<Character>();
-
         if (hitObject != null)
         {
             hitObject.HitAttack(_charaState.AttackPower);
-            //Debug.Log(_charaState.AttackPower + " 敵は " + hitObject.AttackPower);
         }
     }
 

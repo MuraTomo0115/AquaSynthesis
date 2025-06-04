@@ -68,6 +68,10 @@ public class RecordAbility : MonoBehaviour
     public void StartRecording()
     {
         if (_isRecording || _recordCoroutine != null) return;
+        if (_playerMovement != null)
+        {
+            _playerMovement.IsRecording = true; // これが必要
+        }
         _recordCoroutine = StartCoroutine(RecordCoroutine());
     }
 
@@ -93,6 +97,9 @@ public class RecordAbility : MonoBehaviour
         _savedRecord.Clear();
 
         float timer = 0f;
+        bool prevDidPistol = false;
+        bool prevDidAttack = false;
+
         while (timer < _maxRecordTime)
         {
             timer += _recordInterval;
@@ -102,8 +109,15 @@ public class RecordAbility : MonoBehaviour
             bool didAttack = _playerMovement != null && _playerMovement.DidAttack;
             bool didPistol = _playerMovement != null && _playerMovement.DidPistol;
 
-            // 1フレーム分のデータを保存
-            _savedRecord.Add(new FrameData(_target.position, _target.rotation, clipName, isFacingLeft, didAttack, didPistol));
+            // 立ち上がりだけ記録
+            bool pistolTrigger = didPistol && !prevDidPistol;
+            bool attackTrigger = didAttack && !prevDidAttack;
+
+            _savedRecord.Add(new FrameData(_target.position, _target.rotation, clipName, isFacingLeft, attackTrigger, pistolTrigger));
+
+            prevDidPistol = didPistol;
+            prevDidAttack = didAttack;
+
             yield return new WaitForSeconds(_recordInterval);
         }
 
@@ -149,10 +163,11 @@ public class RecordAbility : MonoBehaviour
             _ghostSpriteRenderer = null;
         }
     }
-
     /// <summary>
     /// ゴースト再生処理コルーチン
     /// </summary>
+    /// <param name="playbackTarget">再生対象のTransform</param>
+    /// <param name="framesToPlay">再生するフレームデータリスト</param>
     private IEnumerator PlaybackCoroutine(Transform playbackTarget, List<FrameData> framesToPlay)
     {
         _isPlayingBack = true;
@@ -201,6 +216,7 @@ public class RecordAbility : MonoBehaviour
     /// <summary>
     /// 現在再生中のアニメーションクリップ名を取得
     /// </summary>
+    /// <returns>再生中のアニメーションクリップ名。なければnull</returns>
     private string GetCurrentAnimationClipName()
     {
         if (_animator == null) return null;

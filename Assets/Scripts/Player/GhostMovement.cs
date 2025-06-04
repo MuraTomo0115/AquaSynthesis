@@ -127,7 +127,9 @@ public class GhostMovement : MonoBehaviour
         Vector2 direction = _spriteRenderer.flipX ? Vector2.left : Vector2.right;
         Bullet bulletScript = bullet.GetComponent<Bullet>();
         bulletScript.SetDirection(direction);
-        bulletScript.SetDamage(_charaState != null ? _charaState.PistolPower : 1); // 攻撃力を渡す
+        bulletScript.SetDamage(_charaState != null ? _charaState.PistolPower : 1);
+        bulletScript.SetIsGhostBullet(true); // ★ゴースト弾フラグをセット
+        Debug.Log($"[Ghost] ShootPistol: pos={_firePoint.position}, dir={direction}, damage={_charaState?.PistolPower}");
     }
 
     /// <summary>
