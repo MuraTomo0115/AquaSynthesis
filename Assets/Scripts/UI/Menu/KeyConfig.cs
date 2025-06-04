@@ -3,6 +3,11 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using System.Collections;
+
+/// <summary>
+/// 主制作者：村田智哉
+/// </summary>
 
 public enum KeyDeviceType
 {
@@ -43,7 +48,8 @@ public class KeyConfig : MonoBehaviour
     private Coroutine _errorCoroutine;
 
     private int _selectedIndex = 0;
-    private bool _isResetSelected = false; // 追加: リセットボタン選択中か
+    private bool _isResetSelected = false;
+    private Animation _optionAnim;
     private Dictionary<string, string> _overridePathDict = new Dictionary<string, string>();
 
     /// <summary>
@@ -52,6 +58,7 @@ public class KeyConfig : MonoBehaviour
     private void Start()
     {
         Debug.Log("KeyConfigのJSON保存先: " + GetKeyConfigSavePath());
+        _optionAnim = GetComponent<Animation>();
 
         LoadAllKeyConfigsFromJson(); // JSONから復元
 
@@ -63,6 +70,28 @@ public class KeyConfig : MonoBehaviour
 
         UpdateKeyTexts();
         UpdateSelectionVisual();
+        OnDisable(); // 初期状態では無効化しておく
+    }
+
+    private void Awake()
+    {
+        // InputActionHolderのインスタンスを取得
+        var optionActions = InputActionHolder.Instance.optionInputActions;
+
+        // イベント登録
+        optionActions.Option.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>().x);
+        optionActions.Option.Click.performed += ctx => OnSubmit();
+        optionActions.Option.Close.performed += ctx => OnClose();
+    }
+
+    private void OnEnable()
+    {
+        InputActionHolder.Instance.optionInputActions.Option.Enable();
+    }
+
+    private void OnDisable()
+    {
+        InputActionHolder.Instance.optionInputActions.Option.Disable();
     }
 
     /// <summary>
@@ -137,21 +166,27 @@ public class KeyConfig : MonoBehaviour
     }
 
     /// <summary>
-    /// 入力受付・選択UIの更新
+    /// 選択中のキー設定を移動する（端でループ）
     /// </summary>
-    private void Update()
+    private void MoveSelection(int dir)
     {
-        // 左右入力
-        float horizontal = 0f;
-        if (Gamepad.current != null)
-            horizontal = Gamepad.current.leftStick.x.ReadValue();
-        if (Keyboard.current != null)
+        int prev = _selectedIndex;
+        int len = _keyConfigs.Length;
+        _selectedIndex = (_selectedIndex + dir + len) % len;
+        if (prev != _selectedIndex)
         {
-            if (Keyboard.current.aKey.wasPressedThisFrame) horizontal = -1f;
-            if (Keyboard.current.dKey.wasPressedThisFrame) horizontal = 1f;
+            _isResetSelected = false; // インデックス移動時はkeyButtonに戻す
+            UpdateSelectionVisual();
         }
+    }
 
-        if (horizontal < -0.5f)
+    /// <summary>
+    /// 横方向の入力を受け取り、選択中のキー設定を移動
+    /// </summary>
+    /// <param name="direction"></param>
+    private void OnMove(float direction)
+    {
+        if (direction < -0.5f)
         {
             if (_isResetSelected)
             {
@@ -165,7 +200,7 @@ public class KeyConfig : MonoBehaviour
                 UpdateSelectionVisual();
             }
         }
-        else if (horizontal > 0.5f)
+        else if (direction > 0.5f)
         {
             if (!_isResetSelected)
             {
@@ -179,38 +214,52 @@ public class KeyConfig : MonoBehaviour
                 UpdateSelectionVisual();
             }
         }
+    }
 
-        // 決定入力
-        bool submit = false;
-        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame) submit = true;
-        if (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame) submit = true;
-
-        if (submit)
+    /// <summary>
+    /// 選択中の項目を決定する処理
+    /// </summary>
+    private void OnSubmit()
+    {
+        if (_isResetSelected)
         {
-            if (_isResetSelected)
-            {
-                ResetBinding(_keyConfigs[_selectedIndex]);
-            }
-            else
-            {
-                StartRebind(_keyConfigs[_selectedIndex]);
-            }
+            ResetBinding(_keyConfigs[_selectedIndex]);
+        }
+        else
+        {
+            StartRebind(_keyConfigs[_selectedIndex]);
         }
     }
 
     /// <summary>
-    /// 選択中のキー設定を移動する（端でループ）
+    /// オプション画面を閉じる処理
     /// </summary>
-    private void MoveSelection(int dir)
+    private void OnClose()
     {
-        int prev = _selectedIndex;
-        int len = _keyConfigs.Length;
-        _selectedIndex = (_selectedIndex + dir + len) % len;
-        if (prev != _selectedIndex)
+        StartCoroutine(PlayAnimationUnscaled(_optionAnim, "OptionClose"));
+    }
+
+    /// <summary>
+    /// Time.scaleが０のため、AnimationをUnscaledで再生し、完了後にデバッグログを表示
+    /// </summary>
+    private IEnumerator PlayAnimationUnscaled(Animation anim, string clipName)
+    {
+        anim.Play(clipName);
+        AnimationState state = anim[clipName];
+        state.speed = 1f;
+
+        // 手動でtimeを進める
+        while (state.time < state.length)
         {
-            _isResetSelected = false; // インデックス移動時はkeyButtonに戻す
-            UpdateSelectionVisual();
+            state.time += Time.unscaledDeltaTime;
+            anim.Sample();
+            yield return null;
         }
+        anim.Stop();
+
+        // 再生完了後の処理
+        InputActionHolder.Instance.menuInputActions.Menu.Enable();
+        OnDisable(); // オプション画面を閉じたら無効化
     }
 
     /// <summary>
