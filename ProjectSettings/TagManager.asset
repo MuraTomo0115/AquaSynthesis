@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - MenuUI
   - Spike
+  - Echo
   layers:
   - Default
   - TransparentFX
@@ -18,8 +19,8 @@ TagManager:
   - Player
   - Projectile
   - Enemy
-  - 
-  - 
+  - Echo
+  - Spike
   - 
   - 
   - 
