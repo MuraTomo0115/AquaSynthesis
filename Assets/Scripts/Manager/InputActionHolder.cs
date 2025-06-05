@@ -23,7 +23,7 @@ public abstract class InputActionHolder : MonoBehaviour
             optionInputActions = new OptionInputActions();
 
             // Œp³æ‚ÌChangeInputActions‚ğŒÄ‚Ño‚·
-            ChangeInputActions();
+            //ChangeInputActions();
         }
         else
         {

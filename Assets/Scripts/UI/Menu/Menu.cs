@@ -80,12 +80,14 @@ public class Menu : MonoBehaviour
             CloseMenu();
 
             // プレイヤーの移動を有効化
-            _playerMovement.OnEnableInput();
+            //_playerMovement.OnEnableInput();
+            //InputActionHolder.Instance.playerInputActions.Player.Enable();
         }
         else
         {
             // メニューを開く前にプレイヤーの移動を無効化
-            _playerMovement.DisableInput();
+            //_playerMovement.ChangeInputActions();
+            InputActionHolder.Instance.playerInputActions.Player.Disable();
             OpenMenu();
         }
     }

@@ -106,6 +106,28 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "up",
+                    "id": "7b034023-6422-462c-a3b3-1891bec59448",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "c130ed11-836e-483f-ac01-cb26a0211ea4",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "2D Vector Controller",
                     "id": "5ef40b8d-e9e6-4763-a6ef-6c50c1f69f0c",
                     "path": "2DVector",
@@ -131,6 +153,28 @@
                     "name": "right",
                     "id": "36501ecd-ff1e-409f-92b7-2d6064a15385",
                     "path": "<Gamepad>/dpad/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "up",
+                    "id": "0be460f5-35f2-466b-85ea-1240a6f50b30",
+                    "path": "<Gamepad>/dpad/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "71f65807-30a8-4b47-a3c1-f7eae9ec4a42",
+                    "path": "<Gamepad>/dpad/down",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

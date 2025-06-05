@@ -6,61 +6,98 @@ using System.Collections.Generic;
 using System.Collections;
 
 /// <summary>
+/// キーコンフィグ管理クラス
 /// 主制作者：村田智哉
 /// </summary>
-
 public enum KeyDeviceType
 {
-    Keyboard,
-    Gamepad
+    Keyboard = 0,
+    Gamepad = 1
 }
 
+/// <summary>
+/// キー設定データクラス
+/// </summary>
 [System.Serializable]
 public class KeyConfigData
 {
-    public string label; // 識別用
-    public Button keyButton;
-    public TextMeshProUGUI keyText;
-    public Button resetButton;
-    public InputActionReference action;
-    public int bindingIndex;
-    public string saveKey;
-    public KeyDeviceType deviceType; // キーのデバイスタイプ（Keyboard/Gamepad）
+    public string label;        // 識別用ラベル
+    public Button keyButton;    // キー設定用ボタン
+    public TextMeshProUGUI keyText;      // キー表示用テキスト
+    public Button resetButton;  // リセットボタン
+    public InputActionReference action;   // InputAction参照
+    public int keyboardBindingIndex;      // キーボード用バインディングインデックス
+    public int gamepadBindingIndex;       // ゲームパッド用バインディングインデックス
+    public string saveKey;      // 保存用キー
+
+    public int GetBindingIndex(KeyDeviceType type)
+    {
+        return type == KeyDeviceType.Keyboard ? keyboardBindingIndex : gamepadBindingIndex;
+    }
 }
 
-[System.Serializable]
-public class KeyConfigSaveData
-{
-    public List<KeyBindingData> bindings = new List<KeyBindingData>();
-}
-
+/// <summary>
+/// キー設定のバインディングデータ
+/// </summary>
 [System.Serializable]
 public class KeyBindingData
 {
-    public string saveKey;
-    public string overridePath;
+    public string saveKey;               // 保存用キー
+    public string overridePath;          // オーバーライドパス
+    public KeyDeviceType deviceType;     // デバイスタイプ
+}
+
+/// <summary>
+/// キー設定の保存データクラス
+/// </summary>
+[System.Serializable]
+public class KeyConfigSaveData
+{
+    public List<KeyBindingData> bindings = new List<KeyBindingData>(); // バインディングリスト
 }
 
 public class KeyConfig : MonoBehaviour
 {
-    [SerializeField] private KeyConfigData[] _keyConfigs;
-    [SerializeField] private TextMeshProUGUI _errorText;
-    private Coroutine _errorCoroutine;
+    [SerializeField] private KeyConfigData[] _keyConfigs;        // キー設定データ配列
+    [SerializeField] private TextMeshProUGUI _errorText;         // エラーメッセージ表示用テキスト
+    [SerializeField] private Button _keyboardButton;    // キーボード切替ボタン
+    [SerializeField] private Button _gamepadButton;     // ゲームパッド切替ボタン
+    [SerializeField] private TextMeshProUGUI _deviceLabelText;   // デバイス名表示用テキスト
+    [Header("選択状態を示す枠画像")]
+    [SerializeField] private GameObject _keyboardFrameSelected;  // キーボード選択枠
+    [SerializeField] private GameObject _keyboardFrameActive;    // キーボード決定枠
+    [SerializeField] private GameObject _gamepadFrameSelected;   // ゲームパッド選択枠
+    [SerializeField] private GameObject _gamepadFrameActive;     // ゲームパッド決定枠
 
-    private int _selectedIndex = 0;
-    private bool _isResetSelected = false;
-    private Animation _optionAnim;
-    private Dictionary<string, string> _overridePathDict = new Dictionary<string, string>();
+    private Coroutine _errorCoroutine;            // エラー表示用コルーチン
+    private int _selectedIndex = 0;         // 選択中のキー設定インデックス
+    private int _selectedDeviceIndex = -1;  // 選択中のデバイスインデックス
+    private KeyDeviceType _activeDeviceType = KeyDeviceType.Keyboard; // 決定済みデバイスタイプ
+    private bool _isResetSelected = false;   // リセットボタン選択状態
+    private Animation _optionAnim;                // オプション画面アニメーション
+    private readonly Dictionary<(string saveKey, KeyDeviceType deviceType), string> _overridePathDict
+        = new Dictionary<(string, KeyDeviceType), string>();
 
-    /// <summary>
-    /// 初期化処理。JSONから復元し、ボタンイベントを登録、UIを更新。
-    /// </summary>
+    private static readonly Dictionary<string, string> GamepadLabelMap = new Dictionary<string, string>
+    {
+        { "buttonSouth", "Aボタン" },
+        { "buttonEast",  "Bボタン" },
+        { "buttonWest",  "Yボタン" },
+        { "buttonNorth", "Xボタン" },
+        { "leftShoulder", "L1" },
+        { "rightShoulder", "R1" },
+        { "leftTrigger", "L2" },
+        { "rightTrigger", "R2" },
+        { "leftStickPress", "Lスティック押し込み" },
+        { "rightStickPress", "Rスティック押し込み" }
+    };
+
     private void Start()
     {
         Debug.Log("KeyConfigのJSON保存先: " + GetKeyConfigSavePath());
         _optionAnim = GetComponent<Animation>();
 
-        LoadAllKeyConfigsFromJson(); // JSONから復元
+        LoadAllKeyConfigsFromJson();
 
         foreach (var config in _keyConfigs)
         {
@@ -68,18 +105,19 @@ public class KeyConfig : MonoBehaviour
             config.resetButton.onClick.AddListener(() => ResetBinding(config));
         }
 
+        _selectedDeviceIndex = 0;
+        _selectedIndex = 0;
+        _isResetSelected = false;
+        _activeDeviceType = KeyDeviceType.Keyboard;
         UpdateKeyTexts();
         UpdateSelectionVisual();
-        OnDisable(); // 初期状態では無効化しておく
+        OnDisable(); // 初期状態では無効化
     }
 
     private void Awake()
     {
-        // InputActionHolderのインスタンスを取得
         var optionActions = InputActionHolder.Instance.optionInputActions;
-
-        // イベント登録
-        optionActions.Option.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>().x);
+        optionActions.Option.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>());
         optionActions.Option.Click.performed += ctx => OnSubmit();
         optionActions.Option.Close.performed += ctx => OnClose();
     }
@@ -94,161 +132,186 @@ public class KeyConfig : MonoBehaviour
         InputActionHolder.Instance.optionInputActions.Option.Disable();
     }
 
-    /// <summary>
-    /// 全キー設定をJSONファイルに保存する
-    /// </summary>
     private void SaveAllKeyConfigsToJson()
     {
-        KeyConfigSaveData saveData = new KeyConfigSaveData();
+        var saveData = new KeyConfigSaveData();
         foreach (var config in _keyConfigs)
         {
+            int bindingIndex = config.GetBindingIndex(_activeDeviceType);
             var action = config.action.action;
-            var overridePath = action.bindings[config.bindingIndex].overridePath;
+            var overridePath = action.bindings[bindingIndex].overridePath;
             saveData.bindings.Add(new KeyBindingData
             {
                 saveKey = config.saveKey,
-                overridePath = overridePath
+                overridePath = overridePath,
+                deviceType = _activeDeviceType
             });
         }
-        string json = JsonUtility.ToJson(saveData, true);
+        var json = JsonUtility.ToJson(saveData, true);
         System.IO.File.WriteAllText(GetKeyConfigSavePath(), json);
     }
 
-    /// <summary>
-    /// JSONファイルから全キー設定を復元し、UIとランタイム両方に反映する
-    /// </summary>
     private void LoadAllKeyConfigsFromJson()
     {
         _overridePathDict.Clear();
-
-        string path = GetKeyConfigSavePath();
+        var path = GetKeyConfigSavePath();
         if (!System.IO.File.Exists(path)) return;
 
-        string json = System.IO.File.ReadAllText(path);
+        var json = System.IO.File.ReadAllText(path);
         var saveData = JsonUtility.FromJson<KeyConfigSaveData>(json);
         if (saveData == null) return;
 
         foreach (var binding in saveData.bindings)
         {
             if (!string.IsNullOrEmpty(binding.overridePath))
-            {
-                _overridePathDict[binding.saveKey] = binding.overridePath;
-            }
+                _overridePathDict[(binding.saveKey, binding.deviceType)] = binding.overridePath;
         }
 
-        // バインディングをUIとランタイム両方にApply
         foreach (var config in _keyConfigs)
         {
-            if (_overridePathDict.TryGetValue(config.saveKey, out var overridePath) && !string.IsNullOrEmpty(overridePath))
+            int bindingIndex = config.GetBindingIndex(_activeDeviceType);
+            if (_overridePathDict.TryGetValue((config.saveKey, _activeDeviceType), out var overridePath) && !string.IsNullOrEmpty(overridePath))
             {
-                // UI表示用
-                config.action.action.ApplyBindingOverride(config.bindingIndex, overridePath);
+                config.action.action.ApplyBindingOverride(bindingIndex, overridePath);
 
-                // 実際のゲーム操作用
                 if (InputActionHolder.Instance != null)
                 {
                     var runtimeAction = InputActionHolder.Instance.playerInputActions.asset.FindAction(config.action.action.name, true);
-                    if (runtimeAction != null)
-                    {
-                        runtimeAction.ApplyBindingOverride(config.bindingIndex, overridePath);
-                    }
+                    runtimeAction?.ApplyBindingOverride(bindingIndex, overridePath);
                 }
             }
         }
     }
 
-    /// <summary>
-    /// JSON保存先のフルパスを取得する
-    /// </summary>
     private string GetKeyConfigSavePath()
     {
         return System.IO.Path.Combine(Application.persistentDataPath, "keyconfig.json");
     }
 
-    /// <summary>
-    /// 選択中のキー設定を移動する（端でループ）
-    /// </summary>
     private void MoveSelection(int dir)
     {
-        int prev = _selectedIndex;
         int len = _keyConfigs.Length;
+        int prev = _selectedIndex;
         _selectedIndex = (_selectedIndex + dir + len) % len;
         if (prev != _selectedIndex)
         {
-            _isResetSelected = false; // インデックス移動時はkeyButtonに戻す
+            _isResetSelected = false;
             UpdateSelectionVisual();
         }
     }
 
-    /// <summary>
-    /// 横方向の入力を受け取り、選択中のキー設定を移動
-    /// </summary>
-    /// <param name="direction"></param>
-    private void OnMove(float direction)
+    private void OnMove(Vector2 direction)
     {
-        if (direction < -0.5f)
+        if (_selectedDeviceIndex >= 0)
         {
-            if (_isResetSelected)
+            // 左右で状態ボタン切り替え
+            if (Mathf.Abs(direction.x) > 0.5f)
             {
+                _selectedDeviceIndex = 1 - _selectedDeviceIndex;
+                UpdateSelectionVisual();
+                return;
+            }
+            // 下でコンフィグボタンに移動
+            if (direction.y < -0.5f)
+            {
+                _selectedDeviceIndex = -1;
+                _selectedIndex = 0;
                 _isResetSelected = false;
                 UpdateSelectionVisual();
+                return;
             }
-            else
-            {
-                MoveSelection(-1);
-                _isResetSelected = true;
-                UpdateSelectionVisual();
-            }
+            return;
         }
-        else if (direction > 0.5f)
+
+        // キー設定選択中の処理
+        if (direction.y > 0.5f)
         {
-            if (!_isResetSelected)
+            if (_selectedIndex == 0)
             {
-                _isResetSelected = true;
+                _selectedDeviceIndex = 0;
                 UpdateSelectionVisual();
             }
             else
             {
-                MoveSelection(1);
+                _selectedIndex--;
                 _isResetSelected = false;
                 UpdateSelectionVisual();
             }
+            return;
+        }
+        if (direction.y < -0.5f)
+        {
+            if (_selectedIndex < _keyConfigs.Length - 1)
+            {
+                _selectedIndex++;
+                _isResetSelected = false;
+                UpdateSelectionVisual();
+            }
+            else
+            {
+                _selectedDeviceIndex = 0;
+                UpdateSelectionVisual();
+            }
+            return;
+        }
+
+        // 左右でリセットボタン切り替え
+        if (direction.x < -0.5f && _isResetSelected)
+        {
+            _isResetSelected = false;
+            UpdateSelectionVisual();
+        }
+        else if (direction.x > 0.5f && !_isResetSelected)
+        {
+            _isResetSelected = true;
+            UpdateSelectionVisual();
         }
     }
 
-    /// <summary>
-    /// 選択中の項目を決定する処理
-    /// </summary>
     private void OnSubmit()
     {
+        if (_selectedDeviceIndex == 0 || _selectedDeviceIndex == 1)
+        {
+            // 状態ボタン選択時
+            _activeDeviceType = (KeyDeviceType)_selectedDeviceIndex;
+            UpdateSelectionVisual();
+            _deviceLabelText.text = (_activeDeviceType == KeyDeviceType.Keyboard) ? "キーボード" : "ゲームパッド";
+            UpdateKeyTexts();
+            // バインディングも切り替え
+            foreach (var config in _keyConfigs)
+            {
+                int bindingIndex = config.GetBindingIndex(_activeDeviceType);
+                if (_overridePathDict.TryGetValue((config.saveKey, _activeDeviceType), out var overridePath) && !string.IsNullOrEmpty(overridePath))
+                {
+                    config.action.action.ApplyBindingOverride(bindingIndex, overridePath);
+
+                    if (InputActionHolder.Instance != null)
+                    {
+                        var runtimeAction = InputActionHolder.Instance.playerInputActions.asset.FindAction(config.action.action.name, true);
+                        runtimeAction?.ApplyBindingOverride(bindingIndex, overridePath);
+                    }
+                }
+            }
+            return;
+        }
+
         if (_isResetSelected)
-        {
             ResetBinding(_keyConfigs[_selectedIndex]);
-        }
         else
-        {
             StartRebind(_keyConfigs[_selectedIndex]);
-        }
     }
 
-    /// <summary>
-    /// オプション画面を閉じる処理
-    /// </summary>
     private void OnClose()
     {
         StartCoroutine(PlayAnimationUnscaled(_optionAnim, "OptionClose"));
     }
 
-    /// <summary>
-    /// Time.scaleが０のため、AnimationをUnscaledで再生し、完了後にデバッグログを表示
-    /// </summary>
     private IEnumerator PlayAnimationUnscaled(Animation anim, string clipName)
     {
         anim.Play(clipName);
-        AnimationState state = anim[clipName];
+        var state = anim[clipName];
         state.speed = 1f;
 
-        // 手動でtimeを進める
         while (state.time < state.length)
         {
             state.time += Time.unscaledDeltaTime;
@@ -257,22 +320,33 @@ public class KeyConfig : MonoBehaviour
         }
         anim.Stop();
 
-        // 再生完了後の処理
         InputActionHolder.Instance.menuInputActions.Menu.Enable();
-        OnDisable(); // オプション画面を閉じたら無効化
+        OnDisable();
     }
 
-    /// <summary>
-    /// 選択中のボタンの色を更新する
-    /// </summary>
     private void UpdateSelectionVisual()
     {
+        _keyboardFrameSelected.SetActive(false);
+        _keyboardFrameActive.SetActive(false);
+        _gamepadFrameSelected.SetActive(false);
+        _gamepadFrameActive.SetActive(false);
+
+        if (_selectedDeviceIndex == 0)
+            _keyboardFrameSelected.SetActive(true);
+        else if (_selectedDeviceIndex == 1)
+            _gamepadFrameSelected.SetActive(true);
+
+        if (_activeDeviceType == KeyDeviceType.Keyboard)
+            _keyboardFrameActive.SetActive(true);
+        else if (_activeDeviceType == KeyDeviceType.Gamepad)
+            _gamepadFrameActive.SetActive(true);
+
         for (int i = 0; i < _keyConfigs.Length; i++)
         {
             var keyColors = _keyConfigs[i].keyButton.colors;
             var resetColors = _keyConfigs[i].resetButton.colors;
 
-            if (i == _selectedIndex)
+            if (_selectedDeviceIndex == -1 && i == _selectedIndex)
             {
                 keyColors.normalColor = !_isResetSelected ? Color.yellow : Color.white;
                 resetColors.normalColor = _isResetSelected ? Color.yellow : Color.white;
@@ -286,64 +360,65 @@ public class KeyConfig : MonoBehaviour
             _keyConfigs[i].keyButton.colors = keyColors;
             _keyConfigs[i].resetButton.colors = resetColors;
         }
+
+        _deviceLabelText.text = (_activeDeviceType == KeyDeviceType.Keyboard) ? "キーボード" : "ゲームパッド";
     }
 
-    /// <summary>
-    /// 各キー設定のテキスト表示を更新する
-    /// </summary>
+    private string ToFriendlyGamepadLabel(string raw)
+    {
+        string lowerRaw = raw.ToLower();
+        foreach (var pair in GamepadLabelMap)
+        {
+            if (lowerRaw.Contains(pair.Key.ToLower()))
+                return pair.Value;
+        }
+        return raw;
+    }
+
     private void UpdateKeyTexts()
     {
         foreach (var config in _keyConfigs)
         {
-            string displayPath = null;
-            if (_overridePathDict.TryGetValue(config.saveKey, out var overridePath) && !string.IsNullOrEmpty(overridePath))
-            {
-                displayPath = overridePath;
-            }
-            else
-            {
-                displayPath = config.action.action.bindings[config.bindingIndex].effectivePath;
-            }
+            int bindingIndex = config.GetBindingIndex(_activeDeviceType);
+            string displayPath = _overridePathDict.TryGetValue((config.saveKey, _activeDeviceType), out var overridePath) && !string.IsNullOrEmpty(overridePath)
+                ? overridePath
+                : config.action.action.bindings[bindingIndex].effectivePath;
 
-            config.keyText.text = InputControlPath.ToHumanReadableString(
+            string label = InputControlPath.ToHumanReadableString(
                 displayPath,
                 InputControlPath.HumanReadableStringOptions.OmitDevice);
+
+            if (_activeDeviceType == KeyDeviceType.Gamepad)
+                label = ToFriendlyGamepadLabel(label);
+
+            config.keyText.text = label;
         }
     }
-
-    /// <summary>
-    /// キーリバインドを開始し、完了時に保存・反映・UI更新を行う
-    /// </summary>
     private void StartRebind(KeyConfigData config)
     {
         config.keyButton.interactable = false;
         config.keyText.text = "Press any key";
 
         var action = config.action.action;
+        int bindingIndex = config.GetBindingIndex(_activeDeviceType);
         action.Disable();
 
-        var rebind = action.PerformInteractiveRebinding(config.bindingIndex);
+        var rebind = action.PerformInteractiveRebinding(bindingIndex);
 
-        // デバイス制限（エラー表示付き）
         rebind.OnPotentialMatch(operation =>
         {
             var control = operation.selectedControl;
-            bool isValid = false;
-            if (config.deviceType == KeyDeviceType.Keyboard && control.device is Keyboard)
-                isValid = true;
-            else if (config.deviceType == KeyDeviceType.Gamepad && control.device is Gamepad)
-                isValid = true;
+            bool isValid = (_activeDeviceType == KeyDeviceType.Keyboard && control.device is Keyboard)
+                        || (_activeDeviceType == KeyDeviceType.Gamepad && control.device is Gamepad);
 
             if (!isValid)
             {
-                ShowErrorMessage("この項目には" +
-                    (config.deviceType == KeyDeviceType.Keyboard ? "キーボード" : "ゲームパッド") +
-                    "のみ割り当て可能です");
-                operation.Cancel(); // リバインドキャンセル
-                operation.Dispose(); // Disposeする
+                ShowErrorMessage($"{(_activeDeviceType == KeyDeviceType.Keyboard ? "キーボード" : "ゲームパッド")}のみ割り当て可能です");
+                operation.Cancel();
+                operation.Dispose();
                 config.keyButton.interactable = true;
                 config.keyText.text = InputControlPath.ToHumanReadableString(
-                    config.action.action.bindings[config.bindingIndex].effectivePath,
+                    config.action.action.bindings[bindingIndex].effectivePath,
                     InputControlPath.HumanReadableStringOptions.OmitDevice);
             }
         });
@@ -354,25 +429,24 @@ public class KeyConfig : MonoBehaviour
             config.keyButton.interactable = true;
             op.Dispose();
 
-            var overridePath = action.bindings[config.bindingIndex].overridePath;
+            var overridePath = action.bindings[bindingIndex].overridePath;
 
-            // 重複チェック
-            if (IsDuplicateKey(config, overridePath))
+            if (IsDuplicateKey(config, overridePath, bindingIndex))
             {
                 ShowErrorMessage("選択されたキーは、既に他の項目で使用されています");
-                action.RemoveBindingOverride(config.bindingIndex);
-                _overridePathDict.Remove(config.saveKey);
+                action.RemoveBindingOverride(bindingIndex);
+                _overridePathDict.Remove((config.saveKey, _activeDeviceType));
                 LoadAllKeyConfigsFromJson();
                 UpdateKeyTexts();
                 return;
             }
 
             if (!string.IsNullOrEmpty(overridePath))
-                _overridePathDict[config.saveKey] = overridePath;
+                _overridePathDict[(config.saveKey, _activeDeviceType)] = overridePath;
             else
-                _overridePathDict.Remove(config.saveKey);
+                _overridePathDict.Remove((config.saveKey, _activeDeviceType));
 
-            ApplyOverrideToAllHolders(config, overridePath);
+            ApplyOverrideToAllHolders(config, overridePath, bindingIndex);
 
             SaveAllKeyConfigsToJson();
             UpdateKeyTexts();
@@ -384,41 +458,33 @@ public class KeyConfig : MonoBehaviour
 
     private void ResetBinding(KeyConfigData config)
     {
-        // バインディングのオーバーライドを削除
-        config.action.action.RemoveBindingOverride(config.bindingIndex);
+        int bindingIndex = config.GetBindingIndex(_activeDeviceType);
+        config.action.action.RemoveBindingOverride(bindingIndex);
 
         if (InputActionHolder.Instance != null)
         {
             var actions = InputActionHolder.Instance.playerInputActions;
             var action = actions.asset.FindAction(config.action.action.name, true);
-            if (action != null)
-            {
-                action.RemoveBindingOverride(config.bindingIndex);
-            }
+            action?.RemoveBindingOverride(bindingIndex);
         }
 
-        _overridePathDict.Remove(config.saveKey);
+        _overridePathDict.Remove((config.saveKey, _activeDeviceType));
         SaveAllKeyConfigsToJson();
         UpdateKeyTexts();
 
-        // リセット後もリセットボタンを有効化
         config.resetButton.interactable = true;
     }
 
-    /// <summary>
-    /// 他の項目とバインディングが重複していないか判定
-    /// </summary>
-    private bool IsDuplicateKey(KeyConfigData current, string overridePath)
+    private bool IsDuplicateKey(KeyConfigData current, string overridePath, int bindingIndex)
     {
         if (string.IsNullOrEmpty(overridePath)) return false;
         foreach (var config in _keyConfigs)
         {
             if (config == current) continue;
-            string otherPath = null;
-            if (_overridePathDict.TryGetValue(config.saveKey, out var path) && !string.IsNullOrEmpty(path))
-                otherPath = path;
-            else
-                otherPath = config.action.action.bindings[config.bindingIndex].effectivePath;
+            int otherIndex = config.GetBindingIndex(_activeDeviceType);
+            string otherPath = _overridePathDict.TryGetValue((config.saveKey, _activeDeviceType), out var path) && !string.IsNullOrEmpty(path)
+                ? path
+                : config.action.action.bindings[otherIndex].effectivePath;
 
             if (overridePath == otherPath)
                 return true;
@@ -426,15 +492,10 @@ public class KeyConfig : MonoBehaviour
         return false;
     }
 
-    /// <summary>
-    /// UIとランタイム両方のInputActionにバインディングオーバーライドを適用
-    /// </summary>
-    private void ApplyOverrideToAllHolders(KeyConfigData config, string overridePath)
+    private void ApplyOverrideToAllHolders(KeyConfigData config, string overridePath, int bindingIndex)
     {
-        // UI表示用
-        config.action.action.ApplyBindingOverride(config.bindingIndex, overridePath);
+        config.action.action.ApplyBindingOverride(bindingIndex, overridePath);
 
-        // 実際のゲーム操作用
         if (InputActionHolder.Instance != null)
         {
             var actions = InputActionHolder.Instance.playerInputActions;
@@ -442,16 +503,13 @@ public class KeyConfig : MonoBehaviour
             if (action != null)
             {
                 if (!string.IsNullOrEmpty(overridePath))
-                    action.ApplyBindingOverride(config.bindingIndex, overridePath);
+                    action.ApplyBindingOverride(bindingIndex, overridePath);
                 else
-                    action.RemoveBindingOverride(config.bindingIndex);
+                    action.RemoveBindingOverride(bindingIndex);
             }
         }
     }
 
-    /// <summary>
-    /// エラーメッセージを一定時間表示する
-    /// </summary>
     private void ShowErrorMessage(string message, float duration = 2f)
     {
         if (_errorCoroutine != null)
@@ -459,11 +517,11 @@ public class KeyConfig : MonoBehaviour
         _errorCoroutine = StartCoroutine(ShowErrorCoroutine(message, duration));
     }
 
-    private System.Collections.IEnumerator ShowErrorCoroutine(string message, float duration)
+    private IEnumerator ShowErrorCoroutine(string message, float duration)
     {
         _errorText.text = message;
         _errorText.gameObject.SetActive(true);
-        yield return new WaitForSeconds(duration);
+        yield return new WaitForSecondsRealtime(duration);
         _errorText.gameObject.SetActive(false);
     }
 }
