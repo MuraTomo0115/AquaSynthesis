@@ -90,6 +90,11 @@ public class RecordAbility : MonoBehaviour
         _isRecording = false;
         if (_playerMovement != null)
         {
+            _playerMovement.IsRecording = false; // PlayerMovementの記録モードも終了
+        }
+        _isRecording = false;
+        if (_playerMovement != null)
+        {
             _playerMovement.IsRecording = false; // internal setで操作
         }
     }
@@ -207,7 +212,6 @@ public class RecordAbility : MonoBehaviour
                     _ghostSpriteRenderer.flipX = current.isFacingLeft;
                 if (ghostMovement != null)
                 {
-                    // ゴーストの移動入力を更新
                     ghostMovement.SetRecordedInput(current.input);
 
                     if (current.didPistol) ghostMovement.ShootPistol();
@@ -225,6 +229,9 @@ public class RecordAbility : MonoBehaviour
         playbackTarget.rotation = last.rotation;
 
         _isPlayingBack = false;
+
+        // ★ゴーストを破棄
+        Destroy(playbackTarget.gameObject);
     }
 
     /// <summary>

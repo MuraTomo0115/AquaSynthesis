@@ -191,9 +191,7 @@ public class PlayerMovement : MonoBehaviour
         bulletScript.SetPlayerMovement(this);
 
         _canPistolAttack = false;
-        // Bullet に PlayerMovement を渡す（この行は重複なので1回でOK）
-        bulletScript.SetPlayerMovement(this);
-
+        
         // 記録中フラグを渡す
         bulletScript.SetIsRecording(IsRecording);
         Invoke(nameof(CanPistol), _pistolCoolTime);
