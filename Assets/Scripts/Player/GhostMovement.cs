@@ -129,7 +129,6 @@ public class GhostMovement : MonoBehaviour
         bulletScript.SetDirection(direction);
         bulletScript.SetDamage(_charaState != null ? _charaState.PistolPower : 1);
         bulletScript.SetIsGhostBullet(true); // ★ゴースト弾フラグをセット
-        Debug.Log($"[Ghost] ShootPistol: pos={_firePoint.position}, dir={direction}, damage={_charaState?.PistolPower}");
     }
 
     /// <summary>
@@ -174,11 +173,6 @@ public class GhostMovement : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// アニメーションイベント用のダミー関数（未使用なら空のままでOK）
-    /// </summary>
-    public void trueAttack() { }
-    public void falseAttack() { }
     // クラス内に追加
     public void SetRecordedInput(Vector2 input)
     {

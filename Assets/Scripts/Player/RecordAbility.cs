@@ -92,11 +92,6 @@ public class RecordAbility : MonoBehaviour
         {
             _playerMovement.IsRecording = false; // PlayerMovementの記録モードも終了
         }
-        _isRecording = false;
-        if (_playerMovement != null)
-        {
-            _playerMovement.IsRecording = false; // internal setで操作
-        }
     }
 
     /// <summary>
