@@ -5,6 +5,10 @@ using UnityEngine.SceneManagement;
 using DG.Tweening;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// 主制作者：村田智哉
+/// </summary>
+
 public class Menu : MonoBehaviour
 {
     [SerializeField] private GameObject      _menuContents;           // メニュー全体のUIオブジェクト
@@ -14,13 +18,13 @@ public class Menu : MonoBehaviour
     private bool                             _isOpen = false;         // メニューが開いているかどうか
 
     [SerializeField] private RectTransform[] _menuItems;              // メニュー項目（ボタン等）の配列
+    [SerializeField] private Animation       _optionAnim;             // オプションのアニメーション
     [SerializeField] private GameObject      _backButton;             // 戻るボタンのGameObject
     private int                              _currentIndex = 0;       // 現在選択中のメニュー項目インデックス
     private bool                             _isInCarousel = true;    // メニュー項目選択中か（true:メニュー項目, false:戻るボタン）
     private Outline                          _backButtonOutline;      // 戻るボタンのOutlineコンポーネント
     private Vector3                          _originalBackButtonScale;// 戻るボタンの元のスケール
     private Tween                            _outlineTween;           // Outline点滅用のDOTweenインスタンス
-    private MenuInputActions                 _inputActions;           // 入力アクション管理用
     private Menu                             _menu;                   // メニュークラスのインスタンス
     private PlayerMovement _playerMovement;                           // プレイヤーの移動クラスのインスタンス
 
@@ -41,10 +45,11 @@ public class Menu : MonoBehaviour
         _backButtonOutline.effectColor = OutlineDefaultColor;
         _originalBackButtonScale = _backButton.GetComponent<RectTransform>().localScale;
 
-        _inputActions = new MenuInputActions();
-        _inputActions.Menu.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>().x);
-        _inputActions.Menu.Vertical.performed += ctx => OnVertical(ctx.ReadValue<Vector2>().y);
-        _inputActions.Menu.Click.performed += ctx => OnClick();
+        // InputActionHolderからMenuInputActionsを取得してイベント登録
+        var menuActions = InputActionHolder.Instance.menuInputActions;
+        menuActions.Menu.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>().x);
+        menuActions.Menu.Vertical.performed += ctx => OnVertical(ctx.ReadValue<Vector2>().y);
+        menuActions.Menu.Click.performed += ctx => OnClick();
     }
 
     /// <summary>
@@ -59,8 +64,8 @@ public class Menu : MonoBehaviour
         // プレイヤーの移動クラスを取得
         _playerMovement = _player.GetComponent<PlayerMovement>();
         // ステージシーンならMenuInputActionsアクションマップを有効化
-        _inputActions.Menu.Enable();
-        _inputActions.Menu.Open.performed += ctx => ToggleMenu();
+        InputActionHolder.Instance.menuInputActions.Menu.Enable();
+        InputActionHolder.Instance.menuInputActions.Menu.Open.performed += ctx => ToggleMenu();
     }
 
     /// <summary>
@@ -75,12 +80,14 @@ public class Menu : MonoBehaviour
             CloseMenu();
 
             // プレイヤーの移動を有効化
-            _playerMovement.OnEnable();
+            //_playerMovement.OnEnableInput();
+            //InputActionHolder.Instance.playerInputActions.Player.Enable();
         }
         else
         {
             // メニューを開く前にプレイヤーの移動を無効化
-            _playerMovement.DisableInput();
+            //_playerMovement.ChangeInputActions();
+            InputActionHolder.Instance.playerInputActions.Player.Disable();
             OpenMenu();
         }
     }
@@ -134,6 +141,7 @@ public class Menu : MonoBehaviour
         yield return new WaitForSecondsRealtime(_menuAnim.clip.length);
         _isOpen = false;
         Time.timeScale = 1f;
+        InputActionHolder.Instance.playerInputActions.Player.Enable();
     }
 
     /// <summary>
@@ -151,7 +159,7 @@ public class Menu : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
-        _inputActions.Menu.Enable();
+        InputActionHolder.Instance.menuInputActions.Menu.Enable();
     }
 
     /// <summary>
@@ -159,7 +167,7 @@ public class Menu : MonoBehaviour
     /// </summary>
     private void OnDisable()
     {
-        _inputActions.Menu.Disable();
+        InputActionHolder.Instance.menuInputActions.Menu.Disable();
     }
 
     /// <summary>
@@ -242,14 +250,48 @@ public class Menu : MonoBehaviour
     {
         if(!_isOpen) return;
 
-        if (_isInCarousel)
+        if(_isInCarousel)
         {
-            Debug.Log("選択：" + _menuItems[_currentIndex].name);
+            switch (_currentIndex)
+            {
+                case 0:
+                    // 1つ目のメニュー項目の処理
+                    Debug.Log("メニュー1の処理");
+                    break;
+                case 1:
+                    // 2つ目のメニュー項目の処理
+                    Debug.Log("メニュー2の処理");
+                    OnDisable();
+                    SelectItem(_optionAnim, "Option");
+                    InputActionHolder.Instance.optionInputActions.Option.Enable();
+                    break;
+                case 2:
+                    // 3つ目のメニュー項目の処理
+                    Debug.Log("メニュー3の処理");
+                    break;
+                case 3:
+                    // 4つ目のメニュー項目の処理
+                    Debug.Log("メニュー4の処理");
+                    break;
+                default:
+                    Debug.Log("未定義のメニュー項目");
+                    break;
+            }
         }
         else
         {
             Debug.Log("ゲームへ戻るボタン押下");
         }
+    }
+
+    /// <summary>
+    /// 選択されたメニュー項目のアニメーションを再生する
+    /// </summary>
+    /// <param name="anim"></param>
+    /// <param name="animName"></param>
+    private void SelectItem(Animation anim,string animName)
+    {
+        StartCoroutine(PlayAnimationUnscaled(anim, animName));
     }
 
     /// <summary>
@@ -295,5 +337,26 @@ public class Menu : MonoBehaviour
                 .SetEase(Ease.OutBack)
                 .SetUpdate(true);
         }
+    }
+
+    /// <summary>
+    /// アニメーションを再生する（TimeScaleを無視してUnscaledで再生）
+    /// </summary>
+    /// <param name="anim">再生するアニメーション</param>
+    /// <param name="clipName">アニメーション名</param>
+    /// <returns></returns>
+    private IEnumerator PlayAnimationUnscaled(Animation anim, string clipName)
+    {
+        anim.Play(clipName);
+        AnimationState state = anim[clipName];
+        state.speed = 1f;
+
+        while (state.time < state.length)
+        {
+            anim[clipName].time += Time.unscaledDeltaTime;
+            anim.Sample();
+            yield return null;
+        }
+        anim.Stop();
     }
 }

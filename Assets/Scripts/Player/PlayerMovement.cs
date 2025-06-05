@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ƒvƒŒƒCƒ„[‚ÌˆÚ“®EUŒ‚EƒgƒQƒ_ƒ[ƒWE‹L˜^’†ƒtƒ‰ƒOŠÇ—
+/// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç§»å‹•ãƒ»æ”»æ’ƒãƒ»ãƒˆã‚²ãƒ€ãƒ¡ãƒ¼ã‚¸ãƒ»è¨˜éŒ²ä¸­ãƒ•ãƒ©ã‚°ç®¡ç†
 /// </summary>
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private float _moveSpeed = 5f;  // ˆÚ“®‘¬“x
-    [SerializeField] private float _jumpForce = 5f;  // ƒWƒƒƒ“ƒv—Í
-    [SerializeField] private float _ray = 1f;        // ’n–Ê‚ğŒŸo‚·‚éƒŒƒC‚Ì’·‚³
-    [SerializeField] private Transform _groundCheck;     // ‘«Œ³‚Ì‹óƒIƒuƒWƒFƒNƒg
-    [SerializeField] private LayerMask _groundLayer;     // ’n–Ê‚Ìƒ^ƒO
-    [SerializeField] private LayerMask _spikeLayer;      // Spike—pLayerMask
+    [SerializeField] private float _moveSpeed = 5f;  // ç§»å‹•é€Ÿåº¦
+    [SerializeField] private float _jumpForce = 5f;  // ã‚¸ãƒ£ãƒ³ãƒ—åŠ›
+    [SerializeField] private float _ray = 1f;        // åœ°é¢ã‚’æ¤œå‡ºã™ã‚‹ãƒ¬ã‚¤ã®é•·ã•
+    [SerializeField] private Transform _groundCheck;     // è¶³å…ƒã®ç©ºã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+    [SerializeField] private LayerMask _groundLayer;     // åœ°é¢ã®ã‚¿ã‚°
+    [SerializeField] private LayerMask _spikeLayer;      // Spikeç”¨LayerMask
     [SerializeField] private GameObject _attackSensor;
     [SerializeField] private GameObject _bullet;
     [SerializeField] private Transform _firePoint;
     [SerializeField] private float _pistolCoolTime = 1f;
-    [SerializeField] private float _invincibleTime = 1f;   // ƒ_ƒ[ƒWŒã‚Ì–³“GŠÔ
+    [SerializeField] private float _invincibleTime = 1f;   // ãƒ€ãƒ¡ãƒ¼ã‚¸å¾Œã®ç„¡æ•µæ™‚é–“
     [SerializeField] float _offset = 0.2f;
     [SerializeField] private SupportManager _supportManager;
     private Rigidbody2D _rb;
@@ -29,19 +29,19 @@ public class PlayerMovement : MonoBehaviour
     private bool _is_CanJump = true;
     private bool _canAdjacentAttack = true;
     private bool _canPistolAttack = true;
-    private bool _isInvincible = false; // –³“Gó‘Ô‚©‚Ç‚¤‚©
-    private bool _isOnSpike = false; // ƒgƒQ‚É‚¢‚é‚©‚Ç‚¤‚©
+    private bool _isInvincible = false; // ç„¡æ•µçŠ¶æ…‹ã‹ã©ã†ã‹
+    private bool _isOnSpike = false; // ãƒˆã‚²ã«ã„ã‚‹ã‹ã©ã†ã‹
 
-    // ’Ç‰Á: UŒ‚EƒsƒXƒgƒ‹”­Ëƒtƒ‰ƒO
+    // è¿½åŠ : æ”»æ’ƒãƒ»ãƒ”ã‚¹ãƒˆãƒ«ç™ºå°„ãƒ•ãƒ©ã‚°
     public bool DidAttack { get; private set; }
     public bool DidPistol { get; private set; }
 
     public Character CharaState => _charaState;
 
     /// <summary>
-    /// ‹L˜^’†‚©‚Ç‚¤‚©iRecordAbility‚Ì‚İ‘‚«Š·‚¦‰Âj
+    /// è¨˜éŒ²ä¸­ã‹ã©ã†ã‹ï¼ˆRecordAbilityã®ã¿æ›¸ãæ›ãˆå¯ï¼‰
     /// </summary>
-    public bool IsRecording { get; internal set; } // internal set‚ÅRecordAbility‚Ì‚İ‘€ì
+    public bool IsRecording { get; internal set; } // internal setã§RecordAbilityã®ã¿æ“ä½œ
 
     public Vector2 MovementInput => _movement;
 
@@ -52,23 +52,42 @@ public class PlayerMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// InputSystemİ’è
+    /// InputSystemè¨­å®š
     /// </summary>
-    public void OnEnable()
+    public void OnEnableInput()
     {
-        // InputSystem‚ğ—LŒø‚É‚·‚é
-        _inputActions.Player.Enable();
-        _inputActions.Support.Enable();
-        _inputActions.Player.Move.performed += ctx => _movement = ctx.ReadValue<Vector2>();
-        // “ü—Í‚ª‚È‚­‚È‚Á‚½ê‡‰Á‚¦‚é—Í‚ğ‚O‚É‚·‚é
-        _inputActions.Player.Move.canceled += ctx => _movement = Vector2.zero;
-        // ƒWƒƒƒ“ƒv‚·‚é
-        _inputActions.Player.Jump.performed += ctx => Jump();
-        // UŒ‚
-        _inputActions.Player.Attack.performed += ctx => Attack();
-        _inputActions.Player.Pistol.performed += ctx => Pistol();
-        _inputActions.Support.SummonA.performed += ctx => summonsupport1();
-        _inputActions.Support.SummonB.performed += ctx => _supportManager.Summon2();
+        if (_inputEventsRegistered) return; // ã™ã§ã«ç™»éŒ²æ¸ˆã¿ãªã‚‰ä½•ã‚‚ã—ãªã„
+        Debug.Log("Input actions changed for PlayerMovement.");
+
+        _playerInputActions.Player.Enable();
+        _playerInputActions.Support.Enable();
+        _playerInputActions.Player.Move.performed += ctx => _movement = ctx.ReadValue<Vector2>();
+        _playerInputActions.Player.Move.canceled += ctx => _movement = Vector2.zero;
+        _playerInputActions.Player.Jump.performed += ctx => Jump();
+        _playerInputActions.Player.Attack.performed += ctx => Attack();
+        _playerInputActions.Player.Pistol.performed += ctx => Pistol();
+        _playerInputActions.Support.SummonA.performed += ctx => summonsupport1();
+        _playerInputActions.Support.SummonB.performed += ctx => _supportManager.Summon2();
+
+        _inputEventsRegistered = true;
+    }
+
+    public void OnDisable()
+    {
+        if (!_inputEventsRegistered) return; // ç™»éŒ²ã•ã‚Œã¦ã„ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
+
+        _playerInputActions.Player.Move.performed -= ctx => _movement = ctx.ReadValue<Vector2>();
+        _playerInputActions.Player.Move.canceled -= ctx => _movement = Vector2.zero;
+        _playerInputActions.Player.Jump.performed -= ctx => Jump();
+        _playerInputActions.Player.Attack.performed -= ctx => Attack();
+        _playerInputActions.Player.Pistol.performed -= ctx => Pistol();
+        _playerInputActions.Support.SummonA.performed -= ctx => summonsupport1();
+        _playerInputActions.Support.SummonB.performed -= ctx => _supportManager.Summon2();
+
+        _playerInputActions.Player.Disable();
+        _playerInputActions.Support.Disable();
+
+        _inputEventsRegistered = false;
     }
 
     private void summonsupport1()
@@ -77,16 +96,18 @@ public class PlayerMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// InputSystem‚ğ–³Œø‚É‚·‚é
+    /// InputSystemã‚’ç„¡åŠ¹ã«ã™ã‚‹
     /// </summary>
     public void DisableInput()
     {
-        // InputSystem‚ğ–³Œø‚É‚·‚é
-        _inputActions.Player.Disable();
+        _playerInputActions.Player.Disable();
     }
 
     private void Start()
     {
+        // InputActionHolderã‹ã‚‰å…±æœ‰ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—
+        _playerInputActions = InputActionHolder.Instance.playerInputActions;
+        _attackSensor.gameObject.SetActive(false);
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -94,7 +115,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// ˆÚ“®AƒWƒƒƒ“ƒvˆ—
+    /// ç§»å‹•ã€ã‚¸ãƒ£ãƒ³ãƒ—å‡¦ç†
     /// </summary>
     private void FixedUpdate()
     {
@@ -111,21 +132,21 @@ public class PlayerMovement : MonoBehaviour
 
         _animator.SetFloat("FallSpeed", _rb.velocity.y);
 
-        // ˆÚ“®•ûŒü‚É‰‚¶‚ÄŒü‚«‚ğ•Ï‚¦‚é
+        // ç§»å‹•æ–¹å‘ã«å¿œã˜ã¦å‘ãã‚’å¤‰ãˆã‚‹
         if (_movement.x > 0.01f)
         {
-            _spriteRenderer.flipX = false; // ‰EŒü‚«
+            _spriteRenderer.flipX = false; // å³å‘ã
             _attackSensor.transform.localScale = new Vector2(transform.localScale.x, transform.localScale.y);
             _firePoint.localPosition = new Vector2(Mathf.Abs(_firePoint.localPosition.x), _firePoint.localPosition.y);
         }
         else if (_movement.x < -0.01f)
         {
-            _spriteRenderer.flipX = true; // ¶Œü‚«
+            _spriteRenderer.flipX = true; // å·¦å‘ã
             _attackSensor.transform.localScale = new Vector2(-transform.localScale.x, transform.localScale.y);
             _firePoint.localPosition = new Vector2(-Mathf.Abs(_firePoint.localPosition.x), _firePoint.localPosition.y);
         }
 
-        // ’n–Êƒ`ƒFƒbƒN
+        // åœ°é¢ãƒã‚§ãƒƒã‚¯
         Vector2 center = _groundCheck.position;
         Vector2 left = center + Vector2.left * _offset;
         Vector2 right = center + Vector2.right * _offset;
@@ -138,20 +159,20 @@ public class PlayerMovement : MonoBehaviour
         _is_CanJump = isGrounded;
         _animator.SetBool("isGround", isGrounded);
 
-        // UŒ‚EƒsƒXƒgƒ‹”­Ëƒtƒ‰ƒO‚ğƒŠƒZƒbƒg
+        // æ”»æ’ƒãƒ»ãƒ”ã‚¹ãƒˆãƒ«ç™ºå°„ãƒ•ãƒ©ã‚°ã‚’ãƒªã‚»ãƒƒãƒˆ
         DidAttack = false;
         DidPistol = false;
     }
 
     /// <summary>
-    /// ƒWƒƒƒ“ƒvˆ—
+    /// ã‚¸ãƒ£ãƒ³ãƒ—å‡¦ç†
     /// </summary>
     private void Jump()
     {
-        // ƒtƒ‰ƒO‚ª–³Œø‚Ìê‡ƒWƒƒƒ“ƒv‚µ‚È‚¢
+        // ãƒ•ãƒ©ã‚°ãŒç„¡åŠ¹ã®å ´åˆã‚¸ãƒ£ãƒ³ãƒ—ã—ãªã„
         if (!_is_CanJump) return;
 
-        // ForceMode2D‚ğg—p‚µAu”­“I‚ÉƒWƒƒƒ“ƒv
+        // ForceMode2Dã‚’ä½¿ç”¨ã—ã€ç¬ç™ºçš„ã«ã‚¸ãƒ£ãƒ³ãƒ—
         _animator.SetTrigger("Jump");
         _rb.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
         _is_CanJump = false;
@@ -159,10 +180,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void Attack()
     {
-        if (!_canAdjacentAttack) return; // UŒ‚‚ª‹–‰Â‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î’†’f
+        if (!_canAdjacentAttack) return; // æ”»æ’ƒãŒè¨±å¯ã•ã‚Œã¦ã„ãªã‘ã‚Œã°ä¸­æ–­
 
         _animator.SetTrigger("AttackSword");
-        DidAttack = true; // ’Ç‰Á
+        DidAttack = true; // è¿½åŠ 
     }
 
     private void Pistol()
@@ -171,34 +192,34 @@ public class PlayerMovement : MonoBehaviour
 
         _animator.SetTrigger("AttackPistol");
         ShootPistol();
-        DidPistol = true; // ’Ç‰Á
+        DidPistol = true; // è¿½åŠ 
     }
 
     /// <summary>
-    /// –{‘fŞ“±“üAƒAƒjƒ[ƒVƒ‡ƒ“ƒpƒX‚Å”­‰Î‚³‚¹‚é
+    /// æœ¬ç´ æå°å…¥æ™‚ã€ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‘ã‚¹ã§ç™ºç«ã•ã›ã‚‹
     /// </summary>
     private void ShootPistol()
     {
-        // Bullet ‚ğ¶¬
+        // Bullet ã‚’ç”Ÿæˆ
         GameObject bullet = Instantiate(_bullet, _firePoint.position, Quaternion.identity);
 
-        // ’e‚ÉŒü‚«‚ğ“`‚¦‚é
+        // å¼¾ã«å‘ãã‚’ä¼ãˆã‚‹
         Vector2 direction = _spriteRenderer.flipX ? Vector2.left : Vector2.right;
         Bullet bulletScript = bullet.GetComponent<Bullet>();
         bulletScript.SetDirection(direction);
 
-        // Bullet ‚É PlayerMovement ‚ğ“n‚·
+        // Bullet ã« PlayerMovement ã‚’æ¸¡ã™
         bulletScript.SetPlayerMovement(this);
 
         _canPistolAttack = false;
         
-        // ‹L˜^’†ƒtƒ‰ƒO‚ğ“n‚·
+        // è¨˜éŒ²ä¸­ãƒ•ãƒ©ã‚°ã‚’æ¸¡ã™
         bulletScript.SetIsRecording(IsRecording);
         Invoke(nameof(CanPistol), _pistolCoolTime);
     }
 
     /// <summary>
-    /// –{‘fŞ“±“üíœBƒsƒXƒgÙƒN[ƒ‹ƒ^ƒCƒ€
+    /// æœ¬ç´ æå°å…¥æ™‚å‰Šé™¤ã€‚ãƒ”ã‚¹ãƒˆãƒ«ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ 
     /// </summary>
     private void CanPistol()
     {
@@ -219,13 +240,13 @@ public class PlayerMovement : MonoBehaviour
 
     public void OwnAttackHit(Collider2D other)
     {
-        // ƒXƒpƒCƒN‚È‚çUŒ‚”»’è‚ğƒXƒLƒbƒv
+        // ã‚¹ãƒ‘ã‚¤ã‚¯ãªã‚‰æ”»æ’ƒåˆ¤å®šã‚’ã‚¹ã‚­ãƒƒãƒ—
         if (((1 << other.gameObject.layer) & _spikeLayer) != 0)
         {
             return;
         }
 
-        // “G‚ÌCharacterƒRƒ“ƒ|[ƒlƒ“ƒg‚ğæ“¾
+        // æ•µã®Characterã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’å–å¾—
         Character hitObject = other.GetComponent<Character>();
         if (hitObject != null)
         {
@@ -237,55 +258,55 @@ public class PlayerMovement : MonoBehaviour
     {
         _attackSensor.gameObject.SetActive(true);
 
-        // ƒvƒŒƒCƒ„[‚ÌŒü‚«‚É‡‚í‚¹‚ÄUŒ‚”»’è‚ÌƒXƒP[ƒ‹‚ğ•ÏX
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‘ãã«åˆã‚ã›ã¦æ”»æ’ƒåˆ¤å®šã®ã‚¹ã‚±ãƒ¼ãƒ«ã‚’å¤‰æ›´
         if (_spriteRenderer.flipX)
         {
-            // ¶Œü‚«i”½“]j
+            // å·¦å‘ãï¼ˆåè»¢ï¼‰
             _attackSensor.transform.localScale = new Vector3(-1, 1, 1);
         }
         else
         {
-            // ‰EŒü‚«
+            // å³å‘ã
             _attackSensor.transform.localScale = new Vector3(1, 1, 1);
         }
     }
 
-    // ƒgƒQ‚ÉG‚ê‚½uŠÔ‚ÉŒÄ‚Î‚ê‚éBƒgƒQ‚Éæ‚Á‚Ä‚¢‚é‚±‚Æ‚ğ‹L˜^
+    // ãƒˆã‚²ã«è§¦ã‚ŒãŸç¬é–“ã«å‘¼ã°ã‚Œã‚‹ã€‚ãƒˆã‚²ã«ä¹—ã£ã¦ã„ã‚‹ã“ã¨ã‚’è¨˜éŒ²
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (IsRecording) return;
         if (other.CompareTag("Spike"))
         {
-            _isOnSpike = true; // ƒgƒQ‚Ìã‚É‚¢‚éƒtƒ‰ƒO‚ğ—§‚Ä‚é
+            _isOnSpike = true; // ãƒˆã‚²ã®ä¸Šã«ã„ã‚‹ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
         }
     }
 
-    // ƒgƒQ‚©‚ç—£‚ê‚½uŠÔ‚ÉŒÄ‚Î‚ê‚éBƒgƒQ‚Éæ‚Á‚Ä‚¢‚È‚¢‚±‚Æ‚ğ‹L˜^
+    // ãƒˆã‚²ã‹ã‚‰é›¢ã‚ŒãŸç¬é–“ã«å‘¼ã°ã‚Œã‚‹ã€‚ãƒˆã‚²ã«ä¹—ã£ã¦ã„ãªã„ã“ã¨ã‚’è¨˜éŒ²
     private void OnTriggerExit2D(Collider2D other)
     {
         if (IsRecording) return;
         if (other.CompareTag("Spike"))
         {
-            _isOnSpike = false; // ƒgƒQ‚Ìã‚É‚¢‚È‚¢ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+            _isOnSpike = false; // ãƒˆã‚²ã®ä¸Šã«ã„ãªã„ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
         }
     }
 
     private void Update()
     {
-        // ‹L˜^’†‚ÍƒgƒQƒ_ƒ[ƒWˆ—‚ğƒXƒLƒbƒv
+        // è¨˜éŒ²ä¸­ã¯ãƒˆã‚²ãƒ€ãƒ¡ãƒ¼ã‚¸å‡¦ç†ã‚’ã‚¹ã‚­ãƒƒãƒ—
         if (IsRecording) return;
 
-        // ƒgƒQ‚Ìã‚É‚¢‚Ä–³“G‚¶‚á‚È‚¯‚ê‚Îƒ_ƒ[ƒW‚ğó‚¯‚éˆ—
+        // ãƒˆã‚²ã®ä¸Šã«ã„ã¦ç„¡æ•µã˜ã‚ƒãªã‘ã‚Œã°ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹å‡¦ç†
         if (_isOnSpike && !_isInvincible)
         {
-            _charaState.HitAttack(3);  // ƒ_ƒ[ƒW‚ğ—^‚¦‚é
-            _isInvincible = true;      // –³“Gó‘Ô‚ÉØ‚è‘Ö‚¦
-            StartCoroutine(ResetInvincible());  // ˆê’èŠÔŒã‚É–³“G‰ğœ
+            _charaState.HitAttack(3);  // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹
+            _isInvincible = true;      // ç„¡æ•µçŠ¶æ…‹ã«åˆ‡ã‚Šæ›¿ãˆ
+            StartCoroutine(ResetInvincible());  // ä¸€å®šæ™‚é–“å¾Œã«ç„¡æ•µè§£é™¤
         }
     }
 
     /// <summary>
-    /// –³“Gó‘Ô‚ğˆê’èŠÔŒã‚É‰ğœ‚·‚é
+    /// ç„¡æ•µçŠ¶æ…‹ã‚’ä¸€å®šæ™‚é–“å¾Œã«è§£é™¤ã™ã‚‹
     /// </summary>
     private IEnumerator ResetInvincible()
     {
@@ -295,15 +316,15 @@ public class PlayerMovement : MonoBehaviour
 
     public void EndAttack()
     {
-        // UŒ‚”»’è‚ğ–³Œø‰»
-        _attackSensor.transform.localScale = new Vector3(0, 0, 0); // ƒXƒP[ƒ‹‚ğƒŠƒZƒbƒg
-        _attackSensor.gameObject.SetActive(false); // ”ñ•\¦
+        // æ”»æ’ƒåˆ¤å®šã‚’ç„¡åŠ¹åŒ–
+        _attackSensor.transform.localScale = new Vector3(0, 0, 0); // ã‚¹ã‚±ãƒ¼ãƒ«ã‚’ãƒªã‚»ãƒƒãƒˆ
+        _attackSensor.gameObject.SetActive(false); // éè¡¨ç¤º
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[‚ÌHP‚ğ‰ñ•œ‚·‚é
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®HPã‚’å›å¾©ã™ã‚‹
     /// </summary>
-    /// <param name="healAmount">‰ñ•œ—Ê</param>
+    /// <param name="healAmount">å›å¾©é‡</param>
     public void Heal(float healAmount)
     {
         _charaState.Heal(healAmount);

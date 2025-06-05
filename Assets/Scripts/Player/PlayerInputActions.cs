@@ -49,6 +49,30 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Action"",
+                    ""type"": ""Button"",
+                    ""id"": ""d184d123-64f7-44e9-9ccc-034a37c48ac9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""AbilitySave"",
+                    ""type"": ""Button"",
+                    ""id"": ""6b1f6897-c9b9-4571-ae95-5ca2e31023bf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""AbilityPlay"",
+                    ""type"": ""Button"",
+                    ""id"": ""bbdddb36-c880-4028-bc67-3d6f23975009"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -183,6 +207,72 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""action"": ""Pistol"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fa930056-2667-474b-b432-32a4626c8e18"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bda97030-0e68-486f-97bb-807a117e8ca8"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d92dc917-cda9-42df-bebb-6d4bebbe882d"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AbilitySave"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""092fd7da-c0fb-494c-adef-953cb24a272e"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AbilitySave"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bc294706-818b-46fd-b78b-66440ceb4856"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AbilityPlay"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2328d74b-67f3-45cd-b2c1-dcd14f1324e8"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AbilityPlay"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -278,8 +368,30 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""58d36789-9ce8-4464-b906-76e45dcd0614"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SummonA"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""1c1bca38-1881-4927-8413-785a1ecf9bb2"",
                     ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SummonB"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4bccea87-92c6-45bd-ab37-a8ee0127d971"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -298,6 +410,9 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
         m_Player_Pistol = m_Player.FindAction("Pistol", throwIfNotFound: true);
+        m_Player_Action = m_Player.FindAction("Action", throwIfNotFound: true);
+        m_Player_AbilitySave = m_Player.FindAction("AbilitySave", throwIfNotFound: true);
+        m_Player_AbilityPlay = m_Player.FindAction("AbilityPlay", throwIfNotFound: true);
         // ADV
         m_ADV = asset.FindActionMap("ADV", throwIfNotFound: true);
         m_ADV_Advance = m_ADV.FindAction("Advance", throwIfNotFound: true);
@@ -359,6 +474,9 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Attack;
     private readonly InputAction m_Player_Pistol;
+    private readonly InputAction m_Player_Action;
+    private readonly InputAction m_Player_AbilitySave;
+    private readonly InputAction m_Player_AbilityPlay;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -367,6 +485,9 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Attack => m_Wrapper.m_Player_Attack;
         public InputAction @Pistol => m_Wrapper.m_Player_Pistol;
+        public InputAction @Action => m_Wrapper.m_Player_Action;
+        public InputAction @AbilitySave => m_Wrapper.m_Player_AbilitySave;
+        public InputAction @AbilityPlay => m_Wrapper.m_Player_AbilityPlay;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -388,6 +509,15 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 @Pistol.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPistol;
                 @Pistol.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPistol;
                 @Pistol.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPistol;
+                @Action.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAction;
+                @Action.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAction;
+                @Action.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAction;
+                @AbilitySave.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAbilitySave;
+                @AbilitySave.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAbilitySave;
+                @AbilitySave.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAbilitySave;
+                @AbilityPlay.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAbilityPlay;
+                @AbilityPlay.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAbilityPlay;
+                @AbilityPlay.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAbilityPlay;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -404,6 +534,15 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 @Pistol.started += instance.OnPistol;
                 @Pistol.performed += instance.OnPistol;
                 @Pistol.canceled += instance.OnPistol;
+                @Action.started += instance.OnAction;
+                @Action.performed += instance.OnAction;
+                @Action.canceled += instance.OnAction;
+                @AbilitySave.started += instance.OnAbilitySave;
+                @AbilitySave.performed += instance.OnAbilitySave;
+                @AbilitySave.canceled += instance.OnAbilitySave;
+                @AbilityPlay.started += instance.OnAbilityPlay;
+                @AbilityPlay.performed += instance.OnAbilityPlay;
+                @AbilityPlay.canceled += instance.OnAbilityPlay;
             }
         }
     }
@@ -496,6 +635,9 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
         void OnPistol(InputAction.CallbackContext context);
+        void OnAction(InputAction.CallbackContext context);
+        void OnAbilitySave(InputAction.CallbackContext context);
+        void OnAbilityPlay(InputAction.CallbackContext context);
     }
     public interface IADVActions
     {

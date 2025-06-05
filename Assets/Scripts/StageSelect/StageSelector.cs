@@ -37,25 +37,22 @@ public class StageSelector : MonoBehaviour
     private Transform _player; // プレイヤーのTransform
     private Animator _playerAnimator; // プレイヤーのAnimator
 
-    // InputSystem
-    private StageSelectInputActions _inputActions;
-
     private void Awake()
     {
         // InputActions初期化
-        _inputActions = new StageSelectInputActions();
-        _inputActions.StageSelect.Move.performed += OnMove;
-        _inputActions.StageSelect.Submit.performed += OnSubmit;
+        var inputActions = InputActionHolder.Instance.stageSelectInputActions;
+        inputActions.StageSelect.Move.performed += OnMove;
+        inputActions.StageSelect.Submit.performed += OnSubmit;
     }
 
     private void OnEnable()
     {
-        _inputActions?.Enable();
+        InputActionHolder.Instance.stageSelectInputActions?.Enable();
     }
 
     private void OnDisable()
     {
-        _inputActions?.Disable();
+        InputActionHolder.Instance.stageSelectInputActions?.Disable();
     }
 
     private void Start()
