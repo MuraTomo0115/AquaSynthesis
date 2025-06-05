@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// プレイヤーの移動・攻撃・トゲダメージ・記録中フラグ管理
+/// </summary>
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed = 5f;  // 移動速度
@@ -9,7 +12,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _ray = 1f;        // 地面を検出するレイの長さ
     [SerializeField] private Transform _groundCheck;     // 足元の空オブジェクト
     [SerializeField] private LayerMask _groundLayer;     // 地面のタグ
-    [SerializeField] private LayerMask _spikeLayer;      // ★Spike用LayerMask（ここに移動）
+    [SerializeField] private LayerMask _spikeLayer;      // Spike用LayerMask
     [SerializeField] private GameObject _attackSensor;
     [SerializeField] private GameObject _bullet;
     [SerializeField] private Transform _firePoint;
@@ -36,9 +39,11 @@ public class PlayerMovement : MonoBehaviour
     public Character CharaState => _charaState;
 
     /// <summary>
-    /// 記録中かどうか
+    /// 記録中かどうか（RecordAbilityのみ書き換え可）
     /// </summary>
-    public bool IsRecording { get; set; } // ★追加
+    public bool IsRecording { get; internal set; } // internal setでRecordAbilityのみ操作
+
+    public Vector2 MovementInput => _movement;
 
     private void Awake()
     {
@@ -250,6 +255,7 @@ public class PlayerMovement : MonoBehaviour
     // トゲに触れた瞬間に呼ばれる。トゲに乗っていることを記録
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (IsRecording) return;
         if (other.CompareTag("Spike"))
         {
             _isOnSpike = true; // トゲの上にいるフラグを立てる
@@ -259,6 +265,7 @@ public class PlayerMovement : MonoBehaviour
     // トゲから離れた瞬間に呼ばれる。トゲに乗っていないことを記録
     private void OnTriggerExit2D(Collider2D other)
     {
+        if (IsRecording) return;
         if (other.CompareTag("Spike"))
         {
             _isOnSpike = false; // トゲの上にいないフラグを立てる
@@ -267,6 +274,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        // 記録中はトゲダメージ処理をスキップ
+        if (IsRecording) return;
+
         // トゲの上にいて無敵じゃなければダメージを受ける処理
         if (_isOnSpike && !_isInvincible)
         {
@@ -275,6 +285,7 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(ResetInvincible());  // 一定時間後に無敵解除
         }
     }
+
     /// <summary>
     /// 無敵状態を一定時間後に解除する
     /// </summary>

@@ -30,9 +30,9 @@ public class CoolTimeInput : MonoBehaviour
     [Header("プレイヤー")]
     [SerializeField] private Transform _playerTransform; // プレイヤーTransform
 
-    //================ キー設定 ====================
+    //================ キー設定（★★★★★★★★★★★★いずれInput systemへ変更を行う） ====================
     [Header("キー設定")]
-    [SerializeField] private Key _recordKey = Key.Q; // 記録キー
+    [SerializeField] private Key _recordKey = Key.Q; // 記録キー　
     [SerializeField] private Key _playKey = Key.P; // 再生キー
 
     //================ 時間設定 ====================

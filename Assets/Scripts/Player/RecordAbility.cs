@@ -27,8 +27,9 @@ public class RecordAbility : MonoBehaviour
         public bool isFacingLeft;
         public bool didAttack;
         public bool didPistol;
+        public Vector2 input; // ★追加
 
-        public FrameData(Vector3 pos, Quaternion rot, string clipName, bool facingLeft, bool attack, bool pistol)
+        public FrameData(Vector3 pos, Quaternion rot, string clipName, bool facingLeft, bool attack, bool pistol, Vector2 input)
         {
             position = pos;
             rotation = rot;
@@ -36,6 +37,7 @@ public class RecordAbility : MonoBehaviour
             isFacingLeft = facingLeft;
             didAttack = attack;
             didPistol = pistol;
+            this.input = input;
         }
     }
 
@@ -70,7 +72,7 @@ public class RecordAbility : MonoBehaviour
         if (_isRecording || _recordCoroutine != null) return;
         if (_playerMovement != null)
         {
-            _playerMovement.IsRecording = true; // これが必要
+            _playerMovement.IsRecording = true; // internal setで操作
         }
         _recordCoroutine = StartCoroutine(RecordCoroutine());
     }
@@ -86,6 +88,10 @@ public class RecordAbility : MonoBehaviour
             _recordCoroutine = null;
         }
         _isRecording = false;
+        if (_playerMovement != null)
+        {
+            _playerMovement.IsRecording = false; // internal setで操作
+        }
     }
 
     /// <summary>
@@ -113,7 +119,15 @@ public class RecordAbility : MonoBehaviour
             bool pistolTrigger = didPistol && !prevDidPistol;
             bool attackTrigger = didAttack && !prevDidAttack;
 
-            _savedRecord.Add(new FrameData(_target.position, _target.rotation, clipName, isFacingLeft, attackTrigger, pistolTrigger));
+            _savedRecord.Add(new FrameData(
+                _target.position,
+                _target.rotation,
+                clipName,
+                isFacingLeft,
+                attackTrigger,
+                pistolTrigger,
+                _playerMovement != null ? _playerMovement.MovementInput : Vector2.zero // ★ここを追加
+            ));
 
             prevDidPistol = didPistol;
             prevDidAttack = didAttack;
@@ -163,6 +177,7 @@ public class RecordAbility : MonoBehaviour
             _ghostSpriteRenderer = null;
         }
     }
+
     /// <summary>
     /// ゴースト再生処理コルーチン
     /// </summary>
@@ -171,44 +186,43 @@ public class RecordAbility : MonoBehaviour
     private IEnumerator PlaybackCoroutine(Transform playbackTarget, List<FrameData> framesToPlay)
     {
         _isPlayingBack = true;
-
         var ghostMovement = playbackTarget.GetComponent<GhostMovement>();
 
-        yield return null;
-
-        foreach (var frame in framesToPlay)
+        for (int i = 0; i < framesToPlay.Count - 1; i++)
         {
-            // 位置・回転を再現
-            playbackTarget.position = frame.position;
-            playbackTarget.rotation = frame.rotation;
+            var current = framesToPlay[i];
+            var next = framesToPlay[i + 1];
 
-            // アニメーション再生
-            if (_ghostAnimator != null && !string.IsNullOrEmpty(frame.animClipName))
+            float t = 0f;
+            while (t < _recordInterval)
             {
-                _ghostAnimator.CrossFade(frame.animClipName, 0f);
-            }
+                float lerpFactor = t / _recordInterval;
+                playbackTarget.position = Vector3.Lerp(current.position, next.position, lerpFactor);
+                playbackTarget.rotation = Quaternion.Lerp(current.rotation, next.rotation, lerpFactor);
 
-            // 向きの再現
-            if (_ghostSpriteRenderer != null)
-            {
-                _ghostSpriteRenderer.flipX = frame.isFacingLeft;
-            }
-
-            // 攻撃・ピストル発射を再現
-            if (ghostMovement != null)
-            {
-                if (frame.didPistol)
+                // アニメーション・向き・攻撃再現（必要ならこの中で）
+                if (_ghostAnimator != null && !string.IsNullOrEmpty(current.animClipName))
+                    _ghostAnimator.CrossFade(current.animClipName, 0f);
+                if (_ghostSpriteRenderer != null)
+                    _ghostSpriteRenderer.flipX = current.isFacingLeft;
+                if (ghostMovement != null)
                 {
-                    ghostMovement.ShootPistol();
-                }
-                if (frame.didAttack)
-                {
-                    ghostMovement.StartAttack();
-                }
-            }
+                    // ゴーストの移動入力を更新
+                    ghostMovement.SetRecordedInput(current.input);
 
-            yield return new WaitForSeconds(_recordInterval);
+                    if (current.didPistol) ghostMovement.ShootPistol();
+                    if (current.didAttack) ghostMovement.StartAttack();
+                }
+
+                t += Time.deltaTime;
+                yield return null;
+            }
         }
+
+        // 最後のフレームをセット
+        var last = framesToPlay[framesToPlay.Count - 1];
+        playbackTarget.position = last.position;
+        playbackTarget.rotation = last.rotation;
 
         _isPlayingBack = false;
     }

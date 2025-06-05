@@ -179,4 +179,9 @@ public class GhostMovement : MonoBehaviour
     /// </summary>
     public void trueAttack() { }
     public void falseAttack() { }
+    // ƒNƒ‰ƒX“à‚É’Ç‰Á
+    public void SetRecordedInput(Vector2 input)
+    {
+        _recordedInput = input;
+    }
 }
