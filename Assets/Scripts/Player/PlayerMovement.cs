@@ -2,41 +2,61 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : InputActionHolder
+/// <summary>
+/// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç§»å‹•ãƒ»æ”»æ’ƒãƒ»ãƒˆã‚²ãƒ€ãƒ¡ãƒ¼ã‚¸ãƒ»è¨˜éŒ²ä¸­ãƒ•ãƒ©ã‚°ç®¡ç†
+/// </summary>
+public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private float          _moveSpeed = 5f;  // ˆÚ“®‘¬“x
-    [SerializeField] private float          _jumpForce = 5f;  // ƒWƒƒƒ“ƒv—Í
-    [SerializeField] private float          _ray = 1f;        // ’n–Ê‚ğŒŸo‚·‚éƒŒƒC‚Ì’·‚³
-    [SerializeField] private Transform      _groundCheck;     // ‘«Œ³‚Ì‹óƒIƒuƒWƒFƒNƒg
-    [SerializeField] private LayerMask      _groundLayer;     // ’n–Ê‚Ìƒ^ƒO
-    [SerializeField] private GameObject     _attackSensor;
-    [SerializeField] private GameObject     _bullet;
-    [SerializeField] private Transform      _firePoint;
-    [SerializeField] private float          _pistolCoolTime = 1f;
-    [SerializeField] private float          _invincibleTime = 1f;   // ƒ_ƒ[ƒWŒã‚Ì–³“GŠÔ
-    [SerializeField] private float          _offset = 0.2f;
+    [SerializeField] private float _moveSpeed = 5f;  // ç§»å‹•é€Ÿåº¦
+    [SerializeField] private float _jumpForce = 5f;  // ã‚¸ãƒ£ãƒ³ãƒ—åŠ›
+    [SerializeField] private float _ray = 1f;        // åœ°é¢ã‚’æ¤œå‡ºã™ã‚‹ãƒ¬ã‚¤ã®é•·ã•
+    [SerializeField] private Transform _groundCheck;     // è¶³å…ƒã®ç©ºã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+    [SerializeField] private LayerMask _groundLayer;     // åœ°é¢ã®ã‚¿ã‚°
+    [SerializeField] private LayerMask _spikeLayer;      // Spikeç”¨LayerMask
+    [SerializeField] private GameObject _attackSensor;
+    [SerializeField] private GameObject _bullet;
+    [SerializeField] private Transform _firePoint;
+    [SerializeField] private float _pistolCoolTime = 1f;
+    [SerializeField] private float _invincibleTime = 1f;   // ãƒ€ãƒ¡ãƒ¼ã‚¸å¾Œã®ç„¡æ•µæ™‚é–“
+    [SerializeField] float _offset = 0.2f;
     [SerializeField] private SupportManager _supportManager;
-    private Rigidbody2D                     _rb;
-    private Vector2                         _movement;
-    private PlayerInputActions              _playerInputActions;
-    private Character                       _charaState;
-    private Animator                        _animator;
-    private SpriteRenderer                  _spriteRenderer;
-    private bool                            _is_CanJump = true;
-    private bool                            _canAdjacentAttack = true;
-    private bool                            _canPistolAttack = true;
-    private bool                            _isInvincible = false; // –³“Gó‘Ô‚©‚Ç‚¤‚©
-    private bool                            _isOnSpike = false; // ƒgƒQ‚É‚¢‚é‚©‚Ç‚¤‚©
-    private bool                            _inputEventsRegistered = false;
+    private Rigidbody2D _rb;
+    private Vector2 _movement;
+    private PlayerInputActions _inputActions;
+    private Character _charaState;
+    private Animator _animator;
+    private SpriteRenderer _spriteRenderer;
+    private bool _is_CanJump = true;
+    private bool _canAdjacentAttack = true;
+    private bool _canPistolAttack = true;
+    private bool _isInvincible = false; // ç„¡æ•µçŠ¶æ…‹ã‹ã©ã†ã‹
+    private bool _isOnSpike = false; // ãƒˆã‚²ã«ã„ã‚‹ã‹ã©ã†ã‹
 
-    public Character CharaState =>          _charaState;
+    // è¿½åŠ : æ”»æ’ƒãƒ»ãƒ”ã‚¹ãƒˆãƒ«ç™ºå°„ãƒ•ãƒ©ã‚°
+    public bool DidAttack { get; private set; }
+    public bool DidPistol { get; private set; }
+
+    public Character CharaState => _charaState;
 
     /// <summary>
-    /// InputSystemİ’è
+    /// è¨˜éŒ²ä¸­ã‹ã©ã†ã‹ï¼ˆRecordAbilityã®ã¿æ›¸ãæ›ãˆå¯ï¼‰
+    /// </summary>
+    public bool IsRecording { get; internal set; } // internal setã§RecordAbilityã®ã¿æ“ä½œ
+
+    public Vector2 MovementInput => _movement;
+
+    private void Awake()
+    {
+        _inputActions = new PlayerInputActions();
+        _attackSensor.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// InputSystemè¨­å®š
     /// </summary>
     public void OnEnableInput()
     {
-        if (_inputEventsRegistered) return; // ‚·‚Å‚É“o˜^Ï‚İ‚È‚ç‰½‚à‚µ‚È‚¢
+        if (_inputEventsRegistered) return; // ã™ã§ã«ç™»éŒ²æ¸ˆã¿ãªã‚‰ä½•ã‚‚ã—ãªã„
         Debug.Log("Input actions changed for PlayerMovement.");
 
         _playerInputActions.Player.Enable();
@@ -54,7 +74,7 @@ public class PlayerMovement : InputActionHolder
 
     public void OnDisable()
     {
-        if (!_inputEventsRegistered) return; // “o˜^‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+        if (!_inputEventsRegistered) return; // ç™»éŒ²ã•ã‚Œã¦ã„ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 
         _playerInputActions.Player.Move.performed -= ctx => _movement = ctx.ReadValue<Vector2>();
         _playerInputActions.Player.Move.canceled -= ctx => _movement = Vector2.zero;
@@ -76,7 +96,7 @@ public class PlayerMovement : InputActionHolder
     }
 
     /// <summary>
-    /// InputSystem‚ğ–³Œø‚É‚·‚é
+    /// InputSystemã‚’ç„¡åŠ¹ã«ã™ã‚‹
     /// </summary>
     public void DisableInput()
     {
@@ -85,7 +105,7 @@ public class PlayerMovement : InputActionHolder
 
     private void Start()
     {
-        // InputActionHolder‚©‚ç‹¤—LƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾
+        // InputActionHolderã‹ã‚‰å…±æœ‰ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—
         _playerInputActions = InputActionHolder.Instance.playerInputActions;
         _attackSensor.gameObject.SetActive(false);
         _rb = GetComponent<Rigidbody2D>();
@@ -95,7 +115,7 @@ public class PlayerMovement : InputActionHolder
     }
 
     /// <summary>
-    /// ˆÚ“®AƒWƒƒƒ“ƒvˆ—
+    /// ç§»å‹•ã€ã‚¸ãƒ£ãƒ³ãƒ—å‡¦ç†
     /// </summary>
     private void FixedUpdate()
     {
@@ -112,21 +132,21 @@ public class PlayerMovement : InputActionHolder
 
         _animator.SetFloat("FallSpeed", _rb.velocity.y);
 
-        // ˆÚ“®•ûŒü‚É‰‚¶‚ÄŒü‚«‚ğ•Ï‚¦‚é
+        // ç§»å‹•æ–¹å‘ã«å¿œã˜ã¦å‘ãã‚’å¤‰ãˆã‚‹
         if (_movement.x > 0.01f)
         {
-            _spriteRenderer.flipX = false; // ‰EŒü‚«
+            _spriteRenderer.flipX = false; // å³å‘ã
             _attackSensor.transform.localScale = new Vector2(transform.localScale.x, transform.localScale.y);
             _firePoint.localPosition = new Vector2(Mathf.Abs(_firePoint.localPosition.x), _firePoint.localPosition.y);
         }
         else if (_movement.x < -0.01f)
         {
-            _spriteRenderer.flipX = true; // ¶Œü‚«
+            _spriteRenderer.flipX = true; // å·¦å‘ã
             _attackSensor.transform.localScale = new Vector2(-transform.localScale.x, transform.localScale.y);
             _firePoint.localPosition = new Vector2(-Mathf.Abs(_firePoint.localPosition.x), _firePoint.localPosition.y);
         }
 
-        // ’n–Êƒ`ƒFƒbƒN
+        // åœ°é¢ãƒã‚§ãƒƒã‚¯
         Vector2 center = _groundCheck.position;
         Vector2 left = center + Vector2.left * _offset;
         Vector2 right = center + Vector2.right * _offset;
@@ -138,17 +158,21 @@ public class PlayerMovement : InputActionHolder
 
         _is_CanJump = isGrounded;
         _animator.SetBool("isGround", isGrounded);
+
+        // æ”»æ’ƒãƒ»ãƒ”ã‚¹ãƒˆãƒ«ç™ºå°„ãƒ•ãƒ©ã‚°ã‚’ãƒªã‚»ãƒƒãƒˆ
+        DidAttack = false;
+        DidPistol = false;
     }
 
     /// <summary>
-    /// ƒWƒƒƒ“ƒvˆ—
+    /// ã‚¸ãƒ£ãƒ³ãƒ—å‡¦ç†
     /// </summary>
     private void Jump()
     {
-        // ƒtƒ‰ƒO‚ª–³Œø‚Ìê‡ƒWƒƒƒ“ƒv‚µ‚È‚¢
+        // ãƒ•ãƒ©ã‚°ãŒç„¡åŠ¹ã®å ´åˆã‚¸ãƒ£ãƒ³ãƒ—ã—ãªã„
         if (!_is_CanJump) return;
 
-        // ForceMode2D‚ğg—p‚µAu”­“I‚ÉƒWƒƒƒ“ƒv
+        // ForceMode2Dã‚’ä½¿ç”¨ã—ã€ç¬ç™ºçš„ã«ã‚¸ãƒ£ãƒ³ãƒ—
         _animator.SetTrigger("Jump");
         _rb.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
         _is_CanJump = false;
@@ -156,45 +180,46 @@ public class PlayerMovement : InputActionHolder
 
     private void Attack()
     {
-        if (!_canAdjacentAttack) return; // UŒ‚‚ª‹–‰Â‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î’†’f
+        if (!_canAdjacentAttack) return; // æ”»æ’ƒãŒè¨±å¯ã•ã‚Œã¦ã„ãªã‘ã‚Œã°ä¸­æ–­
 
         _animator.SetTrigger("AttackSword");
+        DidAttack = true; // è¿½åŠ 
     }
 
     private void Pistol()
     {
         if (!_canPistolAttack) return;
 
-        // –{‘fŞ“±“ü‚Ü‚ÅƒRƒƒ“ƒgƒAƒEƒg
         _animator.SetTrigger("AttackPistol");
-
-        //–{‘fŞ“±“üAƒAƒjƒ[ƒVƒ‡ƒ“ƒpƒX‚Å”­‰Î‚³‚¹‚é
         ShootPistol();
+        DidPistol = true; // è¿½åŠ 
     }
 
     /// <summary>
-    /// –{‘fŞ“±“üAƒAƒjƒ[ƒVƒ‡ƒ“ƒpƒX‚Å”­‰Î‚³‚¹‚é
+    /// æœ¬ç´ æå°å…¥æ™‚ã€ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‘ã‚¹ã§ç™ºç«ã•ã›ã‚‹
     /// </summary>
     private void ShootPistol()
     {
-        // Bullet ‚ğ¶¬
+        // Bullet ã‚’ç”Ÿæˆ
         GameObject bullet = Instantiate(_bullet, _firePoint.position, Quaternion.identity);
 
-        // ’e‚ÉŒü‚«‚ğ“`‚¦‚é
+        // å¼¾ã«å‘ãã‚’ä¼ãˆã‚‹
         Vector2 direction = _spriteRenderer.flipX ? Vector2.left : Vector2.right;
         Bullet bulletScript = bullet.GetComponent<Bullet>();
         bulletScript.SetDirection(direction);
 
-        // Bullet ‚É PlayerMovement ‚ğ“n‚·
+        // Bullet ã« PlayerMovement ã‚’æ¸¡ã™
         bulletScript.SetPlayerMovement(this);
 
         _canPistolAttack = false;
-
+        
+        // è¨˜éŒ²ä¸­ãƒ•ãƒ©ã‚°ã‚’æ¸¡ã™
+        bulletScript.SetIsRecording(IsRecording);
         Invoke(nameof(CanPistol), _pistolCoolTime);
     }
 
     /// <summary>
-    /// –{‘fŞ“±“üíœBƒsƒXƒgƒ‹ƒN[ƒ‹ƒ^ƒCƒ€
+    /// æœ¬ç´ æå°å…¥æ™‚å‰Šé™¤ã€‚ãƒ”ã‚¹ãƒˆãƒ«ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ 
     /// </summary>
     private void CanPistol()
     {
@@ -215,13 +240,17 @@ public class PlayerMovement : InputActionHolder
 
     public void OwnAttackHit(Collider2D other)
     {
-        // “G‚ÌCharacterƒRƒ“ƒ|[ƒlƒ“ƒg‚ğæ“¾
-        Character hitObject = other.GetComponent<Character>();
+        // ã‚¹ãƒ‘ã‚¤ã‚¯ãªã‚‰æ”»æ’ƒåˆ¤å®šã‚’ã‚¹ã‚­ãƒƒãƒ—
+        if (((1 << other.gameObject.layer) & _spikeLayer) != 0)
+        {
+            return;
+        }
 
+        // æ•µã®Characterã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’å–å¾—
+        Character hitObject = other.GetComponent<Character>();
         if (hitObject != null)
         {
             hitObject.HitAttack(_charaState.AttackPower);
-            //Debug.Log(_charaState.AttackPower + " “G‚Í " + hitObject.AttackPower);
         }
     }
 
@@ -229,49 +258,55 @@ public class PlayerMovement : InputActionHolder
     {
         _attackSensor.gameObject.SetActive(true);
 
-        // ƒvƒŒƒCƒ„[‚ÌŒü‚«‚É‡‚í‚¹‚ÄUŒ‚”»’è‚ÌƒXƒP[ƒ‹‚ğ•ÏX
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‘ãã«åˆã‚ã›ã¦æ”»æ’ƒåˆ¤å®šã®ã‚¹ã‚±ãƒ¼ãƒ«ã‚’å¤‰æ›´
         if (_spriteRenderer.flipX)
         {
-            // ¶Œü‚«i”½“]j
+            // å·¦å‘ãï¼ˆåè»¢ï¼‰
             _attackSensor.transform.localScale = new Vector3(-1, 1, 1);
         }
         else
         {
-            // ‰EŒü‚«
+            // å³å‘ã
             _attackSensor.transform.localScale = new Vector3(1, 1, 1);
         }
     }
 
-    // ƒgƒQ‚ÉG‚ê‚½uŠÔ‚ÉŒÄ‚Î‚ê‚éBƒgƒQ‚Éæ‚Á‚Ä‚¢‚é‚±‚Æ‚ğ‹L˜^
+    // ãƒˆã‚²ã«è§¦ã‚ŒãŸç¬é–“ã«å‘¼ã°ã‚Œã‚‹ã€‚ãƒˆã‚²ã«ä¹—ã£ã¦ã„ã‚‹ã“ã¨ã‚’è¨˜éŒ²
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (IsRecording) return;
         if (other.CompareTag("Spike"))
         {
-            _isOnSpike = true; // ƒgƒQ‚Ìã‚É‚¢‚éƒtƒ‰ƒO‚ğ—§‚Ä‚é
+            _isOnSpike = true; // ãƒˆã‚²ã®ä¸Šã«ã„ã‚‹ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
         }
     }
 
-    // ƒgƒQ‚©‚ç—£‚ê‚½uŠÔ‚ÉŒÄ‚Î‚ê‚éBƒgƒQ‚Éæ‚Á‚Ä‚¢‚È‚¢‚±‚Æ‚ğ‹L˜^
+    // ãƒˆã‚²ã‹ã‚‰é›¢ã‚ŒãŸç¬é–“ã«å‘¼ã°ã‚Œã‚‹ã€‚ãƒˆã‚²ã«ä¹—ã£ã¦ã„ãªã„ã“ã¨ã‚’è¨˜éŒ²
     private void OnTriggerExit2D(Collider2D other)
     {
+        if (IsRecording) return;
         if (other.CompareTag("Spike"))
         {
-            _isOnSpike = false; // ƒgƒQ‚Ìã‚É‚¢‚È‚¢ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+            _isOnSpike = false; // ãƒˆã‚²ã®ä¸Šã«ã„ãªã„ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
         }
     }
 
     private void Update()
     {
-        // ƒgƒQ‚Ìã‚É‚¢‚Ä–³“G‚¶‚á‚È‚¯‚ê‚Îƒ_ƒ[ƒW‚ğó‚¯‚éˆ—
+        // è¨˜éŒ²ä¸­ã¯ãƒˆã‚²ãƒ€ãƒ¡ãƒ¼ã‚¸å‡¦ç†ã‚’ã‚¹ã‚­ãƒƒãƒ—
+        if (IsRecording) return;
+
+        // ãƒˆã‚²ã®ä¸Šã«ã„ã¦ç„¡æ•µã˜ã‚ƒãªã‘ã‚Œã°ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹å‡¦ç†
         if (_isOnSpike && !_isInvincible)
         {
-            _charaState.HitAttack(3);  // ƒ_ƒ[ƒW‚ğ—^‚¦‚é
-            _isInvincible = true;      // –³“Gó‘Ô‚ÉØ‚è‘Ö‚¦
-            StartCoroutine(ResetInvincible());  // ˆê’èŠÔŒã‚É–³“G‰ğœ
+            _charaState.HitAttack(3);  // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹
+            _isInvincible = true;      // ç„¡æ•µçŠ¶æ…‹ã«åˆ‡ã‚Šæ›¿ãˆ
+            StartCoroutine(ResetInvincible());  // ä¸€å®šæ™‚é–“å¾Œã«ç„¡æ•µè§£é™¤
         }
     }
+
     /// <summary>
-    /// –³“Gó‘Ô‚ğˆê’èŠÔŒã‚É‰ğœ‚·‚é
+    /// ç„¡æ•µçŠ¶æ…‹ã‚’ä¸€å®šæ™‚é–“å¾Œã«è§£é™¤ã™ã‚‹
     /// </summary>
     private IEnumerator ResetInvincible()
     {
@@ -281,20 +316,17 @@ public class PlayerMovement : InputActionHolder
 
     public void EndAttack()
     {
-        // UŒ‚”»’è‚ğ–³Œø‰»
-        _attackSensor.transform.localScale = new Vector3(0, 0, 0); // ƒXƒP[ƒ‹‚ğƒŠƒZƒbƒg
-        _attackSensor.gameObject.SetActive(false); // ”ñ•\¦
+        // æ”»æ’ƒåˆ¤å®šã‚’ç„¡åŠ¹åŒ–
+        _attackSensor.transform.localScale = new Vector3(0, 0, 0); // ã‚¹ã‚±ãƒ¼ãƒ«ã‚’ãƒªã‚»ãƒƒãƒˆ
+        _attackSensor.gameObject.SetActive(false); // éè¡¨ç¤º
     }
 
+    /// <summary>
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®HPã‚’å›å¾©ã™ã‚‹
+    /// </summary>
+    /// <param name="healAmount">å›å¾©é‡</param>
     public void Heal(float healAmount)
     {
         _charaState.Heal(healAmount);
-    }
-
-    public override void ChangeInputActions()
-    {
-        OnDisable(); // Šù‘¶ƒCƒxƒ“ƒg‰ğœid•¡–h~j
-        _playerInputActions = InputActionHolder.Instance.playerInputActions; // Äæ“¾
-        OnEnableInput(); // ƒCƒxƒ“ƒgÄ“o˜^
     }
 }
