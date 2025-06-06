@@ -22,7 +22,6 @@ public class GhostMovement : MonoBehaviour
     private bool _recordedSummonA;
     private bool _recordedSummonB;
     private bool _recordedFacingLeft; // Œü‚«
-
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     private Character _charaState;
@@ -178,4 +177,6 @@ public class GhostMovement : MonoBehaviour
     {
         _recordedInput = input;
     }
+    public void trueAttack() { }
+    public void falseAttack() { }
 }

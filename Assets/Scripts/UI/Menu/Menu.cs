@@ -44,12 +44,6 @@ public class Menu : MonoBehaviour
         _backButtonOutline.enabled = false;
         _backButtonOutline.effectColor = OutlineDefaultColor;
         _originalBackButtonScale = _backButton.GetComponent<RectTransform>().localScale;
-
-        // InputActionHolderからMenuInputActionsを取得してイベント登録
-        var menuActions = InputActionHolder.Instance.menuInputActions;
-        menuActions.Menu.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>().x);
-        menuActions.Menu.Vertical.performed += ctx => OnVertical(ctx.ReadValue<Vector2>().y);
-        menuActions.Menu.Click.performed += ctx => OnClick();
     }
 
     /// <summary>
@@ -57,6 +51,12 @@ public class Menu : MonoBehaviour
     /// </summary>
     private void Start()
     {
+        // InputActionHolderからMenuInputActionsを取得してイベント登録
+        var menuActions = InputActionHolder.Instance.menuInputActions;
+        menuActions.Menu.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>().x);
+        menuActions.Menu.Vertical.performed += ctx => OnVertical(ctx.ReadValue<Vector2>().y);
+        menuActions.Menu.Click.performed += ctx => OnClick();
+
         UpdateSelection();
 
         // プレイヤーオブジェクトを取得
@@ -78,10 +78,6 @@ public class Menu : MonoBehaviour
         if (_isOpen)
         {
             CloseMenu();
-
-            // プレイヤーの移動を有効化
-            //_playerMovement.OnEnableInput();
-            //InputActionHolder.Instance.playerInputActions.Player.Enable();
         }
         else
         {
@@ -152,14 +148,6 @@ public class Menu : MonoBehaviour
         AnimationState stateMenu = _menuAnim[_menuAnim.clip.name];
         stateMenu.time = 0f;
         stateMenu.speed = 1f;
-    }
-
-    /// <summary>
-    /// 有効化時に入力アクションを有効にする
-    /// </summary>
-    private void OnEnable()
-    {
-        InputActionHolder.Instance.menuInputActions.Menu.Enable();
     }
 
     /// <summary>

@@ -30,10 +30,10 @@ public class CoolTimeInput : MonoBehaviour
     [Header("プレイヤー")]
     [SerializeField] private Transform _playerTransform; // プレイヤーTransform
 
-    //================ キー設定（★★★★★★★★★★★★いずれInput systemへ変更を行う） ====================
-    [Header("キー設定")]
-    [SerializeField] private Key _recordKey = Key.Q; // 記録キー　
-    [SerializeField] private Key _playKey = Key.P; // 再生キー
+    //================ キー設定 (Input System) ====================
+    [Header("キー設定 (Input System)")]
+    [SerializeField] private InputActionReference _recordAction; // 記録アクション
+    [SerializeField] private InputActionReference _playAction;   // 再生アクション
 
     //================ 時間設定 ====================
     [Header("各種時間設定")]
@@ -95,41 +95,49 @@ public class CoolTimeInput : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 入力監視
-    /// </summary>
-    private void Update()
+    private void OnEnable()
     {
-        // Qキー押下で記録開始
-        if (Keyboard.current[_recordKey].wasPressedThisFrame)
+        _recordAction.action.Enable();
+        _playAction.action.Enable();
+        _recordAction.action.performed += OnRecordPerformed;
+        _playAction.action.performed += OnPlayPerformed;
+    }
+
+    private void OnDisable()
+    {
+        _recordAction.action.performed -= OnRecordPerformed;
+        _playAction.action.performed -= OnPlayPerformed;
+        _recordAction.action.Disable();
+        _playAction.action.Disable();
+    }
+
+    private void OnRecordPerformed(InputAction.CallbackContext context)
+    {
+        if (!_isRecording && !_isRecordCoolingDown && !_isPlaying && !_isPlayCoolingDown)
         {
-            if (!_isRecording && !_isRecordCoolingDown && !_isPlaying && !_isPlayCoolingDown)
-            {
-                if (_recordCoroutine != null) StopCoroutine(_recordCoroutine);
-                _recordCoroutine = StartCoroutine(_StartRecordMode());
-            }
+            if (_recordCoroutine != null) StopCoroutine(_recordCoroutine);
+            _recordCoroutine = StartCoroutine(_StartRecordMode());
         }
+    }
 
-        // Pキー押下で再生開始 or 中断
-        if (Keyboard.current[_playKey].wasPressedThisFrame)
+    private void OnPlayPerformed(InputAction.CallbackContext context)
+    {
+        if (_isPlaying)
         {
-            if (_isPlaying)
-            {
-                // 再生中にPキーで中断
-                _recordAbility?.StopPlayback();
-                if (_playCoroutine != null) StopCoroutine(_playCoroutine);
-                _isPlaying = false;
+            // 再生中に中断
+            _recordAbility?.StopPlayback();
+            if (_playCoroutine != null) StopCoroutine(_playCoroutine);
+            _isPlaying = false;
 
-                // クールタイム計算
-                _playRepeatCount++;
-                _playCoolTimeCurrent = _playCoolTime * Mathf.Pow(1.5f, _playRepeatCount - 1);
-                StartCoroutine(_StartPlayCoolDown());
-            }
-            else if (_hasRecorded && !_isPlayCoolingDown)
-            {
-                // 記録済みかつクールタイムでなければ再生開始
-                _playCoroutine = StartCoroutine(_StartPlay());
-            }
+            // クールタイム計算
+            _playRepeatCount++;
+            _playCoolTimeCurrent = _playCoolTime * Mathf.Pow(1.5f, _playRepeatCount - 1);
+            StartCoroutine(_StartPlayCoolDown());
+        }
+        else if (_hasRecorded && !_isPlayCoolingDown)
+        {
+            // 記録済みかつクールタイムでなければ再生開始
+            _playCoroutine = StartCoroutine(_StartPlay());
         }
     }
 
