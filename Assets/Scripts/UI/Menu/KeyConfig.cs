@@ -21,17 +21,23 @@ public enum KeyDeviceType
 [System.Serializable]
 public class KeyConfigData
 {
-    public string label;        // 識別用ラベル
-    public Button keyButton;    // キー設定用ボタン
-    public TextMeshProUGUI keyText;      // キー表示用テキスト
-    public Button resetButton;  // リセットボタン
-    public InputActionReference action;   // InputAction参照
-    public int keyboardBindingIndex;      // キーボード用バインディングインデックス
-    public int gamepadBindingIndex;       // ゲームパッド用バインディングインデックス
-    public string saveKey;      // 保存用キー
+    public string               label;                  // 識別用ラベル
+    public Button               keyButton;              // キー設定用ボタン
+    public TextMeshProUGUI      keyText;                // キー表示用テキスト
+    public Button               resetButton;            // リセットボタン
+    public InputActionReference action;                 // InputAction参照
+    public int                  keyboardBindingIndex;   // キーボード用バインディングインデックス
+    public int                  gamepadBindingIndex;    // ゲームパッド用バインディングインデックス
+    public string               saveKey;                // 保存用キー
 
+    /// <summary>
+    /// デバイスタイプに応じたバインディングインデックスを取得する
+    /// </summary>
+    /// <param name="type">デバイスタイプ</param>
+    /// <returns>バインディングインデックス</returns>
     public int GetBindingIndex(KeyDeviceType type)
     {
+        // キーボードとゲームパッドのバインディングインデックスを返す
         return type == KeyDeviceType.Keyboard ? keyboardBindingIndex : gamepadBindingIndex;
     }
 }
@@ -42,8 +48,8 @@ public class KeyConfigData
 [System.Serializable]
 public class KeyBindingData
 {
-    public string saveKey;               // 保存用キー
-    public string overridePath;          // オーバーライドパス
+    public string        saveKey;        // 保存用キー
+    public string        overridePath;   // オーバーライドパス
     public KeyDeviceType deviceType;     // デバイスタイプ
 }
 
@@ -58,40 +64,49 @@ public class KeyConfigSaveData
 
 public class KeyConfig : MonoBehaviour
 {
+    [Header("キー設定データ")]
     [SerializeField] private KeyConfigData[] _keyConfigs;        // キー設定データ配列
     [SerializeField] private TextMeshProUGUI _errorText;         // エラーメッセージ表示用テキスト
-    [SerializeField] private Button _keyboardButton;    // キーボード切替ボタン
-    [SerializeField] private Button _gamepadButton;     // ゲームパッド切替ボタン
+    [SerializeField] private Button          _keyboardButton;    // キーボード切替ボタン
+    [SerializeField] private Button          _gamepadButton;     // ゲームパッド切替ボタン
     [SerializeField] private TextMeshProUGUI _deviceLabelText;   // デバイス名表示用テキスト
+
     [Header("選択状態を示す枠画像")]
     [SerializeField] private GameObject _keyboardFrameSelected;  // キーボード選択枠
     [SerializeField] private GameObject _keyboardFrameActive;    // キーボード決定枠
     [SerializeField] private GameObject _gamepadFrameSelected;   // ゲームパッド選択枠
     [SerializeField] private GameObject _gamepadFrameActive;     // ゲームパッド決定枠
 
-    private Coroutine _errorCoroutine;            // エラー表示用コルーチン
-    private int _selectedIndex = 0;         // 選択中のキー設定インデックス
-    private int _selectedDeviceIndex = -1;  // 選択中のデバイスインデックス
-    private KeyDeviceType _activeDeviceType = KeyDeviceType.Keyboard; // 決定済みデバイスタイプ
-    private bool _isResetSelected = false;   // リセットボタン選択状態
-    private Animation _optionAnim;                // オプション画面アニメーション
+    private int           _selectedIndex = 0;         // 選択中のキー設定インデックス
+    private int           _selectedDeviceIndex = -1;  // 選択中のデバイスインデックス
+    private bool          _isResetSelected = false;   // リセットボタン選択状態
+    private Animation     _optionAnim;                // オプション画面アニメーション
+    private Coroutine     _errorCoroutine;            // エラー表示用コルーチン
+
+    // 決定済みデバイスタイプ
+    private KeyDeviceType _activeDeviceType = KeyDeviceType.Keyboard;
+    // オーバーライドパスの保存用ディクショナリ
     private readonly Dictionary<(string saveKey, KeyDeviceType deviceType), string> _overridePathDict
         = new Dictionary<(string, KeyDeviceType), string>();
 
+    /// <summary>
+    /// ゲームパッドのラベルを日本語表記に変換するためのマッピング
+    /// </summary>
     private static readonly Dictionary<string, string> GamepadLabelMap = new Dictionary<string, string>
     {
-        { "buttonSouth", "Aボタン" },
-        { "buttonEast",  "Bボタン" },
-        { "buttonWest",  "Yボタン" },
-        { "buttonNorth", "Xボタン" },
-        { "leftShoulder", "L1" },
-        { "rightShoulder", "R1" },
-        { "leftTrigger", "L2" },
-        { "rightTrigger", "R2" },
-        { "leftStickPress", "Lスティック押し込み" },
-        { "rightStickPress", "Rスティック押し込み" }
+        { "Button South", "Aボタン" },
+        { "Button West",  "Xボタン" },
+        { "Button North","Yボタン" },
+        { "Button East", "Bボタン" },
+        { "Left Shoulder", "L1" },
+        { "Right Shoulder", "R1" },
+        { "leftTriggerButton", "L2" },
+        { "rightTriggerButton", "R2" }
     };
 
+    /// <summary>
+    /// 各種設定のロードやUI初期化を行う。
+    /// </summary>
     private void Start()
     {
         Debug.Log("KeyConfigのJSON保存先: " + GetKeyConfigSavePath());
@@ -122,16 +137,25 @@ public class KeyConfig : MonoBehaviour
         optionActions.Option.Close.performed += ctx => OnClose();
     }
 
+    /// <summary>
+    /// 有効化時にOptionアクションマップを有効化
+    /// </summary>
     private void OnEnable()
     {
         InputActionHolder.Instance.optionInputActions.Option.Enable();
     }
 
+    /// <summary>
+    /// 無効化時にOptionアクションマップを無効化
+    /// </summary>
     private void OnDisable()
     {
         InputActionHolder.Instance.optionInputActions.Option.Disable();
     }
 
+    /// <summary>
+    /// 全てのキー設定をJSONファイルに保存
+    /// </summary>
     private void SaveAllKeyConfigsToJson()
     {
         var saveData = new KeyConfigSaveData();
@@ -151,6 +175,9 @@ public class KeyConfig : MonoBehaviour
         System.IO.File.WriteAllText(GetKeyConfigSavePath(), json);
     }
 
+    /// <summary>
+    /// JSONファイルから全てのキー設定を読み込む
+    /// </summary>
     private void LoadAllKeyConfigsFromJson()
     {
         _overridePathDict.Clear();
@@ -183,11 +210,19 @@ public class KeyConfig : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// キーコンフィグの保存先パスを取得
+    /// </summary>
+    /// <returns>保存先パス</returns>
     private string GetKeyConfigSavePath()
     {
         return System.IO.Path.Combine(Application.persistentDataPath, "keyconfig.json");
     }
 
+    /// <summary>
+    /// キー設定の選択インデックスを移動
+    /// </summary>
+    /// <param name="dir">移動方向</param>
     private void MoveSelection(int dir)
     {
         int len = _keyConfigs.Length;
@@ -200,6 +235,10 @@ public class KeyConfig : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 入力デバイスの移動入力を処理
+    /// </summary>
+    /// <param name="direction">移動ベクトル</param>
     private void OnMove(Vector2 direction)
     {
         if (_selectedDeviceIndex >= 0)
@@ -268,6 +307,9 @@ public class KeyConfig : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 決定入力時の処理を行う
+    /// </summary>
     private void OnSubmit()
     {
         if (_selectedDeviceIndex == 0 || _selectedDeviceIndex == 1)
@@ -301,11 +343,20 @@ public class KeyConfig : MonoBehaviour
             StartRebind(_keyConfigs[_selectedIndex]);
     }
 
+    /// <summary>
+    /// メニューを閉じる処理を行う
+    /// </summary>
     private void OnClose()
     {
         StartCoroutine(PlayAnimationUnscaled(_optionAnim, "OptionClose"));
     }
 
+    /// <summary>
+    /// アニメーションをスケール無視で再生するコルーチン
+    /// </summary>
+    /// <param name="anim">アニメーション</param>
+    /// <param name="clipName">クリップ名</param>
+    /// <returns>IEnumerator</returns>
     private IEnumerator PlayAnimationUnscaled(Animation anim, string clipName)
     {
         anim.Play(clipName);
@@ -324,6 +375,9 @@ public class KeyConfig : MonoBehaviour
         OnDisable();
     }
 
+    /// <summary>
+    /// 選択状態のUIを更新
+    /// </summary>
     private void UpdateSelectionVisual()
     {
         _keyboardFrameSelected.SetActive(false);
@@ -364,6 +418,11 @@ public class KeyConfig : MonoBehaviour
         _deviceLabelText.text = (_activeDeviceType == KeyDeviceType.Keyboard) ? "キーボード" : "ゲームパッド";
     }
 
+    /// <summary>
+    /// ゲームパッドのラベルを日本語表記に変換
+    /// </summary>
+    /// <param name="raw">元のラベル</param>
+    /// <returns>日本語ラベル</returns>
     private string ToFriendlyGamepadLabel(string raw)
     {
         string lowerRaw = raw.ToLower();
@@ -375,6 +434,9 @@ public class KeyConfig : MonoBehaviour
         return raw;
     }
 
+    /// <summary>
+    /// キー設定テキストを更新
+    /// </summary>
     private void UpdateKeyTexts()
     {
         foreach (var config in _keyConfigs)
@@ -394,8 +456,17 @@ public class KeyConfig : MonoBehaviour
             config.keyText.text = label;
         }
     }
+
+    /// <summary>
+    /// キーのリバインドを開始
+    /// </summary>
+    /// <param name="config">対象のキー設定データ</param>
     private void StartRebind(KeyConfigData config)
     {
+        // オプション入力を一時的に無効化
+        var optionActions = InputActionHolder.Instance.optionInputActions;
+        optionActions.Option.Disable();
+
         config.keyButton.interactable = false;
         config.keyText.text = "Press any key";
 
@@ -420,6 +491,7 @@ public class KeyConfig : MonoBehaviour
                 config.keyText.text = InputControlPath.ToHumanReadableString(
                     config.action.action.bindings[bindingIndex].effectivePath,
                     InputControlPath.HumanReadableStringOptions.OmitDevice);
+                StartCoroutine(EnableOptionActionWithDelay(1f));
             }
         });
 
@@ -433,6 +505,8 @@ public class KeyConfig : MonoBehaviour
 
             if (IsDuplicateKey(config, overridePath, bindingIndex))
             {
+                // 失敗してもオプション入力を再度有効化
+                StartCoroutine(EnableOptionActionWithDelay(1f));
                 ShowErrorMessage("選択されたキーは、既に他の項目で使用されています");
                 action.RemoveBindingOverride(bindingIndex);
                 _overridePathDict.Remove((config.saveKey, _activeDeviceType));
@@ -450,12 +524,27 @@ public class KeyConfig : MonoBehaviour
 
             SaveAllKeyConfigsToJson();
             UpdateKeyTexts();
-
-            InputActionHolder.Instance.ChangeInputActions();
+            // リバインド完了後、1秒待って有効化
+            StartCoroutine(EnableOptionActionWithDelay(1f));
         })
         .Start();
     }
 
+    /// <summary>
+    /// オプションアクションを一定時間後に有効化するコルーチン
+    /// </summary>
+    /// <param name="delay">待機する時間</param>
+    /// <returns></returns>
+    private IEnumerator EnableOptionActionWithDelay(float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+        InputActionHolder.Instance.optionInputActions.Option.Enable();
+    }
+
+    /// <summary>
+    /// キー設定をデフォルトにリセット
+    /// </summary>
+    /// <param name="config">対象のキー設定データ</param>
     private void ResetBinding(KeyConfigData config)
     {
         int bindingIndex = config.GetBindingIndex(_activeDeviceType);
@@ -475,6 +564,13 @@ public class KeyConfig : MonoBehaviour
         config.resetButton.interactable = true;
     }
 
+    /// <summary>
+    /// 他のキー設定と重複していないか判定
+    /// </summary>
+    /// <param name="current">現在の設定</param>
+    /// <param name="overridePath">割り当てパス</param>
+    /// <param name="bindingIndex">バインディングインデックス</param>
+    /// <returns>重複していればtrue</returns>
     private bool IsDuplicateKey(KeyConfigData current, string overridePath, int bindingIndex)
     {
         if (string.IsNullOrEmpty(overridePath)) return false;
@@ -492,6 +588,12 @@ public class KeyConfig : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// 全てのInputActionHolderにバインディングオーバーライドを適用
+    /// </summary>
+    /// <param name="config">対象のキー設定データ</param>
+    /// <param name="overridePath">オーバーライドパス</param>
+    /// <param name="bindingIndex">バインディングインデックス</param>
     private void ApplyOverrideToAllHolders(KeyConfigData config, string overridePath, int bindingIndex)
     {
         config.action.action.ApplyBindingOverride(bindingIndex, overridePath);
@@ -510,6 +612,11 @@ public class KeyConfig : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// エラーメッセージを表示する
+    /// </summary>
+    /// <param name="message">メッセージ</param>
+    /// <param name="duration">表示時間</param>
     private void ShowErrorMessage(string message, float duration = 2f)
     {
         if (_errorCoroutine != null)
@@ -517,6 +624,12 @@ public class KeyConfig : MonoBehaviour
         _errorCoroutine = StartCoroutine(ShowErrorCoroutine(message, duration));
     }
 
+    /// <summary>
+    /// エラーメッセージを一定時間表示するコルーチン
+    /// </summary>
+    /// <param name="message">メッセージ</param>
+    /// <param name="duration">表示時間</param>
+    /// <returns>IEnumerator</returns>
     private IEnumerator ShowErrorCoroutine(string message, float duration)
     {
         _errorText.text = message;

@@ -77,7 +77,7 @@ public class Character : MonoBehaviour
 
         if (CompareTag("Player"))
         {
-            _playerMovement.DisableInput();
+            InputActionHolder.Instance.playerInputActions.Player.Disable();
 
             // Rigidbody2D ‚ª‚ ‚ê‚Î“®‚«‚ð’âŽ~
             var rb = GetComponent<Rigidbody2D>();
