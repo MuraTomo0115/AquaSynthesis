@@ -109,6 +109,11 @@ public class KeyConfig : MonoBehaviour
     /// </summary>
     private void Start()
     {
+        var optionActions = InputActionHolder.Instance.optionInputActions;
+        optionActions.Option.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>());
+        optionActions.Option.Click.performed += ctx => OnSubmit();
+        optionActions.Option.Close.performed += ctx => OnClose();
+
         Debug.Log("KeyConfigのJSON保存先: " + GetKeyConfigSavePath());
         _optionAnim = GetComponent<Animation>();
 
@@ -127,22 +132,6 @@ public class KeyConfig : MonoBehaviour
         UpdateKeyTexts();
         UpdateSelectionVisual();
         OnDisable(); // 初期状態では無効化
-    }
-
-    private void Awake()
-    {
-        var optionActions = InputActionHolder.Instance.optionInputActions;
-        optionActions.Option.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>());
-        optionActions.Option.Click.performed += ctx => OnSubmit();
-        optionActions.Option.Close.performed += ctx => OnClose();
-    }
-
-    /// <summary>
-    /// 有効化時にOptionアクションマップを有効化
-    /// </summary>
-    private void OnEnable()
-    {
-        InputActionHolder.Instance.optionInputActions.Option.Enable();
     }
 
     /// <summary>
@@ -491,7 +480,7 @@ public class KeyConfig : MonoBehaviour
                 config.keyText.text = InputControlPath.ToHumanReadableString(
                     config.action.action.bindings[bindingIndex].effectivePath,
                     InputControlPath.HumanReadableStringOptions.OmitDevice);
-                StartCoroutine(EnableOptionActionWithDelay(1f));
+                StartCoroutine(EnableOptionActionWithDelay(0.1f));
             }
         });
 
@@ -506,7 +495,7 @@ public class KeyConfig : MonoBehaviour
             if (IsDuplicateKey(config, overridePath, bindingIndex))
             {
                 // 失敗してもオプション入力を再度有効化
-                StartCoroutine(EnableOptionActionWithDelay(1f));
+                StartCoroutine(EnableOptionActionWithDelay(0.1f));
                 ShowErrorMessage("選択されたキーは、既に他の項目で使用されています");
                 action.RemoveBindingOverride(bindingIndex);
                 _overridePathDict.Remove((config.saveKey, _activeDeviceType));
@@ -525,7 +514,7 @@ public class KeyConfig : MonoBehaviour
             SaveAllKeyConfigsToJson();
             UpdateKeyTexts();
             // リバインド完了後、1秒待って有効化
-            StartCoroutine(EnableOptionActionWithDelay(1f));
+            StartCoroutine(EnableOptionActionWithDelay(0.1f));
         })
         .Start();
     }
