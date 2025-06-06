@@ -22,7 +22,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private SupportManager _supportManager;
     private Rigidbody2D _rb;
     private Vector2 _movement;
-    private PlayerInputActions _inputActions;
     private Character _charaState;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
@@ -47,47 +46,27 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
-        _inputActions = new PlayerInputActions();
+        var playerActions = InputActionHolder.Instance.playerInputActions;
+        playerActions.Player.Enable();
+        playerActions.Player.Move.performed += ctx => _movement = ctx.ReadValue<Vector2>();
+        playerActions.Player.Move.canceled += ctx => _movement = Vector2.zero;
+        playerActions.Player.Jump.performed += ctx => Jump();
+        playerActions.Player.Attack.performed += ctx => Attack();
+        playerActions.Player.Pistol.performed += ctx => Pistol();
+        playerActions.Support.SummonA.performed += ctx => summonsupport1();
+        playerActions.Support.SummonB.performed += ctx => _supportManager.Summon2();
+
+        //_playerInputActions.Player.Enable();
+        //_playerInputActions.Support.Enable();
+        //_playerInputActions.Player.Move.performed += ctx => _movement = ctx.ReadValue<Vector2>();
+        //_playerInputActions.Player.Move.canceled += ctx => _movement = Vector2.zero;
+        //_playerInputActions.Player.Jump.performed += ctx => Jump();
+        //_playerInputActions.Player.Attack.performed += ctx => Attack();
+        //_playerInputActions.Player.Pistol.performed += ctx => Pistol();
+        //_playerInputActions.Support.SummonA.performed += ctx => summonsupport1();
+        //_playerInputActions.Support.SummonB.performed += ctx => _supportManager.Summon2();
+
         _attackSensor.gameObject.SetActive(false);
-    }
-
-    /// <summary>
-    /// InputSystem設定
-    /// </summary>
-    public void OnEnableInput()
-    {
-        if (_inputEventsRegistered) return; // すでに登録済みなら何もしない
-        Debug.Log("Input actions changed for PlayerMovement.");
-
-        _playerInputActions.Player.Enable();
-        _playerInputActions.Support.Enable();
-        _playerInputActions.Player.Move.performed += ctx => _movement = ctx.ReadValue<Vector2>();
-        _playerInputActions.Player.Move.canceled += ctx => _movement = Vector2.zero;
-        _playerInputActions.Player.Jump.performed += ctx => Jump();
-        _playerInputActions.Player.Attack.performed += ctx => Attack();
-        _playerInputActions.Player.Pistol.performed += ctx => Pistol();
-        _playerInputActions.Support.SummonA.performed += ctx => summonsupport1();
-        _playerInputActions.Support.SummonB.performed += ctx => _supportManager.Summon2();
-
-        _inputEventsRegistered = true;
-    }
-
-    public void OnDisable()
-    {
-        if (!_inputEventsRegistered) return; // 登録されていなければ何もしない
-
-        _playerInputActions.Player.Move.performed -= ctx => _movement = ctx.ReadValue<Vector2>();
-        _playerInputActions.Player.Move.canceled -= ctx => _movement = Vector2.zero;
-        _playerInputActions.Player.Jump.performed -= ctx => Jump();
-        _playerInputActions.Player.Attack.performed -= ctx => Attack();
-        _playerInputActions.Player.Pistol.performed -= ctx => Pistol();
-        _playerInputActions.Support.SummonA.performed -= ctx => summonsupport1();
-        _playerInputActions.Support.SummonB.performed -= ctx => _supportManager.Summon2();
-
-        _playerInputActions.Player.Disable();
-        _playerInputActions.Support.Disable();
-
-        _inputEventsRegistered = false;
     }
 
     private void summonsupport1()
@@ -95,18 +74,8 @@ public class PlayerMovement : MonoBehaviour
         _supportManager.Summon1();
     }
 
-    /// <summary>
-    /// InputSystemを無効にする
-    /// </summary>
-    public void DisableInput()
-    {
-        _playerInputActions.Player.Disable();
-    }
-
     private void Start()
     {
-        // InputActionHolderから共有インスタンスを取得
-        _playerInputActions = InputActionHolder.Instance.playerInputActions;
         _attackSensor.gameObject.SetActive(false);
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
