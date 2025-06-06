@@ -46,26 +46,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
-        var playerActions = InputActionHolder.Instance.playerInputActions;
-        playerActions.Player.Enable();
-        playerActions.Player.Move.performed += ctx => _movement = ctx.ReadValue<Vector2>();
-        playerActions.Player.Move.canceled += ctx => _movement = Vector2.zero;
-        playerActions.Player.Jump.performed += ctx => Jump();
-        playerActions.Player.Attack.performed += ctx => Attack();
-        playerActions.Player.Pistol.performed += ctx => Pistol();
-        playerActions.Support.SummonA.performed += ctx => summonsupport1();
-        playerActions.Support.SummonB.performed += ctx => _supportManager.Summon2();
-
-        //_playerInputActions.Player.Enable();
-        //_playerInputActions.Support.Enable();
-        //_playerInputActions.Player.Move.performed += ctx => _movement = ctx.ReadValue<Vector2>();
-        //_playerInputActions.Player.Move.canceled += ctx => _movement = Vector2.zero;
-        //_playerInputActions.Player.Jump.performed += ctx => Jump();
-        //_playerInputActions.Player.Attack.performed += ctx => Attack();
-        //_playerInputActions.Player.Pistol.performed += ctx => Pistol();
-        //_playerInputActions.Support.SummonA.performed += ctx => summonsupport1();
-        //_playerInputActions.Support.SummonB.performed += ctx => _supportManager.Summon2();
-
         _attackSensor.gameObject.SetActive(false);
     }
 
@@ -76,6 +56,16 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
+        var playerActions = InputActionHolder.Instance.playerInputActions;
+        playerActions.Player.Enable();
+        playerActions.Player.Move.performed += ctx => _movement = ctx.ReadValue<Vector2>();
+        playerActions.Player.Move.canceled += ctx => _movement = Vector2.zero;
+        playerActions.Player.Jump.performed += ctx => Jump();
+        playerActions.Player.Attack.performed += ctx => Attack();
+        playerActions.Player.Pistol.performed += ctx => Pistol();
+        playerActions.Support.SummonA.performed += ctx => summonsupport1();
+        playerActions.Support.SummonB.performed += ctx => _supportManager.Summon2();
+
         _attackSensor.gameObject.SetActive(false);
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
