@@ -194,24 +194,26 @@ public class RecordAbility : MonoBehaviour
             var next = framesToPlay[i + 1];
 
             float t = 0f;
+            // ★ここで複数回呼ばれないように、ShootPistol/StartAttackはループ外に出すのが推奨
+            if (ghostMovement != null)
+            {
+                if (current.didPistol) ghostMovement.ShootPistol();
+                if (current.didAttack) ghostMovement.StartAttack();
+            }
+
             while (t < _recordInterval)
             {
                 float lerpFactor = t / _recordInterval;
                 playbackTarget.position = Vector3.Lerp(current.position, next.position, lerpFactor);
                 playbackTarget.rotation = Quaternion.Lerp(current.rotation, next.rotation, lerpFactor);
 
-                // アニメーション・向き・攻撃再現（必要ならこの中で）
+                // アニメーション・向き再現
                 if (_ghostAnimator != null && !string.IsNullOrEmpty(current.animClipName))
                     _ghostAnimator.CrossFade(current.animClipName, 0f);
                 if (_ghostSpriteRenderer != null)
                     _ghostSpriteRenderer.flipX = current.isFacingLeft;
                 if (ghostMovement != null)
-                {
                     ghostMovement.SetRecordedInput(current.input);
-
-                    if (current.didPistol) ghostMovement.ShootPistol();
-                    if (current.didAttack) ghostMovement.StartAttack();
-                }
 
                 t += Time.deltaTime;
                 yield return null;
