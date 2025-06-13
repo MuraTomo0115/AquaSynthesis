@@ -1796,7 +1796,7 @@ MonoBehaviour:
     keyButton: {fileID: 2062916098}
     keyText: {fileID: 1389305102}
     resetButton: {fileID: 851063556}
-    action: {fileID: 3792530144906833147, guid: 402911923e9744d4cbac8b51463e4966, type: 3}
+    action: {fileID: 4119097290280331391, guid: 402911923e9744d4cbac8b51463e4966, type: 3}
     keyboardBindingIndex: 0
     gamepadBindingIndex: 1
     saveKey: ability_save_keyboard
@@ -1804,7 +1804,7 @@ MonoBehaviour:
     keyButton: {fileID: 1427700836}
     keyText: {fileID: 855871357}
     resetButton: {fileID: 322899852}
-    action: {fileID: 4119097290280331391, guid: 402911923e9744d4cbac8b51463e4966, type: 3}
+    action: {fileID: 3792530144906833147, guid: 402911923e9744d4cbac8b51463e4966, type: 3}
     keyboardBindingIndex: 0
     gamepadBindingIndex: 1
     saveKey: ability_play_keyboard
