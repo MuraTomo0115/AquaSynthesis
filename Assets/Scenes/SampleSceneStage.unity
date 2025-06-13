@@ -12119,6 +12119,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 5586298122300752380, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5586298122300752380, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8026316697547528240, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
       propertyPath: _supportManager
       value: 
