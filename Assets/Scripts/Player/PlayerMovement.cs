@@ -2,6 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//　主製作者：村田智哉
+//  編集者：秋葉朋輝
+
+public struct PlayerSE
+{
+    public const string Attack = "540AttackSE";
+    public const string Pistol = "Player/Pistol";
+    public const string Jump = "Player/Jump";
+    public const string Hit = "Player/Hit";
+    public const string Landing = "543LandingSE";
+}
+
 /// <summary>
 /// プレイヤーの移動・攻撃・トゲダメージ・記録中フラグ管理
 /// </summary>
@@ -30,6 +42,7 @@ public class PlayerMovement : MonoBehaviour
     private bool _canPistolAttack = true;
     private bool _isInvincible = false; // 無敵状態かどうか
     private bool _isOnSpike = false; // トゲにいるかどうか
+    private AudioSource _audioSource;
 
     // 追加: 攻撃・ピストル発射フラグ
     public bool DidAttack { get; private set; }
@@ -71,6 +84,7 @@ public class PlayerMovement : MonoBehaviour
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _charaState = GetComponent<Character>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     /// <summary>
@@ -121,6 +135,15 @@ public class PlayerMovement : MonoBehaviour
         // 攻撃・ピストル発射フラグをリセット
         DidAttack = false;
         DidPistol = false;
+    }
+
+    /// <summary>
+    /// SEを再生するメソッド
+    /// </summary>
+    /// <param name="sePath">再生するファイル名</param>
+    private void PlaySE(string sePath)
+    {
+        AudioManager.Instance.PlaySE("Player", sePath);
     }
 
     /// <summary>
@@ -197,6 +220,11 @@ public class PlayerMovement : MonoBehaviour
         _animator.SetBool("isAttack", false);
     }
 
+    public void Landing()
+    {
+        PlaySE(PlayerSE.Attack);
+    }
+
     public void OwnAttackHit(Collider2D other)
     {
         // スパイクなら攻撃判定をスキップ
@@ -216,6 +244,7 @@ public class PlayerMovement : MonoBehaviour
     public void StartAttack()
     {
         _attackSensor.gameObject.SetActive(true);
+        PlaySE(PlayerSE.Attack);
 
         // プレイヤーの向きに合わせて攻撃判定のスケールを変更
         if (_spriteRenderer.flipX)

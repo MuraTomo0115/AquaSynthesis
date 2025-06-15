@@ -396,6 +396,9 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  _spikeLayer:
+    serializedVersion: 2
+    m_Bits: 0
   _attackSensor: {fileID: 1289498262432133626}
   _bullet: {fileID: 7696661787290791833, guid: 3183ac645db59ee40928bd80477291eb, type: 3}
   _firePoint: {fileID: 6643879991169195801}
