@@ -143,15 +143,7 @@ public class PlayerMovement : MonoBehaviour
     /// <param name="sePath">再生するファイル名</param>
     private void PlaySE(string sePath)
     {
-        AudioClip clip = Resources.Load<AudioClip>($"Audio/SE/Player/{sePath}");
-        if (clip != null)
-        {
-            _audioSource.PlayOneShot(clip);
-        }
-        else
-        {
-            Debug.LogWarning($"SEファイルが見つかりません: Audio/SE/Player/{sePath}");
-        }
+        AudioManager.Instance.PlaySE("Player", sePath);
     }
 
     /// <summary>
@@ -233,7 +225,7 @@ public class PlayerMovement : MonoBehaviour
         PlaySE(PlayerSE.Attack);
     }
 
-public void OwnAttackHit(Collider2D other)
+    public void OwnAttackHit(Collider2D other)
     {
         // スパイクなら攻撃判定をスキップ
         if (((1 << other.gameObject.layer) & _spikeLayer) != 0)
