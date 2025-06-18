@@ -84,6 +84,7 @@ public class SupportManager : MonoBehaviour
 
         if (support != null && statusTable.ContainsKey(supportName))
         {
+            AudioManager.Instance.PlaySE("Support", "546SupportSE");
             support.Initialize(statusTable[supportName]);
             support.Act();
         }

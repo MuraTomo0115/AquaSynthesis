@@ -64,23 +64,39 @@ public class PlayerMovement : MonoBehaviour
         _attackSensor.gameObject.SetActive(false);
     }
 
-    private void summonsupport1()
+    private void SummonSupport(int num)
     {
-        _supportManager.Summon1();
+        if (_supportManager == null)
+        {
+            Debug.LogError("SupportManager is not assigned in PlayerMovement.");
+            return;
+        }
+        switch (num)
+        {
+            case 1:
+                _supportManager.Summon1();
+                break;
+            case 2:
+                _supportManager.Summon2();
+                break;
+            default:
+                break;
+        }
     }
+
 
     private void Start()
     {
         var playerActions = InputActionHolder.Instance.playerInputActions;
         playerActions.Player.Enable();
+        playerActions.Support.Enable();
         playerActions.Player.Move.performed += ctx => _movement = ctx.ReadValue<Vector2>();
         playerActions.Player.Move.canceled += ctx => _movement = Vector2.zero;
         playerActions.Player.Jump.performed += ctx => Jump();
         playerActions.Player.Attack.performed += ctx => Attack();
         playerActions.Player.Pistol.performed += ctx => Pistol();
-        playerActions.Support.SummonA.performed += ctx => summonsupport1();
-        playerActions.Support.SummonB.performed += ctx => _supportManager.Summon2();
-
+        playerActions.Support.SummonA.performed += ctx => SummonSupport(1);
+        playerActions.Support.SummonB.performed += ctx => SummonSupport(2);
         _attackSensor.gameObject.SetActive(false);
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
