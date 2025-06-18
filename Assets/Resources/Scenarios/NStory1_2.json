@@ -1,0 +1,75 @@
+[
+    { "type": "fadeout" },
+    { "type": "fadein" },
+    {
+        "type": "show",
+        "target": "takuro",
+        "sprite": "takuro/sennin_normal",
+        "side": "right",
+        "transition": "fade"
+    },
+    {
+        "type": "text",
+        "speaker": "先任",
+        "text": "初めての実戦なのに皆よくやってくれた。"
+    },
+    {
+        "type": "text",
+        "speaker": "先任",
+        "text": "しかしおかしいな。なぜこんなに数がいたんだ？"
+    },
+    {
+        "type": "show",
+        "target": "hiroshi",
+        "sprite": "hiroshi/hiroshi_normal",
+        "side": "left",
+        "transition": "fade"
+    },
+    {
+        "type": "text",
+        "speaker": "みすず",
+        "text": "珍しいことなんですか？"
+    },
+    {
+        "type": "show",
+        "target": "takuro",
+        "sprite": "takuro/takuro_normal",
+        "side": "right",
+        "transition": "fade"
+    },
+    {
+        "type": "text",
+        "speaker": "先任",
+        "text": "珍しいなんてものじゃない。本来ならありえないことなんだ。"
+    },
+    {
+        "type": "text",
+        "speaker": "先任",
+        "text": "一体何が起こっているんだ。"
+    },
+    {
+        "type": "text",
+        "speaker": "はやと",
+        "text": "先任、あいつ他の奴らよりでかくないですか？"
+    },
+    {
+        "type": "text",
+        "speaker": "先任",
+        "text": "！！"
+    },
+    {
+        "type": "text",
+        "speaker": "先任",
+        "text": "あれは中型!?\n逃がしてはいけない！。ここで倒すぞ！"
+    },
+    {
+        "type": "se",
+        "clip": "glass_break",
+        "wait": true
+    },
+    {
+        "type": "se",
+        "clip": "horror",
+        "wait": false
+    }
+]

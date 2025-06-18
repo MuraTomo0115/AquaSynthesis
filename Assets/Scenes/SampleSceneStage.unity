@@ -1693,7 +1693,7 @@ MonoBehaviour:
   _imageRight: {fileID: 3913508}
   _nextIcon: {fileID: 114767115}
   _fadeOverlay: {fileID: 325738413}
-  _scenarioFileName: NStory1
+  _scenarioFileName: NStory1_1
   _advContents: {fileID: 1437431289}
 --- !u!82 &859201637
 AudioSource:
