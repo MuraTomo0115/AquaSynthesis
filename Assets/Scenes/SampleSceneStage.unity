@@ -1827,16 +1827,16 @@ MonoBehaviour:
   _errorText: {fileID: 1379240574}
   _keyboardButton: {fileID: 1967105152}
   _gamepadButton: {fileID: 1852727685}
-  _seButton:
-    plusButton: {fileID: 1561509911}
-    minusButton: {fileID: 17730559}
-    label: {fileID: 562217113}
-    saveKey: se_volume
   _bgmButton:
     plusButton: {fileID: 1163592592}
     minusButton: {fileID: 603962777}
     label: {fileID: 1382278452}
     saveKey: bgm_volume
+  _seButton:
+    plusButton: {fileID: 1561509911}
+    minusButton: {fileID: 17730559}
+    label: {fileID: 562217113}
+    saveKey: se_volume
   _deviceLabelText: {fileID: 1713654144}
   _keyboardFrameSelected: {fileID: 69420741}
   _keyboardFrameActive: {fileID: 876412411}
@@ -3362,6 +3362,7 @@ Transform:
   m_Children:
   - {fileID: 1135095662}
   - {fileID: 1008261338}
+  - {fileID: 1904360828}
   m_Father: {fileID: 1578178697}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3475,6 +3476,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bgmSource: {fileID: 1135095663}
   _sfxSource: {fileID: 1008261339}
+  _loopSfxSource: {fileID: 1904360829}
 --- !u!1 &562217111
 GameObject:
   m_ObjectHideFlags: 0
@@ -11079,6 +11081,133 @@ RectTransform:
   m_AnchoredPosition: {x: -139, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1904360827
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1904360828}
+  - component: {fileID: 1904360829}
+  m_Layer: 0
+  m_Name: LoopSESource
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1904360828
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1904360827}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 539878497}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &1904360829
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1904360827}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1919958049
 GameObject:
   m_ObjectHideFlags: 0
@@ -12338,10 +12467,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9da73e9683dce6f4895a9d070f58a1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0
-  coolTime: 0
-  detectionRange: 0
-  attackRange: 0
+  speed: 1
+  coolTime: 2
+  detectionRange: 2
+  attackRange: 2
   _playerLayer:
     serializedVersion: 2
     m_Bits: 64

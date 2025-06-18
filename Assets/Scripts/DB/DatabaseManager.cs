@@ -4,6 +4,8 @@ using SQLite4Unity3d;
 using System.Collections.Generic;
 using System.Linq;
 
+// å»ìÒF‘º“c’qÆ
+
 public class TableInfo
 {
     public int cid { get; set; }
