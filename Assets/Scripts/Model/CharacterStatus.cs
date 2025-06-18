@@ -10,4 +10,5 @@ public class CharacterStatus
     public int Coin { get; set; } // コインの数
     public int Level { get; set; } // レベル
     public int? WeaponId { get; set; } // WeaponStatusへの外部キー
+    public string DamageSE { get; set; } // ダメージSEファイル名
 }

@@ -8,7 +8,7 @@ public class CharacterData
     public string id;            // キャラクターID（player, enemy1, etc.）
     public int maxHealth;        // 最大HP
     public int attackPower;      // 攻撃力
-    public int pistolPower;     // プレイヤーのみのステータス。ピストル攻撃力
+    public int pistolPower;      // プレイヤーのみのステータス。ピストル攻撃力
 }
 
 [System.Serializable]

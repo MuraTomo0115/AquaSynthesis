@@ -45,6 +45,14 @@ public class Character : MonoBehaviour
     {
         if (_isDead) return; // 死亡してたら処理スキップ
 
+        if (CompareTag("Player"))
+        {
+            var playerList = DatabaseManager.GetAllCharacters();
+            var playerData = playerList.Find(c => c.Name == "Shizuku");
+
+            AudioManager.Instance.PlaySE("Player", playerData.DamageSE);
+        }
+
         _currentHealth -= damage;
         UnityEngine.Debug.Log($"{_characterName} はダメージを {damage} 食らいました。残りHP: {_currentHealth}");
 
