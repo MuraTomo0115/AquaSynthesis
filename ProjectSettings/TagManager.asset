@@ -9,6 +9,7 @@ TagManager:
   - MenuUI
   - Spike
   - Echo
+  - Destructible
   layers:
   - Default
   - TransparentFX

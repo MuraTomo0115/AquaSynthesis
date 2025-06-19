@@ -84,9 +84,18 @@ public class Bullet : MonoBehaviour
                 hitObject.HitAttack(_damage);
             }
         }
+        else if(collision.gameObject.tag == "Destructible")
+        {
+            // Destructibleオブジェクトに当たった場合はダメージを与える
+            Character destructible = collision.gameObject.GetComponent<Character>();
+            if (destructible != null)
+            {
+                destructible.HitAttack(_damage);
+            }
+        }
 
-        // 何かに当たったら弾を破棄
-        Destroy(this.gameObject);
+            // 何かに当たったら弾を破棄
+            Destroy(this.gameObject);
     }
 
     /// <summary>
