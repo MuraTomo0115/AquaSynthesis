@@ -152,6 +152,30 @@ public class RecordAbility : MonoBehaviour
         _ghostAnimator = ghost.GetComponent<Animator>();
         _ghostSpriteRenderer = ghost.GetComponent<SpriteRenderer>();
 
+        // ★プレイヤーの攻撃センサーを取得
+        GameObject playerAttackSensor = null;
+        if (_playerMovement != null)
+        {
+            playerAttackSensor = _playerMovement.AttackSensorGameObject;
+        }
+
+        // ★ゴーストに攻撃センサーを渡して初期化
+        var ghostMovement = ghost.GetComponent<GhostMovement>();
+        if (ghostMovement != null)
+        {
+            var first = _savedRecord[0];
+            ghostMovement.Initialize(
+                first.position,
+                first.input,
+                false, // ジャンプ等は必要に応じて
+                first.didAttack,
+                first.didPistol,
+                false, false, // summonA, summonB
+                first.isFacingLeft,
+                playerAttackSensor // ここを追加
+            );
+        }
+
         _playbackCoroutine = StartCoroutine(PlaybackCoroutine(_ghostInstanceTransform, _savedRecord));
     }
 
@@ -194,11 +218,23 @@ public class RecordAbility : MonoBehaviour
             var next = framesToPlay[i + 1];
 
             float t = 0f;
-            // ★ここで複数回呼ばれないように、ShootPistol/StartAttackはループ外に出すのが推奨
+
+            // アニメーション・向き再現
+            if (_ghostAnimator != null && !string.IsNullOrEmpty(current.animClipName))
+                _ghostAnimator.CrossFade(current.animClipName, 0f);
+            if (_ghostSpriteRenderer != null)
+                _ghostSpriteRenderer.flipX = current.isFacingLeft;
             if (ghostMovement != null)
+                ghostMovement.SetRecordedInput(current.input);
+
+            // ★アニメーション名でピストル発射を判定
+            if (ghostMovement != null && current.animClipName == "AttackPistol")
             {
-                if (current.didPistol) ghostMovement.ShootPistol();
-                if (current.didAttack) ghostMovement.StartAttack();
+                ghostMovement.ShootPistol();
+            }
+            if (ghostMovement != null && current.animClipName == "AttackSword")
+            {
+                ghostMovement.StartAttack();
             }
 
             while (t < _recordInterval)
@@ -206,14 +242,6 @@ public class RecordAbility : MonoBehaviour
                 float lerpFactor = t / _recordInterval;
                 playbackTarget.position = Vector3.Lerp(current.position, next.position, lerpFactor);
                 playbackTarget.rotation = Quaternion.Lerp(current.rotation, next.rotation, lerpFactor);
-
-                // アニメーション・向き再現
-                if (_ghostAnimator != null && !string.IsNullOrEmpty(current.animClipName))
-                    _ghostAnimator.CrossFade(current.animClipName, 0f);
-                if (_ghostSpriteRenderer != null)
-                    _ghostSpriteRenderer.flipX = current.isFacingLeft;
-                if (ghostMovement != null)
-                    ghostMovement.SetRecordedInput(current.input);
 
                 t += Time.deltaTime;
                 yield return null;
@@ -227,7 +255,6 @@ public class RecordAbility : MonoBehaviour
 
         _isPlayingBack = false;
 
-        // ★ゴーストを破棄
         Destroy(playbackTarget.gameObject);
     }
 

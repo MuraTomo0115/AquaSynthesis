@@ -26,10 +26,11 @@ public class GhostMovement : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private Character _charaState;
 
-    /// <summary>
-    /// 記録データを受け取って初期化
-    /// </summary>
-    public void Initialize(Vector2 position, Vector2 input, bool jump, bool attack, bool pistol, bool summonA, bool summonB, bool facingLeft)
+    // プレイヤーの攻撃センサーを渡せるようにする
+    public void Initialize(
+        Vector2 position, Vector2 input, bool jump, bool attack, bool pistol, bool summonA, bool summonB, bool facingLeft,
+        GameObject playerAttackSensor = null // 追加
+    )
     {
         _recordedPosition = position;
         _recordedInput = input;
@@ -39,6 +40,13 @@ public class GhostMovement : MonoBehaviour
         _recordedSummonA = summonA;
         _recordedSummonB = summonB;
         _recordedFacingLeft = facingLeft;
+
+        // プレイヤーの攻撃センサーを複製して使う
+        if (playerAttackSensor != null)
+        {
+            _attackSensorInstance = Instantiate(playerAttackSensor, transform);
+            _attackSensorInstance.SetActive(false);
+        }
     }
 
     /// <summary>
@@ -122,12 +130,14 @@ public class GhostMovement : MonoBehaviour
     /// </summary>
     public void ShootPistol()
     {
+        Debug.Log("Ghost ShootPistol: " + Time.time);
         GameObject bullet = Instantiate(_bullet, _firePoint.position, Quaternion.identity);
+        Debug.Log("Bullet created: " + bullet);
         Vector2 direction = _spriteRenderer.flipX ? Vector2.left : Vector2.right;
         Bullet bulletScript = bullet.GetComponent<Bullet>();
         bulletScript.SetDirection(direction);
         bulletScript.SetDamage(_charaState != null ? _charaState.PistolPower : 1);
-        bulletScript.SetIsGhostBullet(true); // ★ゴースト弾フラグをセット
+        bulletScript.SetIsGhostBullet(true);
     }
 
     /// <summary>

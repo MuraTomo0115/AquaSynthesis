@@ -43,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
     public bool IsRecording { get; internal set; } // internal setでRecordAbilityのみ操作
 
     public Vector2 MovementInput => _movement;
+    public GameObject AttackSensorGameObject => _attackSensor;
 
     private void Awake()
     {
