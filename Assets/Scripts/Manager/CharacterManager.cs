@@ -8,7 +8,7 @@ public class CharacterData
     public string id;            // キャラクターID（player, enemy1, etc.）
     public int maxHealth;        // 最大HP
     public int attackPower;      // 攻撃力
-    public int pistolPower;     // プレイヤーのみのステータス。ピストル攻撃力
+    public int pistolPower;      // プレイヤーのみのステータス。ピストル攻撃力
 }
 
 [System.Serializable]
@@ -30,6 +30,9 @@ public class CharacterManager : MonoBehaviour
     {
         // Enemyタグが付いたすべてのオブジェクトを取得
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+        // Destructibleタグが付いたすべてのオブジェクトを取得
+        GameObject[] destructibleObjs = GameObject.FindGameObjectsWithTag("Destructible");
 
         // Playerタグが付いたオブジェクトを1つだけ取得
         GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -70,6 +73,31 @@ public class CharacterManager : MonoBehaviour
             }
         }
 
+        // すべてのDestructibleオブジェクトに対して処理を行う
+        foreach (GameObject destructibleObject in destructibleObjs)
+        {
+            Character obj = destructibleObject.GetComponent<Character>();
+
+            if (obj != null)
+            {
+                characterName = obj.CharacterName;
+                Debug.Log($"取得した敵キャラクター名: {characterName}");
+
+                if (string.IsNullOrEmpty(characterName))
+                {
+                    Debug.LogError("キャラクター名が空です！");
+                    continue;
+                }
+
+                // テーブルからデータを読み込む
+                LoadCharacterDataFromTable(characterName, obj);
+            }
+            else
+            {
+                Debug.LogError("DestructibleのCharacterコンポーネントが見つかりません！");
+            }
+        }
+
         // Playerオブジェクトに対して処理
         Character playerCharacter = player.GetComponent<Character>();
 
@@ -102,18 +130,18 @@ public class CharacterManager : MonoBehaviour
             var playerData = playerList.Find(c => c.Name == name);
             var pistolList = DatabaseManager.GetAllPistols();
             var pistolData = pistolList.Find(c => c.Id == 1);
-			if (playerData != null)
+            if (playerData != null)
             {
                 character.SetStats(playerData.HP, playerData.AttackPower, pistolData.AttackPower);
                 Debug.Log($"プレイヤーのステータスを設定: HP={playerData.HP}, AttackPower={playerData.AttackPower}, Level={playerData.Level}");
                 Debug.Log($"ピストルの攻撃力を設定: PistolPower={pistolData.AttackPower}");
-			}
+            }
             else
             {
                 Debug.LogError($"CharacterStatusテーブルにName '{name}' のデータがありません");
             }
         }
-        else
+        else if (character.CompareTag("Enemy"))
         {
             var enemyList = DatabaseManager.GetAllEnemies();
             var enemyData = enemyList.Find(e => e.Name == name);
@@ -121,11 +149,16 @@ public class CharacterManager : MonoBehaviour
             {
                 character.SetStats(enemyData.HP, enemyData.AttackPower);
                 Debug.Log($"敵キャラクターのステータスを設定: HP={enemyData.HP}, AttackPower={enemyData.AttackPower}");
-			}
+            }
             else
             {
                 Debug.LogError($"EnemyStatusテーブルにName '{name}' のデータがありません");
             }
+        }
+        else if (character.CompareTag("Destructible"))
+        {
+            character.SetStats(0, 0);
+            Debug.Log($"Destructibleのステータスを設定: HP={0}, AttackPower={0}");
         }
     }
 }

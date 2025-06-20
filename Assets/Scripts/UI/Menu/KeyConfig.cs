@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Collections;
 
 /// <summary>
-/// ƒL[ƒRƒ“ƒtƒBƒOŠÇ—ƒNƒ‰ƒX
-/// å§ìÒF‘º“c’qÆ
+/// ï¿½Lï¿½[ï¿½Rï¿½ï¿½ï¿½tï¿½Bï¿½Oï¿½Ç—ï¿½ï¿½Nï¿½ï¿½ï¿½X
+/// ï¿½å§ï¿½ï¿½ÒFï¿½ï¿½ï¿½cï¿½qï¿½ï¿½
 /// </summary>
 public enum KeyDeviceType
 {
@@ -16,88 +16,108 @@ public enum KeyDeviceType
 }
 
 /// <summary>
-/// ƒL[İ’èƒf[ƒ^ƒNƒ‰ƒX
+/// ï¿½Lï¿½[ï¿½İ’ï¿½fï¿½[ï¿½^ï¿½Nï¿½ï¿½ï¿½X
 /// </summary>
 [System.Serializable]
 public class KeyConfigData
 {
-    public string               label;                  // ¯•Ê—pƒ‰ƒxƒ‹
-    public Button               keyButton;              // ƒL[İ’è—pƒ{ƒ^ƒ“
-    public TextMeshProUGUI      keyText;                // ƒL[•\¦—pƒeƒLƒXƒg
-    public Button               resetButton;            // ƒŠƒZƒbƒgƒ{ƒ^ƒ“
-    public InputActionReference action;                 // InputActionQÆ
-    public int                  keyboardBindingIndex;   // ƒL[ƒ{[ƒh—pƒoƒCƒ“ƒfƒBƒ“ƒOƒCƒ“ƒfƒbƒNƒX
-    public int                  gamepadBindingIndex;    // ƒQ[ƒ€ƒpƒbƒh—pƒoƒCƒ“ƒfƒBƒ“ƒOƒCƒ“ƒfƒbƒNƒX
-    public string               saveKey;                // •Û‘¶—pƒL[
+    public string               label;                  // ï¿½ï¿½ï¿½Ê—pï¿½ï¿½ï¿½xï¿½ï¿½
+    public Button               keyButton;              // ï¿½Lï¿½[ï¿½İ’ï¿½pï¿½{ï¿½^ï¿½ï¿½
+    public TextMeshProUGUI      keyText;                // ï¿½Lï¿½[ï¿½\ï¿½ï¿½ï¿½pï¿½eï¿½Lï¿½Xï¿½g
+    public Button               resetButton;            // ï¿½ï¿½ï¿½Zï¿½bï¿½gï¿½{ï¿½^ï¿½ï¿½
+    public InputActionReference action;                 // InputActionï¿½Qï¿½ï¿½
+    public int                  keyboardBindingIndex;   // ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½pï¿½oï¿½Cï¿½ï¿½ï¿½fï¿½Bï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
+    public int                  gamepadBindingIndex;    // ï¿½Qï¿½[ï¿½ï¿½ï¿½pï¿½bï¿½hï¿½pï¿½oï¿½Cï¿½ï¿½ï¿½fï¿½Bï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
+    public string               saveKey;                // ï¿½Û‘ï¿½ï¿½pï¿½Lï¿½[
 
     /// <summary>
-    /// ƒfƒoƒCƒXƒ^ƒCƒv‚É‰‚¶‚½ƒoƒCƒ“ƒfƒBƒ“ƒOƒCƒ“ƒfƒbƒNƒX‚ğæ“¾‚·‚é
+    /// ï¿½fï¿½oï¿½Cï¿½Xï¿½^ï¿½Cï¿½vï¿½É‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½Cï¿½ï¿½ï¿½fï¿½Bï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½ï¿½
     /// </summary>
-    /// <param name="type">ƒfƒoƒCƒXƒ^ƒCƒv</param>
-    /// <returns>ƒoƒCƒ“ƒfƒBƒ“ƒOƒCƒ“ƒfƒbƒNƒX</returns>
+    /// <param name="type">ï¿½fï¿½oï¿½Cï¿½Xï¿½^ï¿½Cï¿½v</param>
+    /// <returns>ï¿½oï¿½Cï¿½ï¿½ï¿½fï¿½Bï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X</returns>
     public int GetBindingIndex(KeyDeviceType type)
     {
-        // ƒL[ƒ{[ƒh‚ÆƒQ[ƒ€ƒpƒbƒh‚ÌƒoƒCƒ“ƒfƒBƒ“ƒOƒCƒ“ƒfƒbƒNƒX‚ğ•Ô‚·
+        // ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½ÆƒQï¿½[ï¿½ï¿½ï¿½pï¿½bï¿½hï¿½Ìƒoï¿½Cï¿½ï¿½ï¿½fï¿½Bï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½Ô‚ï¿½
         return type == KeyDeviceType.Keyboard ? keyboardBindingIndex : gamepadBindingIndex;
     }
 }
 
 /// <summary>
-/// ƒL[İ’è‚ÌƒoƒCƒ“ƒfƒBƒ“ƒOƒf[ƒ^
+/// ï¿½Lï¿½[ï¿½İ’ï¿½Ìƒoï¿½Cï¿½ï¿½ï¿½fï¿½Bï¿½ï¿½ï¿½Oï¿½fï¿½[ï¿½^
 /// </summary>
 [System.Serializable]
 public class KeyBindingData
 {
-    public string        saveKey;        // •Û‘¶—pƒL[
-    public string        overridePath;   // ƒI[ƒo[ƒ‰ƒCƒhƒpƒX
-    public KeyDeviceType deviceType;     // ƒfƒoƒCƒXƒ^ƒCƒv
+    public string        saveKey;        // ï¿½Û‘ï¿½ï¿½pï¿½Lï¿½[
+    public string        overridePath;   // ï¿½Iï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½Cï¿½hï¿½pï¿½X
+    public KeyDeviceType deviceType;     // ï¿½fï¿½oï¿½Cï¿½Xï¿½^ï¿½Cï¿½v
 }
 
 /// <summary>
-/// ƒL[İ’è‚Ì•Û‘¶ƒf[ƒ^ƒNƒ‰ƒX
+/// ï¿½Lï¿½[ï¿½İ’ï¿½Ì•Û‘ï¿½ï¿½fï¿½[ï¿½^ï¿½Nï¿½ï¿½ï¿½X
 /// </summary>
 [System.Serializable]
 public class KeyConfigSaveData
 {
-    public List<KeyBindingData> bindings = new List<KeyBindingData>(); // ƒoƒCƒ“ƒfƒBƒ“ƒOƒŠƒXƒg
+    public List<KeyBindingData> bindings = new List<KeyBindingData>(); // ã‚­ãƒ¼ã‚³ãƒ³ãƒ•ã‚£ã‚°
+    public float bgmVolume = 1.0f;
+    public float seVolume = 1.0f;
+}
+
+
+[System.Serializable]
+public class SoundButtonData
+{
+    public Button plusButton;      // ãƒ—ãƒ©ã‚¹ãƒœã‚¿ãƒ³
+    public Button minusButton;     // ãƒã‚¤ãƒŠã‚¹ãƒœã‚¿ãƒ³
+    public TextMeshProUGUI label;  // éŸ³é‡ãƒ†ã‚­ã‚¹ãƒˆ
+    public string saveKey;         // ä¿å­˜ç”¨ã®ã‚­ãƒ¼
 }
 
 public class KeyConfig : MonoBehaviour
 {
-    [Header("ƒL[İ’èƒf[ƒ^")]
-    [SerializeField] private KeyConfigData[] _keyConfigs;        // ƒL[İ’èƒf[ƒ^”z—ñ
-    [SerializeField] private TextMeshProUGUI _errorText;         // ƒGƒ‰[ƒƒbƒZ[ƒW•\¦—pƒeƒLƒXƒg
-    [SerializeField] private Button          _keyboardButton;    // ƒL[ƒ{[ƒhØ‘Öƒ{ƒ^ƒ“
-    [SerializeField] private Button          _gamepadButton;     // ƒQ[ƒ€ƒpƒbƒhØ‘Öƒ{ƒ^ƒ“
-    [SerializeField] private TextMeshProUGUI _deviceLabelText;   // ƒfƒoƒCƒX–¼•\¦—pƒeƒLƒXƒg
+    [Header("ï¿½Lï¿½[ï¿½İ’ï¿½fï¿½[ï¿½^")]
+    [SerializeField] private KeyConfigData[] _keyConfigs;        // ï¿½Lï¿½[ï¿½İ’ï¿½fï¿½[ï¿½^ï¿½zï¿½ï¿½
+    [SerializeField] private TextMeshProUGUI _errorText;         // ï¿½Gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½\ï¿½ï¿½ï¿½pï¿½eï¿½Lï¿½Xï¿½g
+    [SerializeField] private Button          _keyboardButton;    // ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½Ø‘Öƒ{ï¿½^ï¿½ï¿½
+    [SerializeField] private Button          _gamepadButton;     // ï¿½Qï¿½[ï¿½ï¿½ï¿½pï¿½bï¿½hï¿½Ø‘Öƒ{ï¿½^ï¿½ï¿½
+    [SerializeField] private SoundButtonData _bgmButton;         // BGMè¨­å®šãƒœã‚¿ãƒ³
+    [SerializeField] private SoundButtonData _seButton;          // SEè¨­å®šãƒœã‚¿ãƒ³
+    [SerializeField] private TextMeshProUGUI _deviceLabelText;   // ï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½pï¿½eï¿½Lï¿½Xï¿½g
 
-    [Header("‘I‘ğó‘Ô‚ğ¦‚·˜g‰æ‘œ")]
-    [SerializeField] private GameObject _keyboardFrameSelected;  // ƒL[ƒ{[ƒh‘I‘ğ˜g
-    [SerializeField] private GameObject _keyboardFrameActive;    // ƒL[ƒ{[ƒhŒˆ’è˜g
-    [SerializeField] private GameObject _gamepadFrameSelected;   // ƒQ[ƒ€ƒpƒbƒh‘I‘ğ˜g
-    [SerializeField] private GameObject _gamepadFrameActive;     // ƒQ[ƒ€ƒpƒbƒhŒˆ’è˜g
+    [Header("ï¿½Iï¿½ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½æ‘œ")]
+    [SerializeField] private GameObject _keyboardFrameSelected;  // ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½Iï¿½ï¿½g
+    [SerializeField] private GameObject _keyboardFrameActive;    // ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½g
+    [SerializeField] private GameObject _gamepadFrameSelected;   // ï¿½Qï¿½[ï¿½ï¿½ï¿½pï¿½bï¿½hï¿½Iï¿½ï¿½g
+    [SerializeField] private GameObject _gamepadFrameActive;     // ï¿½Qï¿½[ï¿½ï¿½ï¿½pï¿½bï¿½hï¿½ï¿½ï¿½ï¿½g
 
-    private int           _selectedIndex = 0;         // ‘I‘ğ’†‚ÌƒL[İ’èƒCƒ“ƒfƒbƒNƒX
-    private int           _selectedDeviceIndex = -1;  // ‘I‘ğ’†‚ÌƒfƒoƒCƒXƒCƒ“ƒfƒbƒNƒX
-    private bool          _isResetSelected = false;   // ƒŠƒZƒbƒgƒ{ƒ^ƒ“‘I‘ğó‘Ô
-    private Animation     _optionAnim;                // ƒIƒvƒVƒ‡ƒ“‰æ–ÊƒAƒjƒ[ƒVƒ‡ƒ“
-    private Coroutine     _errorCoroutine;            // ƒGƒ‰[•\¦—pƒRƒ‹[ƒ`ƒ“
+    private int           _selectedIndex = 0;         // é¸æŠä¸­ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ï¼ˆã‚­ãƒ¼ã‚³ãƒ³ãƒ•ã‚£ã‚°ï¼‹éŸ³é‡è¨­å®šï¼‰
+    private int           _selectedDeviceIndex = -1;  // ãƒ‡ãƒã‚¤ã‚¹é¸æŠä¸­ã‹ã©ã†ã‹ï¼ˆ-1:é€šå¸¸, 0:ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰, 1:ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰ï¼‰
+    private const int     _soundButtonCount = 4;      // BGM-, BGM+, SE-, SE+
+    private bool          _isResetSelected = false;   // ãƒªã‚»ãƒƒãƒˆãƒœã‚¿ãƒ³é¸æŠä¸­
+    private Animation     _optionAnim;                // ï¿½Iï¿½vï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÊƒAï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
+    private Coroutine     _errorCoroutine;            // ï¿½Gï¿½ï¿½ï¿½[ï¿½\ï¿½ï¿½ï¿½pï¿½Rï¿½ï¿½ï¿½[ï¿½`ï¿½ï¿½
+    private float        _bgmVolume = 1.0f;           // BGMéŸ³é‡
+    private float        _seVolume = 1.0f;            // SEéŸ³é‡
+    private const float  _volumeStep = 0.05f;         // éŸ³é‡èª¿æ•´ã®é–“éš”(5%ãšã¤èª¿æ•´)
+    private const float  _volumeMin = 0.0f;           // éŸ³é‡èª¿æ•´ã®æœ€å°å€¤
+    private const float  _volumeMax = 1.0f;           // éŸ³é‡èª¿æ•´ã®æœ€å¤§å€¤
 
-    // Œˆ’èÏ‚İƒfƒoƒCƒXƒ^ƒCƒv
+    // ï¿½ï¿½ï¿½ï¿½Ï‚İƒfï¿½oï¿½Cï¿½Xï¿½^ï¿½Cï¿½v
     private KeyDeviceType _activeDeviceType = KeyDeviceType.Keyboard;
-    // ƒI[ƒo[ƒ‰ƒCƒhƒpƒX‚Ì•Û‘¶—pƒfƒBƒNƒVƒ‡ƒiƒŠ
+    // ï¿½Iï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½Cï¿½hï¿½pï¿½Xï¿½Ì•Û‘ï¿½ï¿½pï¿½fï¿½Bï¿½Nï¿½Vï¿½ï¿½ï¿½iï¿½ï¿½
     private readonly Dictionary<(string saveKey, KeyDeviceType deviceType), string> _overridePathDict
         = new Dictionary<(string, KeyDeviceType), string>();
 
     /// <summary>
-    /// ƒQ[ƒ€ƒpƒbƒh‚Ìƒ‰ƒxƒ‹‚ğ“ú–{Œê•\‹L‚É•ÏŠ·‚·‚é‚½‚ß‚Ìƒ}ƒbƒsƒ“ƒO
+    /// ï¿½Qï¿½[ï¿½ï¿½ï¿½pï¿½bï¿½hï¿½Ìƒï¿½ï¿½xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½{ï¿½ï¿½\ï¿½Lï¿½É•ÏŠï¿½ï¿½ï¿½ï¿½é‚½ï¿½ß‚Ìƒ}ï¿½bï¿½sï¿½ï¿½ï¿½O
     /// </summary>
     private static readonly Dictionary<string, string> GamepadLabelMap = new Dictionary<string, string>
     {
-        { "Button South", "Aƒ{ƒ^ƒ“" },
-        { "Button West",  "Xƒ{ƒ^ƒ“" },
-        { "Button North","Yƒ{ƒ^ƒ“" },
-        { "Button East", "Bƒ{ƒ^ƒ“" },
+        { "Button South", "Aï¿½{ï¿½^ï¿½ï¿½" },
+        { "Button West",  "Xï¿½{ï¿½^ï¿½ï¿½" },
+        { "Button North","Yï¿½{ï¿½^ï¿½ï¿½" },
+        { "Button East", "Bï¿½{ï¿½^ï¿½ï¿½" },
         { "Left Shoulder", "L1" },
         { "Right Shoulder", "R1" },
         { "leftTriggerButton", "L2" },
@@ -105,7 +125,7 @@ public class KeyConfig : MonoBehaviour
     };
 
     /// <summary>
-    /// Šeíİ’è‚Ìƒ[ƒh‚âUI‰Šú‰»‚ğs‚¤B
+    /// ï¿½eï¿½ï¿½İ’ï¿½Ìƒï¿½ï¿½[ï¿½hï¿½ï¿½UIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½B
     /// </summary>
     private void Start()
     {
@@ -113,29 +133,68 @@ public class KeyConfig : MonoBehaviour
         optionActions.Option.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>());
         optionActions.Option.Click.performed += ctx => OnSubmit();
         optionActions.Option.Close.performed += ctx => OnClose();
-
-        Debug.Log("KeyConfig‚ÌJSON•Û‘¶æ: " + GetKeyConfigSavePath());
+        Debug.Log("KeyConfig JSONä¿å­˜å…ˆ: " + GetKeyConfigSavePath());
         _optionAnim = GetComponent<Animation>();
-
         LoadAllKeyConfigsFromJson();
-
         foreach (var config in _keyConfigs)
         {
             config.keyButton.onClick.AddListener(() => StartRebind(config));
             config.resetButton.onClick.AddListener(() => ResetBinding(config));
         }
-
-        _selectedDeviceIndex = 0;
+        _selectedDeviceIndex = -1;
         _selectedIndex = 0;
         _isResetSelected = false;
         _activeDeviceType = KeyDeviceType.Keyboard;
         UpdateKeyTexts();
         UpdateSelectionVisual();
-        OnDisable(); // ‰Šúó‘Ô‚Å‚Í–³Œø‰»
+        OnDisable();
+        // BGM
+        if (_bgmButton.minusButton != null)
+            _bgmButton.minusButton.onClick.AddListener(() => ChangeBGMVolume(-_volumeStep));
+        if (_bgmButton.plusButton != null)
+            _bgmButton.plusButton.onClick.AddListener(() => ChangeBGMVolume(_volumeStep));
+        // SE
+        if (_seButton.minusButton != null)
+            _seButton.minusButton.onClick.AddListener(() => ChangeSEVolume(-_volumeStep));
+        if (_seButton.plusButton != null)
+            _seButton.plusButton.onClick.AddListener(() => ChangeSEVolume(_volumeStep));
     }
 
     /// <summary>
-    /// –³Œø‰»‚ÉOptionƒAƒNƒVƒ‡ƒ“ƒ}ƒbƒv‚ğ–³Œø‰»
+    /// BGMéŸ³é‡ã‚’å¢—æ¸›ã—ã€AudioManagerã¨ãƒ©ãƒ™ãƒ«ã€JSONã«åæ˜ ã™ã‚‹
+    /// </summary>
+    private void ChangeBGMVolume(float delta)
+    {
+        _bgmVolume = Mathf.Clamp(_bgmVolume + delta, _volumeMin, _volumeMax);
+        AudioManager.Instance?.SetBGMVolume(_bgmVolume);
+        UpdateVolumeLabels();
+        SaveAllKeyConfigsToJson();
+    }
+
+    /// <summary>
+    /// SEéŸ³é‡ã‚’å¢—æ¸›ã—ã€AudioManagerã¨ãƒ©ãƒ™ãƒ«ã€JSONã«åæ˜ ã™ã‚‹
+    /// </summary>
+    private void ChangeSEVolume(float delta)
+    {
+        _seVolume = Mathf.Clamp(_seVolume + delta, _volumeMin, _volumeMax);
+        AudioManager.Instance?.SetSFXVolume(_seVolume);
+        UpdateVolumeLabels();
+        SaveAllKeyConfigsToJson();
+    }
+
+    /// <summary>
+    /// BGM/SEéŸ³é‡ãƒ©ãƒ™ãƒ«ã‚’ç¾åœ¨ã®å€¤ã§æ›´æ–°ã™ã‚‹
+    /// </summary>
+    private void UpdateVolumeLabels()
+    {
+        if (_bgmButton.label != null)
+            _bgmButton.label.text = $"{Mathf.RoundToInt(_bgmVolume * 100)}%";
+        if (_seButton.label != null)
+            _seButton.label.text = $"{Mathf.RoundToInt(_seVolume * 100)}%";
+    }
+
+    /// <summary>
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Optionï¿½Aï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½}ï¿½bï¿½vï¿½ğ–³Œï¿½ï¿½ï¿½
     /// </summary>
     private void OnDisable()
     {
@@ -143,7 +202,7 @@ public class KeyConfig : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘S‚Ä‚ÌƒL[İ’è‚ğJSONƒtƒ@ƒCƒ‹‚É•Û‘¶
+    /// ï¿½Sï¿½Ä‚ÌƒLï¿½[ï¿½İ’ï¿½ï¿½JSONï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½É•Û‘ï¿½
     /// </summary>
     private void SaveAllKeyConfigsToJson()
     {
@@ -160,36 +219,41 @@ public class KeyConfig : MonoBehaviour
                 deviceType = _activeDeviceType
             });
         }
+        saveData.bgmVolume = _bgmVolume;
+        saveData.seVolume = _seVolume;
         var json = JsonUtility.ToJson(saveData, true);
         System.IO.File.WriteAllText(GetKeyConfigSavePath(), json);
     }
 
     /// <summary>
-    /// JSONƒtƒ@ƒCƒ‹‚©‚ç‘S‚Ä‚ÌƒL[İ’è‚ğ“Ç‚İ‚Ş
+    /// JSONï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½Ä‚ÌƒLï¿½[ï¿½İ’ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
     /// </summary>
     private void LoadAllKeyConfigsFromJson()
     {
         _overridePathDict.Clear();
         var path = GetKeyConfigSavePath();
-        if (!System.IO.File.Exists(path)) return;
-
+        if (!System.IO.File.Exists(path)) {
+            _bgmVolume = 1.0f;
+            _seVolume = 1.0f;
+            AudioManager.Instance?.SetBGMVolume(_bgmVolume);
+            AudioManager.Instance?.SetSFXVolume(_seVolume);
+            UpdateVolumeLabels();
+            return;
+        }
         var json = System.IO.File.ReadAllText(path);
         var saveData = JsonUtility.FromJson<KeyConfigSaveData>(json);
         if (saveData == null) return;
-
         foreach (var binding in saveData.bindings)
         {
             if (!string.IsNullOrEmpty(binding.overridePath))
                 _overridePathDict[(binding.saveKey, binding.deviceType)] = binding.overridePath;
         }
-
         foreach (var config in _keyConfigs)
         {
             int bindingIndex = config.GetBindingIndex(_activeDeviceType);
             if (_overridePathDict.TryGetValue((config.saveKey, _activeDeviceType), out var overridePath) && !string.IsNullOrEmpty(overridePath))
             {
                 config.action.action.ApplyBindingOverride(bindingIndex, overridePath);
-
                 if (InputActionHolder.Instance != null)
                 {
                     var runtimeAction = InputActionHolder.Instance.playerInputActions.asset.FindAction(config.action.action.name, true);
@@ -197,21 +261,27 @@ public class KeyConfig : MonoBehaviour
                 }
             }
         }
+        // éŸ³é‡ã‚‚å¾©å…ƒ
+        _bgmVolume = saveData.bgmVolume;
+        _seVolume = saveData.seVolume;
+        AudioManager.Instance?.SetBGMVolume(_bgmVolume);
+        AudioManager.Instance?.SetSFXVolume(_seVolume);
+        UpdateVolumeLabels();
     }
 
     /// <summary>
-    /// ƒL[ƒRƒ“ƒtƒBƒO‚Ì•Û‘¶æƒpƒX‚ğæ“¾
+    /// ï¿½Lï¿½[ï¿½Rï¿½ï¿½ï¿½tï¿½Bï¿½Oï¿½Ì•Û‘ï¿½ï¿½ï¿½pï¿½Xï¿½ï¿½ï¿½æ“¾
     /// </summary>
-    /// <returns>•Û‘¶æƒpƒX</returns>
+    /// <returns>ï¿½Û‘ï¿½ï¿½ï¿½pï¿½X</returns>
     private string GetKeyConfigSavePath()
     {
         return System.IO.Path.Combine(Application.persistentDataPath, "keyconfig.json");
     }
 
     /// <summary>
-    /// ƒL[İ’è‚Ì‘I‘ğƒCƒ“ƒfƒbƒNƒX‚ğˆÚ“®
+    /// ï¿½Lï¿½[ï¿½İ’ï¿½Ì‘Iï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½Ú“ï¿½
     /// </summary>
-    /// <param name="dir">ˆÚ“®•ûŒü</param>
+    /// <param name="dir">ï¿½Ú“ï¿½ï¿½ï¿½ï¿½ï¿½</param>
     private void MoveSelection(int dir)
     {
         int len = _keyConfigs.Length;
@@ -225,21 +295,21 @@ public class KeyConfig : MonoBehaviour
     }
 
     /// <summary>
-    /// “ü—ÍƒfƒoƒCƒX‚ÌˆÚ“®“ü—Í‚ğˆ—
+    /// ï¿½ï¿½ï¿½Íƒfï¿½oï¿½Cï¿½Xï¿½ÌˆÚ“ï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
-    /// <param name="direction">ˆÚ“®ƒxƒNƒgƒ‹</param>
+    /// <param name="direction">ï¿½Ú“ï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½</param>
     private void OnMove(Vector2 direction)
     {
+        int keyConfigCount = _keyConfigs.Length;
+        int totalSelectable = keyConfigCount + _soundButtonCount;
         if (_selectedDeviceIndex >= 0)
         {
-            // ¶‰E‚Åó‘Ôƒ{ƒ^ƒ“Ø‚è‘Ö‚¦
             if (Mathf.Abs(direction.x) > 0.5f)
             {
                 _selectedDeviceIndex = 1 - _selectedDeviceIndex;
                 UpdateSelectionVisual();
                 return;
             }
-            // ‰º‚ÅƒRƒ“ƒtƒBƒOƒ{ƒ^ƒ“‚ÉˆÚ“®
             if (direction.y < -0.5f)
             {
                 _selectedDeviceIndex = -1;
@@ -248,10 +318,70 @@ public class KeyConfig : MonoBehaviour
                 UpdateSelectionVisual();
                 return;
             }
+            if (direction.y > 0.5f)
+            {
+                _selectedDeviceIndex = -1;
+                _selectedIndex = keyConfigCount; // BGM-
+                _isResetSelected = false;
+                UpdateSelectionVisual();
+                return;
+            }
             return;
         }
-
-        // ƒL[İ’è‘I‘ğ’†‚Ìˆ—
+        // éŸ³é‡è¨­å®šç¾¤ã®ç¯„å›²
+        bool isSoundButton = (_selectedIndex >= keyConfigCount && _selectedIndex < keyConfigCount + _soundButtonCount);
+        if (isSoundButton)
+        {
+            // ä¸Šä¸‹ã§ã‚­ãƒ¼ã‚³ãƒ³ãƒ•ã‚£ã‚°ç¾¤ã‚„ãƒ‡ãƒã‚¤ã‚¹é¸æŠã«ç§»å‹•
+            if (direction.y > 0.5f)
+            {
+                if (_selectedIndex == keyConfigCount) // BGM-
+                {
+                    _selectedIndex = keyConfigCount - 1; // æœ€å¾Œã®ã‚­ãƒ¼ã‚³ãƒ³ãƒ•ã‚£ã‚°
+                }
+                else
+                {
+                    _selectedIndex--;
+                }
+                UpdateSelectionVisual();
+                return;
+            }
+            if (direction.y < -0.5f)
+            {
+                if (_selectedIndex == keyConfigCount + _soundButtonCount - 1) // SE+
+                {
+                    _selectedDeviceIndex = 0;
+                    UpdateSelectionVisual();
+                }
+                else
+                {
+                    _selectedIndex++;
+                    UpdateSelectionVisual();
+                }
+                return;
+            }
+            // å·¦å³ã§éŸ³é‡è¨­å®šç¾¤å†…ã‚’ç§»å‹•
+            if (direction.x < -0.5f)
+            {
+                if (_selectedIndex == keyConfigCount)
+                    _selectedIndex = keyConfigCount + _soundButtonCount - 1; // ãƒ«ãƒ¼ãƒ—
+                else
+                    _selectedIndex--;
+                UpdateSelectionVisual();
+                return;
+            }
+            if (direction.x > 0.5f)
+            {
+                if (_selectedIndex == keyConfigCount + _soundButtonCount - 1)
+                    _selectedIndex = keyConfigCount; // ãƒ«ãƒ¼ãƒ—
+                else
+                    _selectedIndex++;
+                UpdateSelectionVisual();
+                return;
+            }
+            return;
+        }
+        // ã‚­ãƒ¼ã‚³ãƒ³ãƒ•ã‚£ã‚°ç¾¤
         if (direction.y > 0.5f)
         {
             if (_selectedIndex == 0)
@@ -269,7 +399,7 @@ public class KeyConfig : MonoBehaviour
         }
         if (direction.y < -0.5f)
         {
-            if (_selectedIndex < _keyConfigs.Length - 1)
+            if (_selectedIndex < totalSelectable - 1)
             {
                 _selectedIndex++;
                 _isResetSelected = false;
@@ -282,40 +412,41 @@ public class KeyConfig : MonoBehaviour
             }
             return;
         }
-
-        // ¶‰E‚ÅƒŠƒZƒbƒgƒ{ƒ^ƒ“Ø‚è‘Ö‚¦
-        if (direction.x < -0.5f && _isResetSelected)
+        if (_selectedIndex < keyConfigCount)
         {
-            _isResetSelected = false;
-            UpdateSelectionVisual();
-        }
-        else if (direction.x > 0.5f && !_isResetSelected)
-        {
-            _isResetSelected = true;
-            UpdateSelectionVisual();
+            if (direction.x < -0.5f && _isResetSelected)
+            {
+                _isResetSelected = false;
+                UpdateSelectionVisual();
+            }
+            else if (direction.x > 0.5f && !_isResetSelected)
+            {
+                _isResetSelected = true;
+                UpdateSelectionVisual();
+            }
         }
     }
 
     /// <summary>
-    /// Œˆ’è“ü—Í‚Ìˆ—‚ğs‚¤
-    /// </summary>
+    ///  ã‚­ãƒ¼ã‚³ãƒ³ãƒ•ã‚£ã‚°ã®ãƒã‚¤ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚’é–‹å§‹
+    ///  </summary>
     private void OnSubmit()
     {
+        int keyConfigCount = _keyConfigs.Length;
+        int totalSelectable = keyConfigCount + _soundButtonCount;
         if (_selectedDeviceIndex == 0 || _selectedDeviceIndex == 1)
         {
-            // ó‘Ôƒ{ƒ^ƒ“‘I‘ğ
+            // ãƒ‡ãƒã‚¤ã‚¹æ±ºå®š
             _activeDeviceType = (KeyDeviceType)_selectedDeviceIndex;
             UpdateSelectionVisual();
-            _deviceLabelText.text = (_activeDeviceType == KeyDeviceType.Keyboard) ? "ƒL[ƒ{[ƒh" : "ƒQ[ƒ€ƒpƒbƒh";
+            _deviceLabelText.text = (_activeDeviceType == KeyDeviceType.Keyboard) ? "ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰" : "ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰";
             UpdateKeyTexts();
-            // ƒoƒCƒ“ƒfƒBƒ“ƒO‚àØ‚è‘Ö‚¦
             foreach (var config in _keyConfigs)
             {
                 int bindingIndex = config.GetBindingIndex(_activeDeviceType);
                 if (_overridePathDict.TryGetValue((config.saveKey, _activeDeviceType), out var overridePath) && !string.IsNullOrEmpty(overridePath))
                 {
                     config.action.action.ApplyBindingOverride(bindingIndex, overridePath);
-
                     if (InputActionHolder.Instance != null)
                     {
                         var runtimeAction = InputActionHolder.Instance.playerInputActions.asset.FindAction(config.action.action.name, true);
@@ -325,15 +456,33 @@ public class KeyConfig : MonoBehaviour
             }
             return;
         }
-
-        if (_isResetSelected)
-            ResetBinding(_keyConfigs[_selectedIndex]);
-        else
-            StartRebind(_keyConfigs[_selectedIndex]);
+        if (_selectedIndex < keyConfigCount)
+        {
+            if (_isResetSelected)
+                ResetBinding(_keyConfigs[_selectedIndex]);
+            else
+                StartRebind(_keyConfigs[_selectedIndex]);
+        }
+        else if (_selectedIndex == keyConfigCount) // BGM-
+        {
+            _bgmButton.minusButton.onClick.Invoke();
+        }
+        else if (_selectedIndex == keyConfigCount + 1) // BGM+
+        {
+            _bgmButton.plusButton.onClick.Invoke();
+        }
+        else if (_selectedIndex == keyConfigCount + 2) // SE-
+        {
+            _seButton.minusButton.onClick.Invoke();
+        }
+        else if (_selectedIndex == keyConfigCount + 3) // SE+
+        {
+            _seButton.plusButton.onClick.Invoke();
+        }
     }
 
     /// <summary>
-    /// ƒƒjƒ…[‚ğ•Â‚¶‚éˆ—‚ğs‚¤
+    /// ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½Â‚ï¿½ï¿½éˆï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½
     /// </summary>
     private void OnClose()
     {
@@ -341,10 +490,10 @@ public class KeyConfig : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒAƒjƒ[ƒVƒ‡ƒ“‚ğƒXƒP[ƒ‹–³‹‚ÅÄ¶‚·‚éƒRƒ‹[ƒ`ƒ“
+    /// ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½Pï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÅÄï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½ï¿½ï¿½[ï¿½`ï¿½ï¿½
     /// </summary>
-    /// <param name="anim">ƒAƒjƒ[ƒVƒ‡ƒ“</param>
-    /// <param name="clipName">ƒNƒŠƒbƒv–¼</param>
+    /// <param name="anim">ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½</param>
+    /// <param name="clipName">ï¿½Nï¿½ï¿½ï¿½bï¿½vï¿½ï¿½</param>
     /// <returns>IEnumerator</returns>
     private IEnumerator PlayAnimationUnscaled(Animation anim, string clipName)
     {
@@ -365,7 +514,7 @@ public class KeyConfig : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘I‘ğó‘Ô‚ÌUI‚ğXV
+    /// ï¿½Iï¿½ï¿½ï¿½ï¿½Ô‚ï¿½UIï¿½ï¿½ï¿½Xï¿½V
     /// </summary>
     private void UpdateSelectionVisual()
     {
@@ -384,11 +533,12 @@ public class KeyConfig : MonoBehaviour
         else if (_activeDeviceType == KeyDeviceType.Gamepad)
             _gamepadFrameActive.SetActive(true);
 
-        for (int i = 0; i < _keyConfigs.Length; i++)
+        int keyConfigCount = _keyConfigs.Length;
+        // ã‚­ãƒ¼ã‚³ãƒ³ãƒ•ã‚£ã‚°ãƒœã‚¿ãƒ³ç¾¤
+        for (int i = 0; i < keyConfigCount; i++)
         {
             var keyColors = _keyConfigs[i].keyButton.colors;
             var resetColors = _keyConfigs[i].resetButton.colors;
-
             if (_selectedDeviceIndex == -1 && i == _selectedIndex)
             {
                 keyColors.normalColor = !_isResetSelected ? Color.yellow : Color.white;
@@ -399,19 +549,36 @@ public class KeyConfig : MonoBehaviour
                 keyColors.normalColor = Color.white;
                 resetColors.normalColor = Color.white;
             }
-
             _keyConfigs[i].keyButton.colors = keyColors;
             _keyConfigs[i].resetButton.colors = resetColors;
         }
+        // éŸ³é‡è¨­å®šãƒœã‚¿ãƒ³ç¾¤
+        Color bgmMinusColor = Color.white, bgmPlusColor = Color.white, seMinusColor = Color.white, sePlusColor = Color.white;
+        if (_selectedDeviceIndex == -1 && _selectedIndex == keyConfigCount)
+            bgmMinusColor = Color.yellow;
+        if (_selectedDeviceIndex == -1 && _selectedIndex == keyConfigCount + 1)
+            bgmPlusColor = Color.yellow;
+        if (_selectedDeviceIndex == -1 && _selectedIndex == keyConfigCount + 2)
+            seMinusColor = Color.yellow;
+        if (_selectedDeviceIndex == -1 && _selectedIndex == keyConfigCount + 3)
+            sePlusColor = Color.yellow;
+        if (_bgmButton.minusButton != null)
+            _bgmButton.minusButton.image.color = bgmMinusColor;
+        if (_bgmButton.plusButton != null)
+            _bgmButton.plusButton.image.color = bgmPlusColor;
+        if (_seButton.minusButton != null)
+            _seButton.minusButton.image.color = seMinusColor;
+        if (_seButton.plusButton != null)
+            _seButton.plusButton.image.color = sePlusColor;
 
-        _deviceLabelText.text = (_activeDeviceType == KeyDeviceType.Keyboard) ? "ƒL[ƒ{[ƒh" : "ƒQ[ƒ€ƒpƒbƒh";
+        _deviceLabelText.text = (_activeDeviceType == KeyDeviceType.Keyboard) ? "ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰" : "ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰";
     }
 
     /// <summary>
-    /// ƒQ[ƒ€ƒpƒbƒh‚Ìƒ‰ƒxƒ‹‚ğ“ú–{Œê•\‹L‚É•ÏŠ·
+    /// ï¿½Qï¿½[ï¿½ï¿½ï¿½pï¿½bï¿½hï¿½Ìƒï¿½ï¿½xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½{ï¿½ï¿½\ï¿½Lï¿½É•ÏŠï¿½
     /// </summary>
-    /// <param name="raw">Œ³‚Ìƒ‰ƒxƒ‹</param>
-    /// <returns>“ú–{Œêƒ‰ƒxƒ‹</returns>
+    /// <param name="raw">ï¿½ï¿½ï¿½Ìƒï¿½ï¿½xï¿½ï¿½</param>
+    /// <returns>ï¿½ï¿½ï¿½{ï¿½êƒ‰ï¿½xï¿½ï¿½</returns>
     private string ToFriendlyGamepadLabel(string raw)
     {
         string lowerRaw = raw.ToLower();
@@ -424,7 +591,7 @@ public class KeyConfig : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒL[İ’èƒeƒLƒXƒg‚ğXV
+    /// ï¿½Lï¿½[ï¿½İ’ï¿½eï¿½Lï¿½Xï¿½gï¿½ï¿½ï¿½Xï¿½V
     /// </summary>
     private void UpdateKeyTexts()
     {
@@ -447,12 +614,12 @@ public class KeyConfig : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒL[‚ÌƒŠƒoƒCƒ“ƒh‚ğŠJn
+    /// ï¿½Lï¿½[ï¿½Ìƒï¿½ï¿½oï¿½Cï¿½ï¿½ï¿½hï¿½ï¿½ï¿½Jï¿½n
     /// </summary>
-    /// <param name="config">‘ÎÛ‚ÌƒL[İ’èƒf[ƒ^</param>
+    /// <param name="config">ï¿½ÎÛ‚ÌƒLï¿½[ï¿½İ’ï¿½fï¿½[ï¿½^</param>
     private void StartRebind(KeyConfigData config)
     {
-        // ƒIƒvƒVƒ‡ƒ““ü—Í‚ğˆê“I‚É–³Œø‰»
+        // ï¿½Iï¿½vï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½êï¿½Iï¿½É–ï¿½ï¿½ï¿½ï¿½ï¿½
         var optionActions = InputActionHolder.Instance.optionInputActions;
         optionActions.Option.Disable();
 
@@ -473,7 +640,7 @@ public class KeyConfig : MonoBehaviour
 
             if (!isValid)
             {
-                ShowErrorMessage($"{(_activeDeviceType == KeyDeviceType.Keyboard ? "ƒL[ƒ{[ƒh" : "ƒQ[ƒ€ƒpƒbƒh")}‚Ì‚İŠ„‚è“–‚Ä‰Â”\‚Å‚·");
+                ShowErrorMessage($"{(_activeDeviceType == KeyDeviceType.Keyboard ? "ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰" : "ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰")}ã®å…¥åŠ›ãŒç„¡åŠ¹ã§ã™");
                 operation.Cancel();
                 operation.Dispose();
                 config.keyButton.interactable = true;
@@ -494,9 +661,9 @@ public class KeyConfig : MonoBehaviour
 
             if (IsDuplicateKey(config, overridePath, bindingIndex))
             {
-                // ¸”s‚µ‚Ä‚àƒIƒvƒVƒ‡ƒ““ü—Í‚ğÄ“x—LŒø‰»
+                // ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Ä‚ï¿½ï¿½Iï¿½vï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½Ä“xï¿½Lï¿½ï¿½ï¿½ï¿½
                 StartCoroutine(EnableOptionActionWithDelay(0.1f));
-                ShowErrorMessage("‘I‘ğ‚³‚ê‚½ƒL[‚ÍAŠù‚É‘¼‚Ì€–Ú‚Åg—p‚³‚ê‚Ä‚¢‚Ü‚·");
+                ShowErrorMessage("ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½Lï¿½[ï¿½ÍAï¿½ï¿½ï¿½É‘ï¿½ï¿½Ìï¿½ï¿½Ú‚Ågï¿½pï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½");
                 action.RemoveBindingOverride(bindingIndex);
                 _overridePathDict.Remove((config.saveKey, _activeDeviceType));
                 LoadAllKeyConfigsFromJson();
@@ -513,16 +680,16 @@ public class KeyConfig : MonoBehaviour
 
             SaveAllKeyConfigsToJson();
             UpdateKeyTexts();
-            // ƒŠƒoƒCƒ“ƒhŠ®—¹ŒãA1•b‘Ò‚Á‚Ä—LŒø‰»
+            // ï¿½ï¿½ï¿½oï¿½Cï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ï¿½A1ï¿½bï¿½Ò‚ï¿½ï¿½Ä—Lï¿½ï¿½ï¿½ï¿½
             StartCoroutine(EnableOptionActionWithDelay(0.1f));
         })
         .Start();
     }
 
     /// <summary>
-    /// ƒIƒvƒVƒ‡ƒ“ƒAƒNƒVƒ‡ƒ“‚ğˆê’èŠÔŒã‚É—LŒø‰»‚·‚éƒRƒ‹[ƒ`ƒ“
+    /// ï¿½Iï¿½vï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½èï¿½ÔŒï¿½É—Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½ï¿½ï¿½[ï¿½`ï¿½ï¿½
     /// </summary>
-    /// <param name="delay">‘Ò‹@‚·‚éŠÔ</param>
+    /// <param name="delay">ï¿½Ò‹@ï¿½ï¿½ï¿½éï¿½ï¿½</param>
     /// <returns></returns>
     private IEnumerator EnableOptionActionWithDelay(float delay)
     {
@@ -531,9 +698,9 @@ public class KeyConfig : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒL[İ’è‚ğƒfƒtƒHƒ‹ƒg‚ÉƒŠƒZƒbƒg
+    /// ï¿½Lï¿½[ï¿½İ’ï¿½ï¿½ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½Éƒï¿½ï¿½Zï¿½bï¿½g
     /// </summary>
-    /// <param name="config">‘ÎÛ‚ÌƒL[İ’èƒf[ƒ^</param>
+    /// <param name="config">ï¿½ÎÛ‚ÌƒLï¿½[ï¿½İ’ï¿½fï¿½[ï¿½^</param>
     private void ResetBinding(KeyConfigData config)
     {
         int bindingIndex = config.GetBindingIndex(_activeDeviceType);
@@ -554,12 +721,12 @@ public class KeyConfig : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘¼‚ÌƒL[İ’è‚Æd•¡‚µ‚Ä‚¢‚È‚¢‚©”»’è
+    /// ï¿½ï¿½ï¿½ÌƒLï¿½[ï¿½İ’ï¿½Ædï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
-    /// <param name="current">Œ»İ‚Ìİ’è</param>
-    /// <param name="overridePath">Š„‚è“–‚ÄƒpƒX</param>
-    /// <param name="bindingIndex">ƒoƒCƒ“ƒfƒBƒ“ƒOƒCƒ“ƒfƒbƒNƒX</param>
-    /// <returns>d•¡‚µ‚Ä‚¢‚ê‚Îtrue</returns>
+    /// <param name="current">ï¿½ï¿½ï¿½İ‚Ìİ’ï¿½</param>
+    /// <param name="overridePath">ï¿½ï¿½ï¿½è“–ï¿½Äƒpï¿½X</param>
+    /// <param name="bindingIndex">ï¿½oï¿½Cï¿½ï¿½ï¿½fï¿½Bï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X</param>
+    /// <returns>ï¿½dï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½true</returns>
     private bool IsDuplicateKey(KeyConfigData current, string overridePath, int bindingIndex)
     {
         if (string.IsNullOrEmpty(overridePath)) return false;
@@ -578,11 +745,11 @@ public class KeyConfig : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘S‚Ä‚ÌInputActionHolder‚ÉƒoƒCƒ“ƒfƒBƒ“ƒOƒI[ƒo[ƒ‰ƒCƒh‚ğ“K—p
+    /// ï¿½Sï¿½Ä‚ï¿½InputActionHolderï¿½Éƒoï¿½Cï¿½ï¿½ï¿½fï¿½Bï¿½ï¿½ï¿½Oï¿½Iï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½Cï¿½hï¿½ï¿½Kï¿½p
     /// </summary>
-    /// <param name="config">‘ÎÛ‚ÌƒL[İ’èƒf[ƒ^</param>
-    /// <param name="overridePath">ƒI[ƒo[ƒ‰ƒCƒhƒpƒX</param>
-    /// <param name="bindingIndex">ƒoƒCƒ“ƒfƒBƒ“ƒOƒCƒ“ƒfƒbƒNƒX</param>
+    /// <param name="config">ï¿½ÎÛ‚ÌƒLï¿½[ï¿½İ’ï¿½fï¿½[ï¿½^</param>
+    /// <param name="overridePath">ï¿½Iï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½Cï¿½hï¿½pï¿½X</param>
+    /// <param name="bindingIndex">ï¿½oï¿½Cï¿½ï¿½ï¿½fï¿½Bï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X</param>
     private void ApplyOverrideToAllHolders(KeyConfigData config, string overridePath, int bindingIndex)
     {
         config.action.action.ApplyBindingOverride(bindingIndex, overridePath);
@@ -602,10 +769,10 @@ public class KeyConfig : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒGƒ‰[ƒƒbƒZ[ƒW‚ğ•\¦‚·‚é
+    /// ï¿½Gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
-    /// <param name="message">ƒƒbƒZ[ƒW</param>
-    /// <param name="duration">•\¦ŠÔ</param>
+    /// <param name="message">ï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½W</param>
+    /// <param name="duration">ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</param>
     private void ShowErrorMessage(string message, float duration = 2f)
     {
         if (_errorCoroutine != null)
@@ -614,10 +781,10 @@ public class KeyConfig : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒGƒ‰[ƒƒbƒZ[ƒW‚ğˆê’èŠÔ•\¦‚·‚éƒRƒ‹[ƒ`ƒ“
+    /// ï¿½Gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½èï¿½Ô•\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½ï¿½ï¿½[ï¿½`ï¿½ï¿½
     /// </summary>
-    /// <param name="message">ƒƒbƒZ[ƒW</param>
-    /// <param name="duration">•\¦ŠÔ</param>
+    /// <param name="message">ï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½W</param>
+    /// <param name="duration">ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</param>
     /// <returns>IEnumerator</returns>
     private IEnumerator ShowErrorCoroutine(string message, float duration)
     {

@@ -2,6 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//　主製作者：村田智哉
+//  編集者：秋葉朋輝
+
+public struct PlayerSE
+{
+    public const string Attack = "540AttackSE";
+    public const string Pistol = "541PistolSE";
+    public const string Jump = "542JumpSE";
+    public const string Landing = "543LandingSE";
+    public const string Dash = "544DashSE";
+    public const string Hit = "545DamageSE";
+}
+
 /// <summary>
 /// プレイヤーの移動・攻撃・トゲダメージ・記録中フラグ管理
 /// </summary>
@@ -30,6 +43,8 @@ public class PlayerMovement : MonoBehaviour
     private bool _canPistolAttack = true;
     private bool _isInvincible = false; // 無敵状態かどうか
     private bool _isOnSpike = false; // トゲにいるかどうか
+    private AudioSource _audioSource;
+    private bool _wasMoving = false; // 前フレームの移動状態
 
     // 追加: 攻撃・ピストル発射フラグ
     public bool DidAttack { get; private set; }
@@ -51,28 +66,45 @@ public class PlayerMovement : MonoBehaviour
         _attackSensor.gameObject.SetActive(false);
     }
 
-    private void summonsupport1()
+    private void SummonSupport(int num)
     {
-        _supportManager.Summon1();
+        if (_supportManager == null)
+        {
+            Debug.LogError("SupportManager is not assigned in PlayerMovement.");
+            return;
+        }
+        switch (num)
+        {
+            case 1:
+                _supportManager.Summon1();
+                break;
+            case 2:
+                _supportManager.Summon2();
+                break;
+            default:
+                break;
+        }
     }
+
 
     private void Start()
     {
         var playerActions = InputActionHolder.Instance.playerInputActions;
         playerActions.Player.Enable();
+        playerActions.Support.Enable();
         playerActions.Player.Move.performed += ctx => _movement = ctx.ReadValue<Vector2>();
         playerActions.Player.Move.canceled += ctx => _movement = Vector2.zero;
         playerActions.Player.Jump.performed += ctx => Jump();
         playerActions.Player.Attack.performed += ctx => Attack();
         playerActions.Player.Pistol.performed += ctx => Pistol();
-        playerActions.Support.SummonA.performed += ctx => summonsupport1();
-        playerActions.Support.SummonB.performed += ctx => _supportManager.Summon2();
-
+        playerActions.Support.SummonA.performed += ctx => SummonSupport(1);
+        playerActions.Support.SummonB.performed += ctx => SummonSupport(2);
         _attackSensor.gameObject.SetActive(false);
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _charaState = GetComponent<Character>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     /// <summary>
@@ -82,18 +114,22 @@ public class PlayerMovement : MonoBehaviour
     {
         _rb.velocity = new Vector2(_movement.x * _moveSpeed, _rb.velocity.y);
 
-        if (Mathf.Abs(_movement.x) > Mathf.Epsilon)
+        bool isMoving = Mathf.Abs(_movement.x) > Mathf.Epsilon;
+
+        if (isMoving && !_wasMoving)
         {
+            AudioManager.Instance.PlayLoopSE("Player", PlayerSE.Dash); // 移動開始時にループSE再生
             _animator.SetInteger("AnimState", 1);
         }
-        else
+        else if (!isMoving && _wasMoving)
         {
+            AudioManager.Instance.StopLoopSE("Player", PlayerSE.Dash); // 移動停止時にSE停止
             _animator.SetInteger("AnimState", 0);
         }
 
-        _animator.SetFloat("FallSpeed", _rb.velocity.y);
+        _wasMoving = isMoving; // 状態を記録
 
-        // 移動方向に応じて向きを変える
+        _animator.SetFloat("FallSpeed", _rb.velocity.y);
         if (_movement.x > 0.01f)
         {
             _spriteRenderer.flipX = false; // 右向き
@@ -117,12 +153,27 @@ public class PlayerMovement : MonoBehaviour
 
         bool isGrounded = (hitCenter.collider != null || hitLeft.collider != null || hitRight.collider != null);
 
+        // 着地判定
+        if (!_is_CanJump && isGrounded)
+        {
+            PlaySE(PlayerSE.Landing);
+        }
+
         _is_CanJump = isGrounded;
         _animator.SetBool("isGround", isGrounded);
 
         // 攻撃・ピストル発射フラグをリセット
         DidAttack = false;
         DidPistol = false;
+    }
+
+    /// <summary>
+    /// SEを再生するメソッド
+    /// </summary>
+    /// <param name="sePath">再生するファイル名</param>
+    private void PlaySE(string sePath)
+    {
+        AudioManager.Instance.PlaySE("Player", sePath);
     }
 
     /// <summary>
@@ -133,6 +184,7 @@ public class PlayerMovement : MonoBehaviour
         // フラグが無効の場合ジャンプしない
         if (!_is_CanJump) return;
 
+        PlaySE(PlayerSE.Jump);
         // ForceMode2Dを使用し、瞬発的にジャンプ
         _animator.SetTrigger("Jump");
         _rb.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
@@ -144,7 +196,7 @@ public class PlayerMovement : MonoBehaviour
         if (!_canAdjacentAttack) return; // 攻撃が許可されていなければ中断
 
         _animator.SetTrigger("AttackSword");
-        DidAttack = true; // 追加
+        DidAttack = true;
     }
 
     private void Pistol()
@@ -161,6 +213,8 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private void ShootPistol()
     {
+        PlaySE(PlayerSE.Pistol);
+
         // Bullet を生成
         GameObject bullet = Instantiate(_bullet, _firePoint.position, Quaternion.identity);
 
@@ -199,6 +253,11 @@ public class PlayerMovement : MonoBehaviour
         _animator.SetBool("isAttack", false);
     }
 
+    public void Landing()
+    {
+        PlaySE(PlayerSE.Attack);
+    }
+
     public void OwnAttackHit(Collider2D other)
     {
         // スパイクなら攻撃判定をスキップ
@@ -218,6 +277,7 @@ public class PlayerMovement : MonoBehaviour
     public void StartAttack()
     {
         _attackSensor.gameObject.SetActive(true);
+        PlaySE(PlayerSE.Attack);
 
         // プレイヤーの向きに合わせて攻撃判定のスケールを変更
         if (_spriteRenderer.flipX)

@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    [SerializeField]
-    private string _characterName;
+    [SerializeField] private string _characterName;
+    [SerializeField] private GameObject _expPrefab;
 
     private int _maxHealth;
     private int _currentHealth;
     private int _attackPower;
     private int _pistolPower = 0;
     protected Animator _animator;
+    protected Animation _animation;
     private SpriteRenderer _spriteRenderer;
     private Color _defaultColor;
     private GameObject _player;
@@ -30,6 +31,7 @@ public class Character : MonoBehaviour
     protected virtual void Awake()
     {
         _animator = GetComponent<Animator>();
+        _animation = GetComponent<Animation>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         if (_spriteRenderer != null)
             _defaultColor = _spriteRenderer.color;
@@ -44,6 +46,14 @@ public class Character : MonoBehaviour
     public void HitAttack(int damage)
     {
         if (_isDead) return; // 死亡してたら処理スキップ
+
+        if (CompareTag("Player"))
+        {
+            var playerList = DatabaseManager.GetAllCharacters();
+            var playerData = playerList.Find(c => c.Name == "Shizuku");
+
+            AudioManager.Instance.PlaySE("Player", playerData.DamageSE);
+        }
 
         _currentHealth -= damage;
         UnityEngine.Debug.Log($"{_characterName} はダメージを {damage} 食らいました。残りHP: {_currentHealth}");
@@ -72,6 +82,20 @@ public class Character : MonoBehaviour
     {
         if (_isDead) return; // 念のため多重実行防止
         _isDead = true;      // フラグON（1回だけ死亡処理）
+
+        if (CompareTag("Destructible"))
+        {
+            float dropChance = 0.8f; // 80%の確率
+            if (Random.value < dropChance && _expPrefab != null)
+            {
+                GameObject exp = Instantiate(_expPrefab, transform.position, Quaternion.identity, this.transform);
+                var anim = exp.GetComponent<Animation>();
+                if (anim != null) anim.Play();
+            }
+            _animator?.SetTrigger("Destroy");
+            Destroy(gameObject, 1.0f);
+            return;
+        }
 
         _animator?.SetTrigger("Die");
 
