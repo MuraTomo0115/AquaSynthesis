@@ -18,6 +18,7 @@ public class Character : MonoBehaviour
     private GameObject _player;
     private PlayerMovement _playerMovement;
     private bool _isDead = false; // 死亡したかどうかのフラグ
+    private string _seFile;
 
     public float HP { get; private set; }
     public float MaxHP { get; private set; }
@@ -83,17 +84,10 @@ public class Character : MonoBehaviour
         if (_isDead) return; // 念のため多重実行防止
         _isDead = true;      // フラグON（1回だけ死亡処理）
 
+        // 破壊可能オブジェクトの場合処理を分ける
         if (CompareTag("Destructible"))
         {
-            float dropChance = 0.8f; // 80%の確率
-            if (Random.value < dropChance && _expPrefab != null)
-            {
-                GameObject exp = Instantiate(_expPrefab, transform.position, Quaternion.identity, this.transform);
-                var anim = exp.GetComponent<Animation>();
-                if (anim != null) anim.Play();
-            }
-            _animator?.SetTrigger("Destroy");
-            Destroy(gameObject, 1.0f);
+            DestructibleObj();
             return;
         }
 
@@ -163,6 +157,11 @@ public class Character : MonoBehaviour
         _currentHealth = maxHp;
     }
 
+    public void SetSE(string path)
+    {
+        _seFile = path;
+    }
+
     /// <summary>
     /// 他のCharacterからステータスをコピーする
     /// </summary>
@@ -175,5 +174,36 @@ public class Character : MonoBehaviour
         _currentHealth = other.CurrentHealth;
         HP = other.HP;
         MaxHP = other.MaxHP;
+    }
+
+    /// <summary>
+    /// 破壊可能オブジェクトの処理
+    /// </summary>
+    private void DestructibleObj()
+    {
+        AudioManager.Instance.PlaySE("StageObj", _seFile);
+        float dropChance = 0.8f; // 80%の確率
+        if (Random.value < dropChance && _expPrefab != null)
+        {
+            GameObject exp = Instantiate(_expPrefab, transform.position, Quaternion.identity, this.transform);
+            var anim = exp.GetComponent<Animation>();
+            if (anim != null) anim.Play();
+
+            int _expMin = 500;
+            int _expMax = 1000;
+            int _expStep = 100;
+            int stepCount = (_expMax - _expMin) / _expStep + 1;
+            int expCount = _expMin + _expStep * Random.Range(0, stepCount);
+
+            var popup = exp.GetComponent<ExpPopup>();
+            if (popup != null)
+            {
+                popup.SetExp(expCount);
+            }
+
+            ExpManager.Instance.AddExp(expCount);
+        }
+        _animator?.SetTrigger("Destroy");
+        Destroy(gameObject, 1.0f);
     }
 }
