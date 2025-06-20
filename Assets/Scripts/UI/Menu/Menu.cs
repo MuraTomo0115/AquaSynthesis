@@ -14,6 +14,8 @@ public class Menu : MonoBehaviour
     [SerializeField] private GameObject      _menuContents;           // メニュー全体のUIオブジェクト
     [SerializeField] private GameObject      _menuUI;                 // メニューUIオブジェクト
     [SerializeField] private GameObject      _player;                 // プレイヤーオブジェクト
+    [SerializeField] private Image           _fadeImage;              // フェード用Image（Inspectorでアサイン）
+    [SerializeField] private float           _fadeDuration = 0.5f;    // フェード時間
     private Animation                        _menuAnim;               // メニュー開閉用のAnimationコンポーネント
     private bool                             _isOpen = false;         // メニューが開いているかどうか
 
@@ -50,6 +52,12 @@ public class Menu : MonoBehaviour
         menuActions.Menu.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>().x);
         menuActions.Menu.Vertical.performed += ctx => OnVertical(ctx.ReadValue<Vector2>().y);
         menuActions.Menu.Click.performed += ctx => OnClick();
+
+        if (_fadeImage != null)
+        {
+            _fadeImage.color = new Color(0, 0, 0, 1); // 念のためAlpha=1
+            _fadeImage.DOFade(0f, _fadeDuration).SetUpdate(true);
+        }
     }
 
     /// <summary>
@@ -267,7 +275,7 @@ public class Menu : MonoBehaviour
                     break;
                 case 2:
                     // 3つ目のメニュー項目の処理
-                    Debug.Log("メニュー3の処理");
+                    StartCoroutine(RetryStageWithFade());
                     break;
                 case 3:
                     // 4つ目のメニュー項目の処理
@@ -358,5 +366,22 @@ public class Menu : MonoBehaviour
             yield return null;
         }
         anim.Stop();
+    }
+    private IEnumerator RetryStageWithFade()
+    {
+        // フェードアウト
+        if (_fadeImage != null)
+        {
+            // TimeScale=0でも動くようSetUpdate(true)を指定
+            Tween fadeTween = _fadeImage.DOFade(1f, _fadeDuration).SetUpdate(true);
+            yield return fadeTween.WaitForCompletion();
+        }
+
+        // TimeScaleを戻しておく（リトライ時に0のままだと止まるため）
+        Time.timeScale = 1f;
+
+        // シーン再読み込み
+        var scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.name);
     }
 }

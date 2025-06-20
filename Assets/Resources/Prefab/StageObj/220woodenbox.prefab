@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3148595815546374478}
   - component: {fileID: 5399271287057741921}
   - component: {fileID: 7523126588195886288}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 220woodenbox
   m_TagString: Destructible
   m_Icon: {fileID: 0}
@@ -124,7 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938b323c97307b6449b6282f7a76c142, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterName: DestructibleObj
+  _characterName: wooden_box
   _expPrefab: {fileID: 824182020359103010, guid: 168762a98dde9e845a1ff99eac0e83dd, type: 3}
 --- !u!95 &7523126588195886288
 Animator:

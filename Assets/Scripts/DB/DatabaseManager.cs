@@ -3,6 +3,7 @@ using UnityEngine;
 using SQLite4Unity3d;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 
 // 主製作者：村田智哉
 
@@ -120,11 +121,14 @@ public class DatabaseManager
         {
             //Connection.Execute("ALTER TABLE CharacterStatus ADD COLUMN Exp INTEGER DEFAULT 100;");
 		}
-    }
 
-    /// CharacterStatusテーブルの全レコードを取得
-    /// </summary>
-    public static List<CharacterStatus> GetAllCharacters()
+		// 名前を指定し、テーブルからデータを削除
+		//Connection.Execute("DELETE FROM DestructibleObjs WHERE Name = ?", "barrel");
+	}
+
+	/// CharacterStatusテーブルの全レコードを取得
+	/// </summary>
+	public static List<CharacterStatus> GetAllCharacters()
 	{
 		return Connection.Query<CharacterStatus>("SELECT * FROM CharacterStatus");
 	}
@@ -135,6 +139,14 @@ public class DatabaseManager
 	public static List<EnemyStatus> GetAllEnemies()
 	{
 		return Connection.Query<EnemyStatus>("SELECT * FROM EnemyStatus");
+	}
+
+	/// <summary>
+	/// EnemyStatusテーブルの全レコードを取得
+	/// </summary>
+	public static List<DestructibleObjs> GetAllDestructibleObjs()
+	{
+		return Connection.Query<DestructibleObjs>("SELECT * FROM DestructibleObjs");
 	}
 
 	/// <summary>

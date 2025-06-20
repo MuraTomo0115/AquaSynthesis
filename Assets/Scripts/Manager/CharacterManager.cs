@@ -157,7 +157,9 @@ public class CharacterManager : MonoBehaviour
         }
         else if (character.CompareTag("Destructible"))
         {
-            character.SetStats(0, 0);
+            var destructibleList = DatabaseManager.GetAllDestructibleObjs();
+            var destructibleData = destructibleList.Find(e => e.Name == name);
+            character.SetSE(destructibleData.DestroySE);
             Debug.Log($"Destructibleのステータスを設定: HP={0}, AttackPower={0}");
         }
     }

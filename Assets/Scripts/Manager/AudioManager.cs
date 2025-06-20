@@ -135,4 +135,13 @@ public class AudioManager : MonoBehaviour
             _loopSfxSource.Stop();
         }
     }
+
+    /// <summary>
+    /// 全ての効果音を停止
+    /// </summary>
+    public void StopAllSE()
+    {
+        _sfxSource.Stop();       // ワンショットSEの停止
+        _loopSfxSource.Stop();   // ループSEの停止
+    }
 }

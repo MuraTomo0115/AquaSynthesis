@@ -62,7 +62,9 @@ public class ADVManager : MonoBehaviour
 	{
 		if (_isPlay) return;
 
-		_isPlay = true;
+		AudioManager.Instance.StopAllSE(); // ‚·‚×‚Ä‚ÌSE‚ğ’â~
+
+        _isPlay = true;
 		Time.timeScale = 0f;
                               // UI‰Šú‰»•‰ß‹‚Ìc‚è‚ğƒNƒŠƒA
         _messageText.text = "";
