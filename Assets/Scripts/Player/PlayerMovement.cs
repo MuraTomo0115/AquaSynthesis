@@ -44,6 +44,7 @@ public class PlayerMovement : MonoBehaviour
 
     public Vector2 MovementInput => _movement;
     public GameObject AttackSensorGameObject => _attackSensor;
+    public GameObject BulletPrefab => _bullet;
 
     private void Awake()
     {

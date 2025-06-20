@@ -7,11 +7,13 @@ using UnityEngine;
 /// </summary>
 public class RecordAbility : MonoBehaviour
 {
-    [SerializeField] private Transform _target; // 記録対象
+    [Header("記録・再生対象")]
+    [SerializeField] private Transform _target; // 記録対象（プレイヤー）
     [SerializeField] private float _recordInterval = 0.1f; // 記録間隔（秒）
-    [SerializeField] private float _maxRecordTime = 10f; // 最大記録時間（秒）
-    [SerializeField] private GameObject _ghostPrefab; // ゴーストのプレハブ
+    [SerializeField] private float _maxRecordTime = 10f;   // 最大記録時間（秒）
+    [SerializeField] private GameObject _ghostPrefab;      // ゴーストのプレハブ
 
+    // 内部参照
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     private PlayerMovement _playerMovement;
@@ -21,13 +23,13 @@ public class RecordAbility : MonoBehaviour
     /// </summary>
     private struct FrameData
     {
-        public Vector3 position;
-        public Quaternion rotation;
-        public string animClipName;
-        public bool isFacingLeft;
-        public bool didAttack;
-        public bool didPistol;
-        public Vector2 input; // ★追加
+        public Vector3 position;         // 位置
+        public Quaternion rotation;      // 回転
+        public string animClipName;      // アニメーションクリップ名
+        public bool isFacingLeft;        // 左向きか
+        public bool didAttack;           // 近接攻撃トリガー
+        public bool didPistol;           // ピストルトリガー
+        public Vector2 input;            // 入力値
 
         public FrameData(Vector3 pos, Quaternion rot, string clipName, bool facingLeft, bool attack, bool pistol, Vector2 input)
         {
@@ -41,10 +43,12 @@ public class RecordAbility : MonoBehaviour
         }
     }
 
-    private List<FrameData> _savedRecord = new List<FrameData>(); // 記録データ
+    // 記録データ
+    private List<FrameData> _savedRecord = new List<FrameData>();
     private Coroutine _recordCoroutine = null;
     private Coroutine _playbackCoroutine = null;
 
+    // ゴースト再生用
     private Transform _ghostInstanceTransform;
     private Animator _ghostAnimator;
     private SpriteRenderer _ghostSpriteRenderer;
@@ -72,7 +76,7 @@ public class RecordAbility : MonoBehaviour
         if (_isRecording || _recordCoroutine != null) return;
         if (_playerMovement != null)
         {
-            _playerMovement.IsRecording = true; // internal setで操作
+            _playerMovement.IsRecording = true; // 記録モードON
         }
         _recordCoroutine = StartCoroutine(RecordCoroutine());
     }
@@ -90,12 +94,12 @@ public class RecordAbility : MonoBehaviour
         _isRecording = false;
         if (_playerMovement != null)
         {
-            _playerMovement.IsRecording = false; // PlayerMovementの記録モードも終了
+            _playerMovement.IsRecording = false; // 記録モードOFF
         }
     }
 
     /// <summary>
-    /// 記録処理コルーチン
+    /// プレイヤーの動作を一定間隔で記録するコルーチン
     /// </summary>
     private IEnumerator RecordCoroutine()
     {
@@ -110,12 +114,13 @@ public class RecordAbility : MonoBehaviour
         {
             timer += _recordInterval;
 
+            // 現在の状態を取得
             string clipName = GetCurrentAnimationClipName();
             bool isFacingLeft = _spriteRenderer != null ? _spriteRenderer.flipX : false;
             bool didAttack = _playerMovement != null && _playerMovement.DidAttack;
             bool didPistol = _playerMovement != null && _playerMovement.DidPistol;
 
-            // 立ち上がりだけ記録
+            // トリガー（立ち上がり）だけ記録
             bool pistolTrigger = didPistol && !prevDidPistol;
             bool attackTrigger = didAttack && !prevDidAttack;
 
@@ -126,7 +131,7 @@ public class RecordAbility : MonoBehaviour
                 isFacingLeft,
                 attackTrigger,
                 pistolTrigger,
-                _playerMovement != null ? _playerMovement.MovementInput : Vector2.zero // ★ここを追加
+                _playerMovement != null ? _playerMovement.MovementInput : Vector2.zero
             ));
 
             prevDidPistol = didPistol;
@@ -152,14 +157,16 @@ public class RecordAbility : MonoBehaviour
         _ghostAnimator = ghost.GetComponent<Animator>();
         _ghostSpriteRenderer = ghost.GetComponent<SpriteRenderer>();
 
-        // ★プレイヤーの攻撃センサーを取得
+        // プレイヤーの攻撃センサー・弾プレハブを取得
         GameObject playerAttackSensor = null;
+        GameObject bulletPrefab = null;
         if (_playerMovement != null)
         {
             playerAttackSensor = _playerMovement.AttackSensorGameObject;
+            bulletPrefab = _playerMovement.BulletPrefab;
         }
 
-        // ★ゴーストに攻撃センサーを渡して初期化
+        // ゴーストに初期データを渡して初期化
         var ghostMovement = ghost.GetComponent<GhostMovement>();
         if (ghostMovement != null)
         {
@@ -172,7 +179,8 @@ public class RecordAbility : MonoBehaviour
                 first.didPistol,
                 false, false, // summonA, summonB
                 first.isFacingLeft,
-                playerAttackSensor // ここを追加
+                playerAttackSensor,
+                bulletPrefab
             );
         }
 
@@ -203,7 +211,7 @@ public class RecordAbility : MonoBehaviour
     }
 
     /// <summary>
-    /// ゴースト再生処理コルーチン
+    /// ゴーストの動作を記録データに従って再生するコルーチン
     /// </summary>
     /// <param name="playbackTarget">再生対象のTransform</param>
     /// <param name="framesToPlay">再生するフレームデータリスト</param>
@@ -227,16 +235,15 @@ public class RecordAbility : MonoBehaviour
             if (ghostMovement != null)
                 ghostMovement.SetRecordedInput(current.input);
 
-            // ★アニメーション名でピストル発射を判定
-            if (ghostMovement != null && current.animClipName == "AttackPistol")
-            {
-                ghostMovement.ShootPistol();
-            }
-            if (ghostMovement != null && current.animClipName == "AttackSword")
-            {
+            // 近接攻撃（トリガーのみ）
+            if (ghostMovement != null && current.didAttack)
                 ghostMovement.StartAttack();
-            }
 
+            // ピストル発射（トリガーのみ）
+            if (ghostMovement != null && current.didPistol)
+                ghostMovement.ShootPistol();
+
+            // 補間でなめらかに移動・回転
             while (t < _recordInterval)
             {
                 float lerpFactor = t / _recordInterval;
@@ -255,6 +262,7 @@ public class RecordAbility : MonoBehaviour
 
         _isPlayingBack = false;
 
+        // ゴーストを破棄
         Destroy(playbackTarget.gameObject);
     }
 
