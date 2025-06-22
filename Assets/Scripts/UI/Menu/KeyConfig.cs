@@ -489,15 +489,10 @@ public class KeyConfig : MonoBehaviour
     private void OnClose()
     {
         AudioManager.Instance.PlaySE("Menu","5412MenuClose");
+        InputActionHolder.Instance.optionInputActions.Option.Disable();
         StartCoroutine(PlayAnimationUnscaled(_optionAnim, "OptionClose"));
     }
 
-    /// <summary>
-    /// �A�j���[�V�������X�P�[�������ōĐ�����R���[�`��
-    /// </summary>
-    /// <param name="anim">�A�j���[�V����</param>
-    /// <param name="clipName">�N���b�v��</param>
-    /// <returns>IEnumerator</returns>
     private IEnumerator PlayAnimationUnscaled(Animation anim, string clipName)
     {
         anim.Play(clipName);
