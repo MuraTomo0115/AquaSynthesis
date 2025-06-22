@@ -300,6 +300,7 @@ public class KeyConfig : MonoBehaviour
     /// <param name="direction">�ړ��x�N�g��</param>
     private void OnMove(Vector2 direction)
     {
+        AudioManager.Instance.PlaySE("Menu","5413MenuChoice");
         int keyConfigCount = _keyConfigs.Length;
         int totalSelectable = keyConfigCount + _soundButtonCount;
         if (_selectedDeviceIndex >= 0)
@@ -432,6 +433,7 @@ public class KeyConfig : MonoBehaviour
     ///  </summary>
     private void OnSubmit()
     {
+        AudioManager.Instance.PlaySE("Menu","5412MenuDecision");
         int keyConfigCount = _keyConfigs.Length;
         int totalSelectable = keyConfigCount + _soundButtonCount;
         if (_selectedDeviceIndex == 0 || _selectedDeviceIndex == 1)
@@ -486,6 +488,7 @@ public class KeyConfig : MonoBehaviour
     /// </summary>
     private void OnClose()
     {
+        AudioManager.Instance.PlaySE("Menu","5412MenuClose");
         StartCoroutine(PlayAnimationUnscaled(_optionAnim, "OptionClose"));
     }
 
