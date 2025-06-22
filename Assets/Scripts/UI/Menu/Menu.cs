@@ -305,7 +305,14 @@ public class Menu : MonoBehaviour
     /// <param name="animName"></param>
     private void SelectItem(Animation anim,string animName)
     {
-        StartCoroutine(PlayAnimationUnscaled(anim, animName));
+        StartCoroutine(PlayItemAnimationWithInputLock(anim, animName));
+    }
+
+    private IEnumerator PlayItemAnimationWithInputLock(Animation anim, string animName)
+    {
+        InputActionHolder.Instance.menuInputActions.Menu.Disable();
+        yield return StartCoroutine(PlayAnimationUnscaled(anim, animName));
+        InputActionHolder.Instance.menuInputActions.Menu.Enable();
     }
 
     /// <summary>
