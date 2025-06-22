@@ -34,6 +34,7 @@ public class ADVManager : MonoBehaviour
 	private float _advanceCooldown = 1f;
 	private bool _isPlay = false;
 	private bool _isFading = false;
+	private bool _isWaitingSE = false; // SEçƒê∂ë“ã@íÜÉtÉâÉOÇí«â¡
 	private Dictionary<string, string> _targetToSideMap = new Dictionary<string, string>();
 
 	private void Awake()
@@ -96,7 +97,7 @@ public class ADVManager : MonoBehaviour
 	/// </summary>
 	private void Update()
 	{
-		if (_isCooldown || _isFading || !_isPlay) return;
+		if (_isCooldown || _isFading || !_isPlay || _isWaitingSE) return; // Å© í«â¡
 
 		bool isAdvancePressed = _inputActions.ADV.Advance.triggered;
 		bool isHoldSpeedUp = _inputActions.ADV.Advance.ReadValue<float>() > 0.5f;
@@ -237,21 +238,24 @@ public class ADVManager : MonoBehaviour
 	/// <returns></returns>
 	private IEnumerator PlaySEAndWait(string clipName, bool wait)
 	{
+		_isWaitingSE = true; // Å© í«â¡
 		AudioClip clip = Resources.Load<AudioClip>("Audio/SE/" + clipName);
 		if (clip == null)
 		{
 			UnityEngine.Debug.LogWarning("SEÇ™å©Ç¬Ç©ÇËÇ‹ÇπÇÒ: " + clipName);
+			_isWaitingSE = false; // Å© í«â¡
 			ShowNextStep();
 			yield break;
 		}
 		_seAudioSource.PlayOneShot(clip);
 
-        if (wait)
-        {
-            yield return new WaitForSecondsRealtime(clip.length);
-        }
+    if (wait)
+    {
+        yield return new WaitForSecondsRealtime(clip.length);
+    }
 
-        ShowNextStep();
+    _isWaitingSE = false; // Å© í«â¡
+    ShowNextStep();
 	}
 
 	/// <summary>
