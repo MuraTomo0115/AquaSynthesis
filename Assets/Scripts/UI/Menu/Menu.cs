@@ -6,36 +6,41 @@ using DG.Tweening;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// å§ìÒF‘º“c’qÆ
+/// ï¿½å§ï¿½ï¿½ÒFï¿½ï¿½ï¿½cï¿½qï¿½ï¿½
 /// </summary>
 
 public class Menu : MonoBehaviour
 {
-    [SerializeField] private GameObject      _menuContents;           // ƒƒjƒ…[‘S‘Ì‚ÌUIƒIƒuƒWƒFƒNƒg
-    [SerializeField] private GameObject      _menuUI;                 // ƒƒjƒ…[UIƒIƒuƒWƒFƒNƒg
-    [SerializeField] private GameObject      _player;                 // ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg
-    private Animation                        _menuAnim;               // ƒƒjƒ…[ŠJ•Â—p‚ÌAnimationƒRƒ“ƒ|[ƒlƒ“ƒg
-    private bool                             _isOpen = false;         // ƒƒjƒ…[‚ªŠJ‚¢‚Ä‚¢‚é‚©‚Ç‚¤‚©
+    [SerializeField] private GameObject      _menuContents;           // ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½Sï¿½Ì‚ï¿½UIï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½g
+    [SerializeField] private GameObject      _menuUI;                 // ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[UIï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½g
+    [SerializeField] private GameObject      _player;                 // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½g
+    [SerializeField] private Image           _fadeImage;              // ï¿½tï¿½Fï¿½[ï¿½hï¿½pImageï¿½iInspectorï¿½ÅƒAï¿½Tï¿½Cï¿½ï¿½ï¿½j
+    [SerializeField] private float           _fadeDuration = 0.5f;    // ï¿½tï¿½Fï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½
+    private Animation                        _menuAnim;               // ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½Jï¿½Â—pï¿½ï¿½Animationï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½g
+    private bool                             _isOpen = false;         // ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½
 
-    [SerializeField] private RectTransform[] _menuItems;              // ƒƒjƒ…[€–Úiƒ{ƒ^ƒ““™j‚Ì”z—ñ
-    [SerializeField] private Animation       _optionAnim;             // ƒIƒvƒVƒ‡ƒ“‚ÌƒAƒjƒ[ƒVƒ‡ƒ“
-    [SerializeField] private GameObject      _backButton;             // –ß‚éƒ{ƒ^ƒ“‚ÌGameObject
-    private int                              _currentIndex = 0;       // Œ»İ‘I‘ğ’†‚Ìƒƒjƒ…[€–ÚƒCƒ“ƒfƒbƒNƒX
-    private bool                             _isInCarousel = true;    // ƒƒjƒ…[€–Ú‘I‘ğ’†‚©itrue:ƒƒjƒ…[€–Ú, false:–ß‚éƒ{ƒ^ƒ“j
-    private Outline                          _backButtonOutline;      // –ß‚éƒ{ƒ^ƒ“‚ÌOutlineƒRƒ“ƒ|[ƒlƒ“ƒg
-    private Vector3                          _originalBackButtonScale;// –ß‚éƒ{ƒ^ƒ“‚ÌŒ³‚ÌƒXƒP[ƒ‹
-    private Tween                            _outlineTween;           // Outline“_–Å—p‚ÌDOTweenƒCƒ“ƒXƒ^ƒ“ƒX
-    private Menu                             _menu;                   // ƒƒjƒ…[ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX
-    private PlayerMovement _playerMovement;                           // ƒvƒŒƒCƒ„[‚ÌˆÚ“®ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX
+    [SerializeField] private RectTransform[] _menuItems;              // ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Úiï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½jï¿½Ì”zï¿½ï¿½
+    [SerializeField] private Animation       _optionAnim;             // ï¿½Iï¿½vï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ÌƒAï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
+    [SerializeField] private GameObject      _backButton;             // ï¿½ß‚ï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½GameObject
+    private int                              _currentIndex = 0;       // ï¿½ï¿½ï¿½İ‘Iï¿½ğ’†‚Ìƒï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ÚƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
+    private bool                             _isInCarousel = true;    // ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú‘Iï¿½ğ’†‚ï¿½ï¿½itrue:ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½, false:ï¿½ß‚ï¿½{ï¿½^ï¿½ï¿½ï¿½j
+    private Outline                          _backButtonOutline;      // ï¿½ß‚ï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½Outlineï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½g
+    private Vector3                          _originalBackButtonScale;// ï¿½ß‚ï¿½{ï¿½^ï¿½ï¿½ï¿½ÌŒï¿½ï¿½ÌƒXï¿½Pï¿½[ï¿½ï¿½
+    private Tween                            _outlineTween;           // Outlineï¿½_ï¿½Å—pï¿½ï¿½DOTweenï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½X
+    private Menu                             _menu;                   // ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½Nï¿½ï¿½ï¿½Xï¿½ÌƒCï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½X
+    private PlayerMovement _playerMovement;                           // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ÌˆÚ“ï¿½ï¿½Nï¿½ï¿½ï¿½Xï¿½ÌƒCï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½X
 
-    private const float                      MenuItemSelectedScale = 1.2f;       // ‘I‘ğ’†ƒƒjƒ…[€–Ú‚ÌŠg‘å—¦
-    private const float                      MenuItemTweenDuration = 0.2f;       // ƒƒjƒ…[€–Ú‚ÌŠg‘åEk¬ƒAƒjƒ[ƒVƒ‡ƒ“ŠÔ
-    private const float                      BackButtonTweenDuration = 0.2f;     // –ß‚éƒ{ƒ^ƒ“‚ÌŠg‘åEk¬ƒAƒjƒ[ƒVƒ‡ƒ“ŠÔ
-    private const float                      StartAnimScale = 1.2f;              // ŠJn‚ÌŠg‘å—¦
-    private const float                      StartAnimDuration = 0.4f;           // ŠJn‚ÌŠg‘åƒAƒjƒ[ƒVƒ‡ƒ“ŠÔ
-    private const float                      OutlineBlinkDuration = 0.5f;        // Outline“_–Å‚ÌüŠú
-    private static readonly Color            OutlineDefaultColor = Color.yellow; // Outline‚ÌƒfƒtƒHƒ‹ƒgF
-    private static readonly Color            OutlineBlinkColor = Color.white;    // Outline“_–Å‚ÌF
+    private const float                      MenuItemSelectedScale = 1.2f;       // ï¿½Iï¿½ğ’†ƒï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú‚ÌŠgï¿½å—¦
+    private const float                      MenuItemTweenDuration = 0.2f;       // ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú‚ÌŠgï¿½ï¿½Eï¿½kï¿½ï¿½ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    private const float                      BackButtonTweenDuration = 0.2f;     // ï¿½ß‚ï¿½{ï¿½^ï¿½ï¿½ï¿½ÌŠgï¿½ï¿½Eï¿½kï¿½ï¿½ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    private const float                      StartAnimScale = 1.2f;              // ï¿½Jï¿½nï¿½ï¿½ï¿½ÌŠgï¿½å—¦
+    private const float                      StartAnimDuration = 0.4f;           // ï¿½Jï¿½nï¿½ï¿½ï¿½ÌŠgï¿½ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    private const float                      OutlineBlinkDuration = 0.5f;        // Outlineï¿½_ï¿½Å‚Ìï¿½ï¿½ï¿½
+    private static readonly Color            OutlineDefaultColor = Color.yellow; // Outlineï¿½Ìƒfï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½F
+    private static readonly Color            OutlineBlinkColor = Color.white;    // Outlineï¿½_ï¿½Åï¿½ï¿½ÌF
+    private const string MenuOpenAnimName = "MenuOpen";
+    private const string MenuCloseAnimName = "MenuClose";
+    private bool _isAnimating = false;
 
     private void Awake()
     {
@@ -44,14 +49,27 @@ public class Menu : MonoBehaviour
         _backButtonOutline.enabled = false;
         _backButtonOutline.effectColor = OutlineDefaultColor;
         _originalBackButtonScale = _backButton.GetComponent<RectTransform>().localScale;
+
+        // InputActionHolderï¿½ï¿½ï¿½ï¿½MenuInputActionsï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½ÄƒCï¿½xï¿½ï¿½ï¿½gï¿½oï¿½^
+        var menuActions = InputActionHolder.Instance.menuInputActions;
+        menuActions.Menu.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>().x);
+        menuActions.Menu.Vertical.performed += ctx => OnVertical(ctx.ReadValue<Vector2>().y);
+        menuActions.Menu.Click.performed += ctx => OnClick();
+
+        if (_fadeImage != null)
+        {
+            _fadeImage.color = new Color(0, 0, 0, 1); // ï¿½Oï¿½Ì‚ï¿½ï¿½ï¿½Alpha=1
+            _fadeImage.DOFade(0f, _fadeDuration).SetUpdate(true);
+        }
+
     }
 
     /// <summary>
-    /// ŠJn‚Éƒƒjƒ…[€–Ú‚Ì‘I‘ğó‘Ô‚ğ‰Šú‰»
+    /// ï¿½Jï¿½nï¿½ï¿½ï¿½Éƒï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú‚Ì‘Iï¿½ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     private void Start()
     {
-        // InputActionHolder‚©‚çMenuInputActions‚ğæ“¾‚µ‚ÄƒCƒxƒ“ƒg“o˜^
+        // InputActionHolderï¿½ï¿½ï¿½ï¿½MenuInputActionsï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½ÄƒCï¿½xï¿½ï¿½ï¿½gï¿½oï¿½^
         var menuActions = InputActionHolder.Instance.menuInputActions;
         menuActions.Menu.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>().x);
         menuActions.Menu.Vertical.performed += ctx => OnVertical(ctx.ReadValue<Vector2>().y);
@@ -59,20 +77,21 @@ public class Menu : MonoBehaviour
 
         UpdateSelection();
 
-        // ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg‚ğæ“¾
+        // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½æ“¾
         _player = GameObject.FindGameObjectWithTag("Player");
-        // ƒvƒŒƒCƒ„[‚ÌˆÚ“®ƒNƒ‰ƒX‚ğæ“¾
+        // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ÌˆÚ“ï¿½ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½æ“¾
         _playerMovement = _player.GetComponent<PlayerMovement>();
-        // ƒXƒe[ƒWƒV[ƒ“‚È‚çMenuInputActionsƒAƒNƒVƒ‡ƒ“ƒ}ƒbƒv‚ğ—LŒø‰»
+        // ï¿½Xï¿½eï¿½[ï¿½Wï¿½Vï¿½[ï¿½ï¿½ï¿½È‚ï¿½MenuInputActionsï¿½Aï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½}ï¿½bï¿½vï¿½ï¿½Lï¿½ï¿½ï¿½ï¿½
         InputActionHolder.Instance.menuInputActions.Menu.Enable();
         InputActionHolder.Instance.menuInputActions.Menu.Open.performed += ctx => ToggleMenu();
     }
 
     /// <summary>
-    /// ƒƒjƒ…[‚ÌŠJ•Âó‘Ô‚ğØ‚è‘Ö‚¦
+    /// ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ÌŠJï¿½Âï¿½Ô‚ï¿½Ø‚ï¿½Ö‚ï¿½
     /// </summary>
     public void ToggleMenu()
     {
+        if (_isAnimating) return; // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ä¸­ã¯ç„¡åŠ¹
         _menuContents.SetActive(true);
 
         if (_isOpen)
@@ -81,77 +100,88 @@ public class Menu : MonoBehaviour
         }
         else
         {
-            // ƒƒjƒ…[‚ğŠJ‚­‘O‚ÉƒvƒŒƒCƒ„[‚ÌˆÚ“®‚ğ–³Œø‰»
-            //_playerMovement.ChangeInputActions();
             InputActionHolder.Instance.playerInputActions.Player.Disable();
             OpenMenu();
         }
     }
 
     /// <summary>
-    /// ƒƒjƒ…[‚ğŠJ‚­ˆ—
+    /// ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     private void OpenMenu()
     {
-        ResetAnimationState();
-
-        if (_menuAnim.clip != null)
-            _menuAnim.Play();
-
+        AudioManager.Instance.PlaySE("Menu", "5411MenuOpen");
+        ResetAnimationState(MenuOpenAnimName);
         _menuUI.SetActive(true);
         GameManager.Instance.ChangeState(GameState.Menu);
-
         _isOpen = true;
-        StartCoroutine(WaitForAnimationToEndAndPause());
+        StartCoroutine(PlayMenuAnimationAndPause(MenuOpenAnimName));
     }
 
     /// <summary>
-    /// ƒƒjƒ…[‚ğ•Â‚¶‚éˆ—
+    /// ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½
     /// </summary>
     private void CloseMenu()
     {
-        _menuAnim.Stop();
-
-        AnimationState stateMenu = _menuAnim[_menuAnim.clip.name];
-        stateMenu.speed = -1f;
-        stateMenu.time = stateMenu.length;
-        _menuAnim.Play(_menuAnim.clip.name);
-
-        StartCoroutine(WaitForAnimationToEndAndResume());
+        AudioManager.Instance.PlaySE("Menu", "5412MenuClose");
+        ResetAnimationState(MenuCloseAnimName);
+        StartCoroutine(PlayMenuAnimationAndResume(MenuCloseAnimName));
     }
 
-    /// <summary>
-    /// ƒAƒjƒ[ƒVƒ‡ƒ“I—¹Œã‚ÉTimeScale‚ğ0‚É‚·‚é
-    /// </summary>
-    private IEnumerator WaitForAnimationToEndAndPause()
+    private IEnumerator PlayMenuAnimationAndPause(string animName)
     {
-        yield return new WaitForSecondsRealtime(_menuAnim.clip.length);
+        _isAnimating = true;
+        InputActionHolder.Instance.menuInputActions.Menu.Open.Disable();
+        _menuAnim.Play(animName);
+        yield return new WaitForSecondsRealtime(_menuAnim[animName].length);
         Time.timeScale = 0f;
+        _isAnimating = false;
+        InputActionHolder.Instance.menuInputActions.Menu.Open.Enable();
     }
 
     /// <summary>
-    /// ƒAƒjƒ[ƒVƒ‡ƒ“I—¹Œã‚ÉTimeScale‚ğ1‚É–ß‚·
+    /// ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ê‚½
     /// </summary>
-    private IEnumerator WaitForAnimationToEndAndResume()
+    /// <param name="animName">ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½</param>
+    /// <returns></returns>
+    private IEnumerator PlayMenuAnimationAndResume(string animName)
     {
-        yield return new WaitForSecondsRealtime(_menuAnim.clip.length);
+        _isAnimating = true;
+        InputActionHolder.Instance.menuInputActions.Menu.Open.Disable();
+        _menuAnim.Play(animName);
+        yield return new WaitForSecondsRealtime(_menuAnim[animName].length);
         _isOpen = false;
         Time.timeScale = 1f;
         InputActionHolder.Instance.playerInputActions.Player.Enable();
+        _isAnimating = false;
+        InputActionHolder.Instance.menuInputActions.Menu.Open.Enable();
     }
 
     /// <summary>
-    /// ƒAƒjƒ[ƒVƒ‡ƒ“ó‘Ô‚ğƒŠƒZƒbƒg
+    /// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®çŠ¶æ…‹ã‚’ãƒªã‚»ãƒƒãƒˆ
     /// </summary>
-    private void ResetAnimationState()
+    /// <param name="animName">ãƒªã‚»ãƒƒãƒˆã™ã‚‹ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®åå‰</param
+    private void ResetAnimationState(string animName)
     {
-        AnimationState stateMenu = _menuAnim[_menuAnim.clip.name];
-        stateMenu.time = 0f;
-        stateMenu.speed = 1f;
+        if (_menuAnim[animName] != null)
+        {
+            AnimationState stateMenu = _menuAnim[animName];
+            stateMenu.time = 0f;
+            stateMenu.speed = 1f;
+        }
     }
 
     /// <summary>
-    /// –³Œø‰»‚É“ü—ÍƒAƒNƒVƒ‡ƒ“‚ğ–³Œø‚É‚·‚é
+
+    /// ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É“ï¿½ï¿½ÍƒAï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
+    /// </summary>
+    private void OnEnable()
+    {
+        InputActionHolder.Instance.menuInputActions.Menu.Enable();
+    }
+
+    /// <summary>
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É“ï¿½ï¿½ÍƒAï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ğ–³Œï¿½ï¿½É‚ï¿½ï¿½ï¿½
     /// </summary>
     private void OnDisable()
     {
@@ -159,18 +189,20 @@ public class Menu : MonoBehaviour
     }
 
     /// <summary>
-    /// ‰¡•ûŒü‚Ì“ü—Í‚Åƒƒjƒ…[€–Ú‚ğˆÚ“®
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì“ï¿½ï¿½Í‚Åƒï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú‚ï¿½ï¿½Ú“ï¿½
     /// </summary>
     private void OnMove(float direction)
     {
-        if (!_isInCarousel) return;
+        if (!_isInCarousel || !_isOpen) return;
 
         if (direction > 0) MoveRight();
         else if (direction < 0) MoveLeft();
+
+        AudioManager.Instance.PlaySE("Menu", "5413MenuChoice");
     }
 
     /// <summary>
-    /// c•ûŒü‚Ì“ü—Í‚ÅƒJ[ƒ\ƒ‹ˆÊ’u‚ğØ‚è‘Ö‚¦
+    /// ï¿½cï¿½ï¿½ï¿½ï¿½ï¿½Ì“ï¿½ï¿½Í‚ÅƒJï¿½[ï¿½\ï¿½ï¿½ï¿½Ê’uï¿½ï¿½Ø‚ï¿½Ö‚ï¿½
     /// </summary>
     private void OnVertical(float direction)
     {
@@ -205,7 +237,7 @@ public class Menu : MonoBehaviour
     }
 
     /// <summary>
-    /// –ß‚éƒ{ƒ^ƒ“‚ÌOutline‚ğ“_–Å‚³‚¹‚éƒAƒjƒ[ƒVƒ‡ƒ“‚ğŠJn
+    /// ï¿½ß‚ï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½Outlineï¿½ï¿½_ï¿½Å‚ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½n
     /// </summary>
     private void StartOutlineBlink()
     {
@@ -223,7 +255,7 @@ public class Menu : MonoBehaviour
     }
 
     /// <summary>
-    /// –ß‚éƒ{ƒ^ƒ“‚ÌOutline“_–ÅƒAƒjƒ[ƒVƒ‡ƒ“‚ğ’â~‚µF‚ğŒ³‚É–ß‚·
+    /// ï¿½ß‚ï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½Outlineï¿½_ï¿½ÅƒAï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½ï¿½ï¿½Fï¿½ï¿½ï¿½ï¿½ï¿½É–ß‚ï¿½
     /// </summary>
     private void StopOutlineBlink()
     {
@@ -232,58 +264,67 @@ public class Menu : MonoBehaviour
     }
 
     /// <summary>
-    /// Œˆ’èƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚Æ‚«‚Ìˆ—
+    /// ï¿½ï¿½ï¿½ï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½Æ‚ï¿½ï¿½Ìï¿½ï¿½ï¿½
     /// </summary>
     private void OnClick()
     {
         if(!_isOpen) return;
+        
+        AudioManager.Instance.PlaySE("Menu","5412MenuDecision");
 
         if(_isInCarousel)
         {
             switch (_currentIndex)
             {
                 case 0:
-                    // 1‚Â–Ú‚Ìƒƒjƒ…[€–Ú‚Ìˆ—
-                    Debug.Log("ƒƒjƒ…[1‚Ìˆ—");
+                    // 1ï¿½Â–Ú‚Ìƒï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú‚Ìï¿½ï¿½ï¿½
+                    Debug.Log("ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[1ï¿½Ìï¿½ï¿½ï¿½");
                     break;
                 case 1:
-                    // 2‚Â–Ú‚Ìƒƒjƒ…[€–Ú‚Ìˆ—
-                    Debug.Log("ƒƒjƒ…[2‚Ìˆ—");
+                    // 2ï¿½Â–Ú‚Ìƒï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú‚Ìï¿½ï¿½ï¿½
+                    Debug.Log("ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[2ï¿½Ìï¿½ï¿½ï¿½");
                     OnDisable();
                     SelectItem(_optionAnim, "Option");
                     InputActionHolder.Instance.optionInputActions.Option.Enable();
                     break;
                 case 2:
-                    // 3‚Â–Ú‚Ìƒƒjƒ…[€–Ú‚Ìˆ—
-                    Debug.Log("ƒƒjƒ…[3‚Ìˆ—");
+                    // 3ï¿½Â–Ú‚Ìƒï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú‚Ìï¿½ï¿½ï¿½
+                    StartCoroutine(RetryStageWithFade());
                     break;
                 case 3:
-                    // 4‚Â–Ú‚Ìƒƒjƒ…[€–Ú‚Ìˆ—
-                    Debug.Log("ƒƒjƒ…[4‚Ìˆ—");
+                    // 4ï¿½Â–Ú‚Ìƒï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú‚Ìï¿½ï¿½ï¿½
+                    Debug.Log("ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[4ï¿½Ìï¿½ï¿½ï¿½");
                     break;
                 default:
-                    Debug.Log("–¢’è‹`‚Ìƒƒjƒ…[€–Ú");
+                    Debug.Log("ï¿½ï¿½ï¿½ï¿½`ï¿½Ìƒï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½");
                     break;
             }
         }
         else
         {
-            Debug.Log("ƒQ[ƒ€‚Ö–ß‚éƒ{ƒ^ƒ“‰Ÿ‰º");
+            Debug.Log("ï¿½Qï¿½[ï¿½ï¿½ï¿½Ö–ß‚ï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
         }
     }
 
     /// <summary>
-    /// ‘I‘ğ‚³‚ê‚½ƒƒjƒ…[€–Ú‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ğÄ¶‚·‚é
+    /// ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú‚ÌƒAï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     /// <param name="anim"></param>
     /// <param name="animName"></param>
     private void SelectItem(Animation anim,string animName)
     {
-        StartCoroutine(PlayAnimationUnscaled(anim, animName));
+        StartCoroutine(PlayItemAnimationWithInputLock(anim, animName));
+    }
+
+    private IEnumerator PlayItemAnimationWithInputLock(Animation anim, string animName)
+    {
+        InputActionHolder.Instance.menuInputActions.Menu.Disable();
+        yield return StartCoroutine(PlayAnimationUnscaled(anim, animName));
+        InputActionHolder.Instance.menuInputActions.Menu.Enable();
     }
 
     /// <summary>
-    /// ƒXƒNƒ[ƒ‹“ü—Í‚Åƒƒjƒ…[€–Ú‚ğˆÚ“®
+    /// ï¿½Xï¿½Nï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½Í‚Åƒï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú‚ï¿½ï¿½Ú“ï¿½
     /// </summary>
     private void OnScroll(float scroll)
     {
@@ -294,7 +335,7 @@ public class Menu : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒƒjƒ…[€–Ú‚ğ‰E‚ÉˆÚ“®iƒ‹[ƒv‚ ‚èj
+    /// ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú‚ï¿½ï¿½Eï¿½ÉˆÚ“ï¿½ï¿½iï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½ï¿½ï¿½j
     /// </summary>
     private void MoveRight()
     {
@@ -304,7 +345,7 @@ public class Menu : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒƒjƒ…[€–Ú‚ğ¶‚ÉˆÚ“®iƒ‹[ƒv‚ ‚èj
+    /// ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú‚ï¿½ï¿½ï¿½ï¿½ÉˆÚ“ï¿½ï¿½iï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½ï¿½ï¿½j
     /// </summary>
     private void MoveLeft()
     {
@@ -314,7 +355,7 @@ public class Menu : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒƒjƒ…[€–Ú‚Ì‘I‘ğó‘Ô‚É‰‚¶‚ÄŠg‘åEk¬ƒAƒjƒ[ƒVƒ‡ƒ“‚ğs‚¤
+    /// ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú‚Ì‘Iï¿½ï¿½ï¿½ï¿½Ô‚É‰ï¿½ï¿½ï¿½ï¿½ÄŠgï¿½ï¿½Eï¿½kï¿½ï¿½ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½
     /// </summary>
     private void UpdateSelection()
     {
@@ -328,10 +369,10 @@ public class Menu : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒAƒjƒ[ƒVƒ‡ƒ“‚ğÄ¶‚·‚éiTimeScale‚ğ–³‹‚µ‚ÄUnscaled‚ÅÄ¶j
+    /// ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½ï¿½ï¿½iTimeScaleï¿½ğ–³ï¿½ï¿½ï¿½ï¿½ï¿½Unscaledï¿½ÅÄï¿½ï¿½j
     /// </summary>
-    /// <param name="anim">Ä¶‚·‚éƒAƒjƒ[ƒVƒ‡ƒ“</param>
-    /// <param name="clipName">ƒAƒjƒ[ƒVƒ‡ƒ“–¼</param>
+    /// <param name="anim">ï¿½Äï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½</param>
+    /// <param name="clipName">ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</param>
     /// <returns></returns>
     private IEnumerator PlayAnimationUnscaled(Animation anim, string clipName)
     {
@@ -346,5 +387,22 @@ public class Menu : MonoBehaviour
             yield return null;
         }
         anim.Stop();
+    }
+    private IEnumerator RetryStageWithFade()
+    {
+        // ï¿½tï¿½Fï¿½[ï¿½hï¿½Aï¿½Eï¿½g
+        if (_fadeImage != null)
+        {
+            // TimeScale=0ï¿½Å‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ‚¤SetUpdate(true)ï¿½ï¿½ï¿½wï¿½ï¿½
+            Tween fadeTween = _fadeImage.DOFade(1f, _fadeDuration).SetUpdate(true);
+            yield return fadeTween.WaitForCompletion();
+        }
+
+        // TimeScaleï¿½ï¿½ß‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½0ï¿½Ì‚Ü‚Ü‚ï¿½ï¿½Æ~ï¿½Ü‚é‚½ï¿½ßj
+        Time.timeScale = 1f;
+
+        // ï¿½Vï¿½[ï¿½ï¿½ï¿½Ä“Ç‚İï¿½ï¿½ï¿½
+        var scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.name);
     }
 }

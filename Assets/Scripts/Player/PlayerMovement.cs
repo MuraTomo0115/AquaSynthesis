@@ -162,6 +162,11 @@ public class PlayerMovement : MonoBehaviour
         _is_CanJump = isGrounded;
         _animator.SetBool("isGround", isGrounded);
 
+        if(!isGrounded)
+        {
+            AudioManager.Instance.StopLoopSE("Player", PlayerSE.Dash); // 空中にいる場合は移動音を停止
+        }
+
         // 攻撃・ピストル発射フラグをリセット
         DidAttack = false;
         DidPistol = false;

@@ -34,6 +34,7 @@ public class ADVManager : MonoBehaviour
 	private float _advanceCooldown = 1f;
 	private bool _isPlay = false;
 	private bool _isFading = false;
+	private bool _isWaitingSE = false; // SE再生待機中フラグを追加
 	private Dictionary<string, string> _targetToSideMap = new Dictionary<string, string>();
 
 	private void Awake()
@@ -62,7 +63,9 @@ public class ADVManager : MonoBehaviour
 	{
 		if (_isPlay) return;
 
-		_isPlay = true;
+		AudioManager.Instance.StopAllSE(); // すべてのSEを停止
+
+        _isPlay = true;
 		Time.timeScale = 0f;
                               // UI初期化＆過去の残りをクリア
         _messageText.text = "";
@@ -94,7 +97,7 @@ public class ADVManager : MonoBehaviour
 	/// </summary>
 	private void Update()
 	{
-		if (_isCooldown || _isFading || !_isPlay) return;
+		if (_isCooldown || _isFading || !_isPlay || _isWaitingSE) return; // ← 追加
 
 		bool isAdvancePressed = _inputActions.ADV.Advance.triggered;
 		bool isHoldSpeedUp = _inputActions.ADV.Advance.ReadValue<float>() > 0.5f;
@@ -235,21 +238,24 @@ public class ADVManager : MonoBehaviour
 	/// <returns></returns>
 	private IEnumerator PlaySEAndWait(string clipName, bool wait)
 	{
+		_isWaitingSE = true; // ← 追加
 		AudioClip clip = Resources.Load<AudioClip>("Audio/SE/" + clipName);
 		if (clip == null)
 		{
 			UnityEngine.Debug.LogWarning("SEが見つかりません: " + clipName);
+			_isWaitingSE = false; // ← 追加
 			ShowNextStep();
 			yield break;
 		}
 		_seAudioSource.PlayOneShot(clip);
 
-        if (wait)
-        {
-            yield return new WaitForSecondsRealtime(clip.length);
-        }
+    if (wait)
+    {
+        yield return new WaitForSecondsRealtime(clip.length);
+    }
 
-        ShowNextStep();
+    _isWaitingSE = false; // ← 追加
+    ShowNextStep();
 	}
 
 	/// <summary>
