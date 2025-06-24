@@ -7,11 +7,10 @@ using UnityEngine;
 public class GhostMovement : MonoBehaviour
 {
     [Header("攻撃関連")]
-    [SerializeField] private GameObject _attackSensorPrefab;  // 攻撃センサープレハブ
-    private GameObject _attackSensorInstance;
+    private GameObject _attackSensorInstance;                 // 実際に使う攻撃センサー
 
-    [SerializeField] private GameObject _bullet;     // ピストルの弾プレハブ
-    [SerializeField] private Transform _firePoint;   // 弾の発射位置
+    [SerializeField] private GameObject _bullet;              // ピストルの弾プレハブ（Inspector用・実際はInitializeで上書き）
+    [SerializeField] private Transform _firePoint;            // 弾の発射位置
 
     // 記録された各種データ
     private Vector2 _recordedPosition;
@@ -21,16 +20,21 @@ public class GhostMovement : MonoBehaviour
     private bool _recordedPistol;
     private bool _recordedSummonA;
     private bool _recordedSummonB;
-    private bool _recordedFacingLeft; // 向き
+    private bool _recordedFacingLeft;
 
+    // 内部参照
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     private Character _charaState;
 
     /// <summary>
-    /// 記録データを受け取って初期化
+    /// ゴーストの初期化（記録データ・攻撃センサー・弾プレハブをセット）
     /// </summary>
-    public void Initialize(Vector2 position, Vector2 input, bool jump, bool attack, bool pistol, bool summonA, bool summonB, bool facingLeft)
+    public void Initialize(
+        Vector2 position, Vector2 input, bool jump, bool attack, bool pistol, bool summonA, bool summonB, bool facingLeft,
+        GameObject playerAttackSensor = null,
+        GameObject bulletPrefab = null
+    )
     {
         _recordedPosition = position;
         _recordedInput = input;
@@ -40,10 +44,23 @@ public class GhostMovement : MonoBehaviour
         _recordedSummonA = summonA;
         _recordedSummonB = summonB;
         _recordedFacingLeft = facingLeft;
+
+        // 攻撃センサーをプレイヤーから複製
+        if (playerAttackSensor != null)
+        {
+            _attackSensorInstance = Instantiate(playerAttackSensor, transform);
+            _attackSensorInstance.SetActive(false);
+        }
+
+        // 弾プレハブをセット
+        if (bulletPrefab != null)
+        {
+            _bullet = bulletPrefab;
+        }
     }
 
     /// <summary>
-    /// 初期化処理
+    /// ゴーストの初期化処理
     /// </summary>
     private void Start()
     {
@@ -51,7 +68,7 @@ public class GhostMovement : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _charaState = GetComponent<Character>();
 
-        // プレイヤーのCharacterを探してステータスをコピー
+        // プレイヤーのステータスをコピー
         var playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
@@ -62,45 +79,23 @@ public class GhostMovement : MonoBehaviour
             }
         }
 
-        // 初期位置に移動
+        // 記録された初期位置に移動
         transform.position = _recordedPosition;
-
-        // 攻撃センサー生成
-        if (_attackSensorPrefab != null)
-        {
-            _attackSensorInstance = Instantiate(_attackSensorPrefab, transform);
-            _attackSensorInstance.SetActive(false);
-        }
 
         // 向き調整
         _spriteRenderer.flipX = _recordedFacingLeft;
 
-        // アクション再現
+        // 記録されたアクションを再現（初期フレームのみ）
         if (_recordedAttack)
-        {
             _animator.SetTrigger("AttackSword");
-        }
-
         if (_recordedPistol)
-        {
             _animator.SetTrigger("AttackPistol");
-            // 不要なログ削除
-        }
-
         if (_recordedJump)
-        {
             _animator.SetTrigger("Jump");
-        }
-
         if (_recordedSummonA)
-        {
             _animator.SetTrigger("SummonA");
-        }
-
         if (_recordedSummonB)
-        {
             _animator.SetTrigger("SummonB");
-        }
     }
 
     /// <summary>
@@ -108,31 +103,38 @@ public class GhostMovement : MonoBehaviour
     /// </summary>
     private void FixedUpdate()
     {
+        // 入力値に応じてアニメーション状態を切り替え
         if (Mathf.Abs(_recordedInput.x) > Mathf.Epsilon)
-        {
-            _animator.SetInteger("AnimState", 1); // 歩きモーション
-        }
+            _animator.SetInteger("AnimState", 1); // 歩き
         else
-        {
-            _animator.SetInteger("AnimState", 0); // 待機モーション
-        }
+            _animator.SetInteger("AnimState", 0); // 待機
     }
 
     /// <summary>
-    /// ピストル発射処理
+    /// ピストル発射処理（ゴースト用）
     /// </summary>
     public void ShootPistol()
     {
+        if (_bullet == null || _firePoint == null) return;
+
+        // 弾を生成
         GameObject bullet = Instantiate(_bullet, _firePoint.position, Quaternion.identity);
+
+        // 進行方向を決定
         Vector2 direction = _spriteRenderer.flipX ? Vector2.left : Vector2.right;
+
+        // 弾のパラメータをセット
         Bullet bulletScript = bullet.GetComponent<Bullet>();
-        bulletScript.SetDirection(direction);
-        bulletScript.SetDamage(_charaState != null ? _charaState.PistolPower : 1);
-        bulletScript.SetIsGhostBullet(true); // ★ゴースト弾フラグをセット
+        if (bulletScript != null)
+        {
+            bulletScript.SetDirection(direction);
+            bulletScript.SetDamage(_charaState != null ? _charaState.PistolPower : 1);
+            bulletScript.SetIsGhostBullet(true);
+        }
     }
 
     /// <summary>
-    /// 近接攻撃開始
+    /// 近接攻撃開始（攻撃センサー有効化）
     /// </summary>
     public void StartAttack()
     {
@@ -146,7 +148,7 @@ public class GhostMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// 近接攻撃終了
+    /// 近接攻撃終了（攻撃センサー無効化）
     /// </summary>
     public void EndAttack()
     {
@@ -162,10 +164,8 @@ public class GhostMovement : MonoBehaviour
     /// </summary>
     public void OwnAttackHit(Collider2D other)
     {
-        if (_charaState == null)
-        {
-            return;
-        }
+        if (_charaState == null) return;
+
         Character hitObject = other.GetComponent<Character>();
         if (hitObject != null)
         {
@@ -173,9 +173,15 @@ public class GhostMovement : MonoBehaviour
         }
     }
 
-    // クラス内に追加
+    /// <summary>
+    /// 記録された入力値をセット（再生時に呼ばれる）
+    /// </summary>
     public void SetRecordedInput(Vector2 input)
     {
         _recordedInput = input;
     }
+
+    // ダミーメソッド
+    public void trueAttack() { }
+    public void falseAttack() { }
 }
