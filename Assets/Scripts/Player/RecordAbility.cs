@@ -232,14 +232,16 @@ public class RecordAbility : MonoBehaviour
                 _ghostAnimator.CrossFade(current.animClipName, 0f);
             if (_ghostSpriteRenderer != null)
                 _ghostSpriteRenderer.flipX = current.isFacingLeft;
+
+            // ゴーストの入力を反映
             if (ghostMovement != null)
                 ghostMovement.SetRecordedInput(current.input);
 
-            // 近接攻撃（トリガーのみ）
+            // 近接攻撃トリガー
             if (ghostMovement != null && current.didAttack)
                 ghostMovement.StartAttack();
 
-            // ピストル発射（トリガーのみ）
+            // ピストルトリガー
             if (ghostMovement != null && current.didPistol)
                 ghostMovement.ShootPistol();
 
