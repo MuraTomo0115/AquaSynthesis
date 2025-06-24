@@ -37,9 +37,22 @@ public class ADVManager : MonoBehaviour
 	private bool _isWaitingSE = false; // SE再生待機中フラグを追加
 	private Dictionary<string, string> _targetToSideMap = new Dictionary<string, string>();
 
-	private void Awake()
+	public bool IsPlaying => _isPlay; // シナリオが再生中かどうかを取得するプロパティ
+
+    public static ADVManager Instance { get; private set; }
+
+    private void Awake()
 	{
-		_inputActions = new PlayerInputActions();  // PlayerInputActionsのインスタンスを作成
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+        _inputActions = new PlayerInputActions();  // PlayerInputActionsのインスタンスを作成
 		_inputActions.ADV.Enable();  // ADVマップを有効にする
 		_canvasGroup = _advContents.GetComponent<CanvasGroup>();
 	}

@@ -103,6 +103,8 @@ public class Menu : MonoBehaviour
     /// </summary>
     private void OpenMenu()
     {
+        // ADV再生中はメニューと開かない
+        if (ADVManager.Instance.IsPlaying) return;
         AudioManager.Instance.PlaySE("Menu", "5411MenuOpen");
         ResetAnimationState(MenuOpenAnimName);
         _menuUI.SetActive(true);
