@@ -11,7 +11,7 @@ public class StageData
     public string stageName;      // 表示名
     public string sceneName;      // シーン名
     public Sprite stageImage;     // 背景画像
-    public Transform stagePoint;     // ステージ位置
+    public Transform stagePoint;  // ステージ位置
 }
 
 public class StageSelector : MonoBehaviour

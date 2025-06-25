@@ -17803,7 +17803,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1804164239
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17845,8 +17845,8 @@ MonoBehaviour:
   _darkOverlay: {fileID: 0}
   _recordAbility: {fileID: 0}
   _playerTransform: {fileID: 0}
-  _recordKey: 31
-  _playKey: 19
+  _recordAction: {fileID: 0}
+  _playAction: {fileID: 0}
   _recordDuration: 10
   _recordCoolTime: 5
   _playDuration: 10
