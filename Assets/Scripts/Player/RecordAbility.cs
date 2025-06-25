@@ -78,7 +78,29 @@ public class RecordAbility : MonoBehaviour
         {
             _playerMovement.IsRecording = true; // 記録モードON
         }
+        _savedRecord.Clear(); // 新規記録
+        SaveCurrentFrame();   // ここで1フレーム分を即記録
         _recordCoroutine = StartCoroutine(RecordCoroutine());
+    }
+
+    /// <summary>
+    /// 現在の状態を1フレーム分記録
+    /// </summary>
+    private void SaveCurrentFrame()
+    {
+        string clipName = GetCurrentAnimationClipName();
+        bool isFacingLeft = _spriteRenderer != null ? _spriteRenderer.flipX : false;
+        bool didAttack = _playerMovement != null && _playerMovement.DidAttack;
+        bool didPistol = _playerMovement != null && _playerMovement.DidPistol;
+        _savedRecord.Add(new FrameData(
+            _target.position,
+            _target.rotation,
+            clipName,
+            isFacingLeft,
+            didAttack,
+            didPistol,
+            _playerMovement != null ? _playerMovement.MovementInput : Vector2.zero
+        ));
     }
 
     /// <summary>
