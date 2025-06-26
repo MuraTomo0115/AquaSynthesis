@@ -120,6 +120,42 @@ public class CoolTimeInput : MonoBehaviour
     /// </summary>
     private void OnRecordPerformed(InputAction.CallbackContext context)
     {
+        // 記録中なら記録を停止
+        if (_isRecording)
+        {
+            if (_recordCoroutine != null) StopCoroutine(_recordCoroutine);
+            _recordAbility.StopRecording();
+            _isRecording = false;
+
+            _hasRecorded = true;
+            _playRepeatCount = 0;
+
+            // UIや暗転解除、コンポーネント再有効化など
+            _coolDownImage.fillAmount = 0f;
+            _coolDownImage.gameObject.SetActive(false);
+            _coolDownText.gameObject.SetActive(false);
+            SetOverlayAlpha(0f);
+
+            foreach (var comp in _disabledComponents)
+            {
+                comp.enabled = true;
+            }
+            _disabledComponents.Clear();
+
+            foreach (var comp in _playerDisabledComponents)
+            {
+                comp.enabled = true;
+            }
+            _playerDisabledComponents.Clear();
+
+            // プレイヤー位置を記録直前に戻す
+            _playerTransform.position = _playerStartPos;
+
+            // クールタイム開始
+            StartCoroutine(_StartRecordCoolDown());
+            return;
+        }
+
         // 記録・再生・クールタイム中は記録開始不可
         if (!_isRecording && !_isRecordCoolingDown && !_isPlaying && !_isPlayCoolingDown)
         {
@@ -133,6 +169,9 @@ public class CoolTimeInput : MonoBehaviour
     /// </summary>
     private void OnPlayPerformed(InputAction.CallbackContext context)
     {
+        // 記録中は再生不可
+        if (_isRecording) return;
+
         // 再生中なら中断、そうでなければ再生開始
         if (_isPlaying)
         {
