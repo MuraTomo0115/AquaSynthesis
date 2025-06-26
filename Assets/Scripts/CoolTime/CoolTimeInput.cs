@@ -395,9 +395,4 @@ public class CoolTimeInput : MonoBehaviour
         c.a = alpha;
         _darkOverlay.color = c;
     }
-    public void StopRecording()
-    {
-        if (_recordCoroutine != null) StopCoroutine(_recordCoroutine);
-        // _savedRecordは消さない
-    }
 }
