@@ -12,7 +12,7 @@ public class player_status
 
     public int current_exp { get; set; } // 現在の経験値
 
-    public int current_route { get; set; }
+    public string current_route { get; set; }
 
     public string damage_se { get; set; } // ダメージSEファイル名
 }

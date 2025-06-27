@@ -132,12 +132,11 @@ public class DatabaseManager
 		{
 			//Connection.Execute("ALTER TABLE player_status ADD COLUMN Exp INTEGER DEFAULT 100;");
 		}
-
 	}
 
-	/// player_statusテーブルの全レコードを取得
-	/// </summary>
-	public static List<player_status> GetAllCharacters()
+    /// player_statusテーブルの全レコードを取得
+    /// </summary>
+    public static List<player_status> GetAllCharacters()
 	{
 		return Connection.Query<player_status>("SELECT * FROM player_status");
 	}
@@ -186,11 +185,32 @@ public class DatabaseManager
 		return list.FirstOrDefault();
 	}
 
-	/// <summary>
-	/// EnemyStatusテーブルに新しい敵データを挿入
-	/// </summary>
-	/// <param name="enemy">挿入するEnemyStatusオブジェクト</param>
-	public static void InsertEnemy(EnemyStatus enemy)
+    /// <summary>
+    /// player_statusテーブルの現在のルートをidで取得
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>現在のルート</returns>
+    public static string GetCurrentRouteById(int id)
+    {
+        return Connection.ExecuteScalar<string>("SELECT current_route FROM player_status WHERE id = ?", id);
+    }
+
+    /// <summary>
+    /// 指定したプレイヤーIDのルートを変更する
+    /// </summary>
+    /// <param name="id">player_statusテーブルのid</param>
+    /// <param name="route">新しいルート名（例: "N", "A", "G"）</param>
+    public static void UpdateCurrentRoute(int id, string route)
+    {
+        Connection.Execute("UPDATE player_status SET current_route = ? WHERE id = ?", route, id);
+		Debug.Log($"プレイヤーID {id} のルートを '{route}' に更新しました。");
+    }
+
+    /// <summary>
+    /// EnemyStatusテーブルに新しい敵データを挿入
+    /// </summary>
+    /// <param name="enemy">挿入するEnemyStatusオブジェクト</param>
+    public static void InsertEnemy(EnemyStatus enemy)
 	{
 		// INSERT～:どのテーブルのどのカラムにデータを入れるか指定 VALUES:実際にどんな値を入れるか指定(?はプレースホルダー)
 		Connection.Execute(

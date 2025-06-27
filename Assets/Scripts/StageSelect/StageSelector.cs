@@ -16,9 +16,6 @@ public class StageData
 
 public class StageSelector : MonoBehaviour
 {
-    [Header("ステージデータリスト")]
-    [SerializeField] private List<StageData> _stages; // ステージ情報のリスト
-
     [Header("プレイヤーオブジェクト")]
     [SerializeField] private GameObject _playerObject; // プレイヤーのGameObject
 
@@ -30,9 +27,24 @@ public class StageSelector : MonoBehaviour
 
     [SerializeField] private float _playerYOffset; // プレイヤーのY軸オフセット
 
+    private List<StageData> _allStages; // 進行順で全ステージを登録
+
+    // N/A/Gルートの全候補
+    [Header("Nルートステージリスト (N1~N8)")]
+    [SerializeField] private List<StageData> _nStages;
+    [Header("Aルートステージリスト (A2~A8)")]
+    [SerializeField] private List<StageData> _aStages;
+    [Header("Gルートステージリスト (G4~G8)")]
+    [SerializeField] private List<StageData> _gStages;
+
     private int _currentIndex = 0; // 現在選択中のステージ番号
     private bool _isMoving = false; // プレイヤーが移動中かどうか
     private int _moveDirection = 1; // -1:左, 1:右（移動方向）
+
+    // ルート分岐フラグ
+    private bool _isARoute = false;
+    private bool _isGRoute = false;
+    private string _currentRoute;
 
     private Transform _player; // プレイヤーのTransform
     private Animator _playerAnimator; // プレイヤーのAnimator
@@ -57,15 +69,43 @@ public class StageSelector : MonoBehaviour
 
     private void Start()
     {
-        // プレイヤーのTransformとAnimatorを取得
+        _currentRoute = DatabaseManager.GetCurrentRouteById(1);
+        Debug.Log("現在のルート: " + _currentRoute);
+
+        switch (_currentRoute)
+        {
+            case "A":
+                // N1 + A2~A8
+                _allStages = new List<StageData>();
+                if (_nStages.Count > 0) _allStages.Add(_nStages[0]); // N1
+                _allStages.AddRange(_aStages); // A2~A8
+                _isARoute = true;
+                break;
+            case "G":
+                // N1 + A2~A3 + G4~G8
+                _allStages = new List<StageData>();
+                if (_nStages.Count > 0) _allStages.Add(_nStages[0]); // N1
+                if (_aStages.Count > 0) _allStages.Add(_aStages[0]); // A2
+                if (_aStages.Count > 1) _allStages.Add(_aStages[1]); // A3
+                _allStages.AddRange(_gStages); // G4~G8
+                _isARoute = true;
+                _isGRoute = true;
+                break;
+            case "N":
+            default:
+                _allStages = new List<StageData>(_nStages);
+                break;
+        }
+
+        _currentIndex = 0;
+
         if (_playerObject != null)
         {
             _player = _playerObject.transform;
             _playerAnimator = _playerObject.GetComponent<Animator>();
         }
-
-        UpdateStageView();    // 背景画像を初期化
-        MovePlayerInstant();  // プレイヤーを初期位置に移動
+        UpdateStageView();
+        MovePlayerInstant();
     }
 
     // 入力イベント: 移動
@@ -87,7 +127,7 @@ public class StageSelector : MonoBehaviour
     private void OnSubmit(InputAction.CallbackContext ctx)
     {
         if (_isMoving) return;
-        SceneManager.LoadScene(_stages[_currentIndex].sceneName);
+        SceneManager.LoadScene(_allStages[_currentIndex].sceneName);
     }
 
     /// <summary>
@@ -97,12 +137,12 @@ public class StageSelector : MonoBehaviour
     /// <param name="direction">移動方向（-1:左, 1:右）</param>
     private void MoveToStage(int newIndex, int direction)
     {
-        if (newIndex < 0 || newIndex >= _stages.Count) return; // 範囲外は無視
+        if (newIndex < 0 || newIndex >= _allStages.Count) return;
         _currentIndex = newIndex;
         _moveDirection = direction;
-        UpdateStageView();           // 背景画像を更新
-        SetPlayerFacing(_moveDirection); // 移動方向に向きを変える
-        StartCoroutine(MovePlayerCoroutine()); // プレイヤーをアニメーションで移動
+        UpdateStageView();
+        SetPlayerFacing(_moveDirection);
+        StartCoroutine(MovePlayerCoroutine());
     }
 
     /// <summary>
@@ -110,8 +150,8 @@ public class StageSelector : MonoBehaviour
     /// </summary>
     private void UpdateStageView()
     {
-        if (_backgroundImage != null && _stages[_currentIndex].stageImage != null)
-            _backgroundImage.sprite = _stages[_currentIndex].stageImage;
+        if (_backgroundImage != null && _allStages[_currentIndex].stageImage != null)
+            _backgroundImage.sprite = _allStages[_currentIndex].stageImage;
     }
 
     /// <summary>
@@ -119,10 +159,10 @@ public class StageSelector : MonoBehaviour
     /// </summary>
     private void MovePlayerInstant()
     {
-        if (_player != null && _stages[_currentIndex].stagePoint != null)
+        if (_player != null && _allStages[_currentIndex].stagePoint != null)
         {
-            Vector3 pos = _stages[_currentIndex].stagePoint.position;
-            pos.y += _playerYOffset; // Y軸を少し上げる
+            Vector3 pos = _allStages[_currentIndex].stagePoint.position;
+            pos.y += _playerYOffset;
             _player.position = pos;
         }
     }
@@ -145,7 +185,7 @@ public class StageSelector : MonoBehaviour
     {
         _isMoving = true;
         Vector3 start = _player.position;
-        Vector3 end = _stages[_currentIndex].stagePoint.position;
+        Vector3 end = _allStages[_currentIndex].stagePoint.position;
         end.y += _playerYOffset; // Y軸オフセットを加える
         float duration = _moveSpeed; // 移動にかかる秒数
         float elapsed = 0f;
@@ -171,5 +211,38 @@ public class StageSelector : MonoBehaviour
             _playerAnimator.SetBool("isRunning", false);
 
         _isMoving = false;
+    }
+
+    // ステージクリア時や分岐フラグを踏んだ時に呼ぶ
+    public void OnStageFlagTriggered(string flag)
+    {
+        if (flag == "A" && !_isARoute && _currentIndex == 0)
+        {
+            // N1でAルート分岐
+            _isARoute = true;
+            // N1 + A2~A8
+            var newStages = new List<StageData>();
+            if (_nStages.Count > 0) newStages.Add(_nStages[0]); // N1
+            newStages.AddRange(_aStages); // A2~A8
+            _allStages = newStages;
+            _currentIndex = 1; // A2に移動
+            UpdateStageView();
+            MovePlayerInstant();
+        }
+        else if (flag == "G" && _isARoute && !_isGRoute && _currentIndex == 3)
+        {
+            // A3でGルート分岐
+            _isGRoute = true;
+            // N1 + A2~A3 + G4~G8
+            var newStages = new List<StageData>();
+            if (_nStages.Count > 0) newStages.Add(_nStages[0]); // N1
+            if (_aStages.Count > 0) newStages.Add(_aStages[0]); // A2
+            if (_aStages.Count > 1) newStages.Add(_aStages[1]); // A3
+            newStages.AddRange(_gStages); // G4~G8
+            _allStages = newStages;
+            _currentIndex = 4; // G4に移動
+            UpdateStageView();
+            MovePlayerInstant();
+        }
     }
 }
