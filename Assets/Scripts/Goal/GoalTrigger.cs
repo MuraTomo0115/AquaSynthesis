@@ -17,6 +17,7 @@ public class GoalTrigger : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _pressAnyKeyText; // 「Press Any Key」用
     [SerializeField] private float _resultDelay = 3f;      // リザルト表示時間（秒）
     [SerializeField] private float _fadeDuration = 1f;     // フェードアウト時間（秒）
+    [SerializeField] private float _stageClearDelay = 0.25f; // ADV終了後の遅延秒数
 
     private int _addExp = 0; // クリア時に取得する経験値
     private PlayerInputActions _inputActions;
@@ -35,8 +36,7 @@ public class GoalTrigger : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        _inputActions = new PlayerInputActions();
-        _inputActions.Enable();
+
         if (_pressAnyKeyText != null)
             _pressAnyKeyText.gameObject.SetActive(false);
     }
@@ -146,7 +146,7 @@ public class GoalTrigger : MonoBehaviour
         if (_waitForAdvEnd && _advManager != null && !_advManager.IsPlaying)
         {
             _waitForAdvEnd = false;
-            Invoke(nameof(StageClear), 0.25f);
+            Invoke(nameof(StageClear), _stageClearDelay);
 
             // 念のため当たり判定を無効化
             Collider2D col = GetComponent<Collider2D>();
