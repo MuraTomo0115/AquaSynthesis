@@ -5,12 +5,9 @@ using TMPro;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem;
 
-/// <summary>
-/// ゴール地点のトリガー。ADV再生・リザルト表示・シーン遷移・フェードアウトを制御。
-/// </summary>
 public class GoalTrigger : MonoBehaviour
 {
-    public GoalTrigger Instance { get; private set; }
+    public static GoalTrigger Instance { get; private set; }
 
     [SerializeField] private ADVManager _advManager;
     [SerializeField] private string _scenarioFileName;
@@ -18,6 +15,8 @@ public class GoalTrigger : MonoBehaviour
     [SerializeField] private string _nextSceneName; // 遷移先シーン名
     [SerializeField] private CanvasGroup _fadeCanvasGroup; // フェード用
     [SerializeField] private TextMeshProUGUI _pressAnyKeyText; // 「Press Any Key」用
+    [SerializeField] private float _resultDelay = 3f;      // リザルト表示時間（秒）
+    [SerializeField] private float _fadeDuration = 1f;     // フェードアウト時間（秒）
 
     private int _addExp = 0; // クリア時に取得する経験値
     private PlayerInputActions _inputActions;
@@ -89,7 +88,7 @@ public class GoalTrigger : MonoBehaviour
     /// </summary>
     private IEnumerator ResultAndWaitForAnyKey()
     {
-        yield return new WaitForSecondsRealtime(3f); // 3秒リザルト表示
+        yield return new WaitForSecondsRealtime(_resultDelay); // 3秒リザルト表示
 
         // 「Press Any Key」表示
         if (_pressAnyKeyText != null)
@@ -104,7 +103,7 @@ public class GoalTrigger : MonoBehaviour
         }
 
         // フェードアウト
-        yield return StartCoroutine(FadeOut(1f));
+        yield return StartCoroutine(FadeOut(_fadeDuration));
 
         // フェード後にリザルトパネルとテキストを非表示
         if (_resultPanel != null && _isResultOpen)
