@@ -36,10 +36,10 @@ public class GameManager : MonoBehaviour
         // DB接続・初期化
         var db = DatabaseManager.Connection;
         DatabaseManager.Initialize();
-        _characterManager.LoadCharacterStatus();
+        _characterManager.LoadPlayerStatus();
 
-        // 例：CharacterStatusテーブルの最初のプレイヤー情報を取得してログ表示
-        var player = db.Table<CharacterStatus>().FirstOrDefault();
+        // 例：player_statusテーブルの最初のプレイヤー情報を取得してログ表示
+        var player = db.Table<player_status>().FirstOrDefault();
         if (player != null)
         {
             //Debug.Log($"Player Info - Id:{player.Id}, HP:{player.HP}, AttackPower:{player.AttackPower}, Coin:{player.Coin}, Level:{player.Level}, WeaponId:{player.WeaponId}");
@@ -65,21 +65,21 @@ public class GameManager : MonoBehaviour
     private void LevelUpPlayer()
     {
         // プレイヤーの現在データ取得
-        var player = DatabaseManager.GetAllCharacters().Find(c => c.Name == "Shizuku"); // 例: 名前で検索
+        var player = DatabaseManager.GetAllCharacters().Find(c => c.name == "Shizuku"); // 例: 名前で検索
         if (player != null)
         {
             // ステータス上昇例（HP+10, 攻撃力+2, レベル+1）
-            int newHP = player.HP + 10;
-            int newAtk = player.AttackPower + 2;
-            int newLevel = player.Level + 1;
+            int newHP = player.hp + 10;
+            int newAtk = player.attack_power + 2;
+            int newLevel = player.level + 1;
 
             // DBを更新
-            DatabaseManager.UpdatePlayerStatus(player.Id, newHP, newAtk, newLevel);
+            DatabaseManager.UpdatePlayerStatus(player.id, newHP, newAtk, newLevel);
 
             Debug.Log($"レベルアップ！ 新HP:{newHP}, 新攻撃力:{newAtk}, 新レベル:{newLevel}");
 
             // 画面上のキャラクターにも反映したい場合は、再読込やSetStats呼び出しを追加
-            _characterManager.LoadCharacterStatus();
+            _characterManager.LoadPlayerStatus();
         }
         else
         {

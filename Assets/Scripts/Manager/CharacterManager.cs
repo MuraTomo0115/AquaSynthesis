@@ -26,7 +26,7 @@ public class CharacterManager : MonoBehaviour
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
 
-    public void LoadCharacterStatus()
+    public void LoadPlayerStatus()
     {
         // Enemyタグが付いたすべてのオブジェクトを取得
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
@@ -127,18 +127,18 @@ public class CharacterManager : MonoBehaviour
         if (isPlayer)
         {
             var playerList = DatabaseManager.GetAllCharacters();
-            var playerData = playerList.Find(c => c.Name == name);
+            var playerData = playerList.Find(c => c.name == name);
             var pistolList = DatabaseManager.GetAllPistols();
             var pistolData = pistolList.Find(c => c.Id == 1);
             if (playerData != null)
             {
-                character.SetStats(playerData.HP, playerData.AttackPower, pistolData.AttackPower);
-                Debug.Log($"プレイヤーのステータスを設定: HP={playerData.HP}, AttackPower={playerData.AttackPower}, Level={playerData.Level}");
+                character.SetStats(playerData.hp, playerData.attack_power, pistolData.AttackPower);
+                Debug.Log($"プレイヤーのステータスを設定: HP={playerData.hp}, AttackPower={playerData.attack_power}, Level={playerData.level}");
                 Debug.Log($"ピストルの攻撃力を設定: PistolPower={pistolData.AttackPower}");
             }
             else
             {
-                Debug.LogError($"CharacterStatusテーブルにName '{name}' のデータがありません");
+                Debug.LogError($"player_statusテーブルにName '{name}' のデータがありません");
             }
         }
         else if (character.CompareTag("Enemy"))

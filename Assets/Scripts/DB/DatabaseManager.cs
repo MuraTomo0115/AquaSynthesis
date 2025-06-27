@@ -51,7 +51,7 @@ public class DatabaseManager
     {
         if(_debugMode)
         {
-            //ResetCharacterStatusTable();
+            //Resetplayer_statusTable();
 		}
 
         Migrate();
@@ -71,17 +71,28 @@ public class DatabaseManager
             );
         ");
 
-        // プレイヤーステータステーブル
-        _connection.Execute(@"
-            CREATE TABLE IF NOT EXISTS CharacterStatus (
-                Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                HP INTEGER NOT NULL,
-                AttackPower INTEGER NOT NULL,
-                Coin INTEGER NOT NULL DEFAULT 0,
-                Level INTEGER NOT NULL DEFAULT 1,
-                WeaponId INTEGER
-            );
+        //_connection.Execute("PRAGMA foreign_keys = ON;");
+        //// プレイヤーステータステーブル
+        Connection.Execute(@"
+        	CREATE TABLE IF NOT EXISTS player_status (
+        		id INTEGER PRIMARY KEY AUTOINCREMENT,
+        		name TEXT NOT NULL DEFAULT 'Shizuku',
+        		hp INTEGER NOT NULL DEFAULT 5,
+        		attack_power INTEGER NOT NULL DEFAULT 3,
+        		level INTEGER NOT NULL DEFAULT 1,
+        		current_exp INTEGER NOT NULL DEFAULT 0,
+        		current_route TEXT NOT NULL DEFAULT 'A',
+        		damage_se TEXT NOT NULL DEFAULT '545DamageSE',
+        		FOREIGN KEY (current_route) REFERENCES route_flags(flag_name)
+        	);
         ");
+
+        Connection.Execute(@"
+			CREATE TABLE IF NOT EXISTS route_flags (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				flag_name TEXT UNIQUE
+			);
+		");
 
         // ピストル（武器）テーブル
         _connection.Execute(@"
@@ -93,11 +104,11 @@ public class DatabaseManager
         ");
 
         // 初期データの挿入
-        var playerCount = _connection.ExecuteScalar<int>("SELECT COUNT(*) FROM CharacterStatus");
+        var playerCount = _connection.ExecuteScalar<int>("SELECT COUNT(*) FROM player_status");
         if(playerCount == 0)
         {
             _connection.Execute(
-                "INSERT INTO CharacterStatus (HP, AttackPower) VALUES (?, ?)",
+                "INSERT INTO player_status (HP, attack_power) VALUES (?, ?)",
                 10, 3, 0); // HP10、攻撃力3、コイン０で登録
         }
         var pistolCount = _connection.ExecuteScalar<int>("SELECT COUNT(*) FROM PistolStatus");
@@ -106,31 +117,28 @@ public class DatabaseManager
             _connection.Execute(
                 "INSERT INTO PistolStatus (AttackPower, DisableTime) VALUES (?, ?)",
                 2, 6); // 攻撃力２、弾が消えるまでの時間６で登録
-        }
-    }
+		}
+	}
 
-    public static void Migrate()
-    {
-        var columns = Connection.Query<TableInfo>("PRAGMA table_info(CharacterStatus);")
-                                .Select(c => c.name)
-                                .ToList();
+	public static void Migrate()
+	{
+		var columns = Connection.Query<TableInfo>("PRAGMA table_info(player_status);")
+								.Select(c => c.name)
+								.ToList();
 
 		// Expカラムが存在しない場合、追加する処理の例
 		// 例えば、経験値を追加したい場合などに使用
 		if (!columns.Contains("Exp"))
-        {
-            //Connection.Execute("ALTER TABLE CharacterStatus ADD COLUMN Exp INTEGER DEFAULT 100;");
+		{
+			//Connection.Execute("ALTER TABLE player_status ADD COLUMN Exp INTEGER DEFAULT 100;");
 		}
-
-		// 名前を指定し、テーブルからデータを削除
-		//Connection.Execute("DELETE FROM DestructibleObjs WHERE Name = ?", "barrel");
 	}
 
-	/// CharacterStatusテーブルの全レコードを取得
-	/// </summary>
-	public static List<CharacterStatus> GetAllCharacters()
+    /// player_statusテーブルの全レコードを取得
+    /// </summary>
+    public static List<player_status> GetAllCharacters()
 	{
-		return Connection.Query<CharacterStatus>("SELECT * FROM CharacterStatus");
+		return Connection.Query<player_status>("SELECT * FROM player_status");
 	}
 
 	/// <summary>
@@ -177,11 +185,32 @@ public class DatabaseManager
 		return list.FirstOrDefault();
 	}
 
-	/// <summary>
-	/// EnemyStatusテーブルに新しい敵データを挿入
-	/// </summary>
-	/// <param name="enemy">挿入するEnemyStatusオブジェクト</param>
-	public static void InsertEnemy(EnemyStatus enemy)
+    /// <summary>
+    /// player_statusテーブルの現在のルートをidで取得
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>現在のルート</returns>
+    public static string GetCurrentRouteById(int id)
+    {
+        return Connection.ExecuteScalar<string>("SELECT current_route FROM player_status WHERE id = ?", id);
+    }
+
+    /// <summary>
+    /// 指定したプレイヤーIDのルートを変更する
+    /// </summary>
+    /// <param name="id">player_statusテーブルのid</param>
+    /// <param name="route">新しいルート名（例: "N", "A", "G"）</param>
+    public static void UpdateCurrentRoute(int id, string route)
+    {
+        Connection.Execute("UPDATE player_status SET current_route = ? WHERE id = ?", route, id);
+		Debug.Log($"プレイヤーID {id} のルートを '{route}' に更新しました。");
+    }
+
+    /// <summary>
+    /// EnemyStatusテーブルに新しい敵データを挿入
+    /// </summary>
+    /// <param name="enemy">挿入するEnemyStatusオブジェクト</param>
+    public static void InsertEnemy(EnemyStatus enemy)
 	{
 		// INSERT～:どのテーブルのどのカラムにデータを入れるか指定 VALUES:実際にどんな値を入れるか指定(?はプレースホルダー)
 		Connection.Execute(
@@ -201,7 +230,7 @@ public class DatabaseManager
 	}
 
 	/// <summary>
-	/// CharacterStatusテーブルのプレイヤーステータスを更新
+	/// player_statusテーブルのプレイヤーステータスを更新
 	/// </summary>
 	/// <param name="id">更新するプレイヤーのID</param>
 	/// <param name="newHP">新しいHP</param>
@@ -210,20 +239,20 @@ public class DatabaseManager
 	public static void UpdatePlayerStatus(int id, int newHP, int newAttackPower, int newLevel)
 	{
 		Connection.Execute(
-			"UPDATE CharacterStatus SET HP = ?, AttackPower = ?, Level = ? WHERE Id = ?",
+			"UPDATE player_status SET HP = ?, attack_power = ?, Level = ? WHERE Id = ?",
 			newHP, newAttackPower, newLevel, id);
 	}
 
 	/// <summary>
 	/// デバッグ用にテーブルをリセットする処理
 	/// </summary>
-	private static void ResetCharacterStatusTable()
+	private static void Resetplayer_statusTable()
 	{
-		Connection.Execute("DROP TABLE IF EXISTS CharacterStatus;");
+		Connection.Execute("DROP TABLE IF EXISTS player_status;");
 		Connection.Execute("DROP TABLE IF EXISTS EnemyStatus;");
 
 		Connection.Execute(@"
-        CREATE TABLE CharacterStatus (
+        CREATE TABLE player_status (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             Name TEXT NOT NULL DEFAULT 'Shizuku',
             HP INTEGER NOT NULL,
@@ -244,7 +273,7 @@ public class DatabaseManager
     ");
 
 		Connection.Execute(
-			"INSERT INTO CharacterStatus (HP, AttackPower, Coin, Level, WeaponId) VALUES (?, ?, ?, ?, ?);",
+			"INSERT INTO player_status (HP, AttackPower, Coin, Level, WeaponId) VALUES (?, ?, ?, ?, ?);",
 			10, 3, 0, 1, null);
 
 		Connection.Execute(
@@ -256,6 +285,6 @@ public class DatabaseManager
 			"TestEnemy2", 25, 5);
 
 		Connection.Execute("DROP TABLE IF EXISTS SupportStatus;");
-		UnityEngine.Debug.Log("CharacterStatusテーブルをリセットしました。初期データを挿入しました。");
+		UnityEngine.Debug.Log("player_statusテーブルをリセットしました。初期データを挿入しました。");
 	}
 }

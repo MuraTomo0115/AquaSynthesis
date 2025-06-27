@@ -51,9 +51,9 @@ public class Character : MonoBehaviour
         if (CompareTag("Player"))
         {
             var playerList = DatabaseManager.GetAllCharacters();
-            var playerData = playerList.Find(c => c.Name == "Shizuku");
+            var playerData = playerList.Find(c => c.name == "Shizuku");
 
-            AudioManager.Instance.PlaySE("Player", playerData.DamageSE);
+            AudioManager.Instance.PlaySE("Player", playerData.damage_se);
         }
 
         _currentHealth -= damage;
