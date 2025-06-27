@@ -793,7 +793,7 @@ MonoBehaviour:
   _playerYOffset: 0.5
   _nStages:
   - stageName: N1
-    sceneName: Stage_1
+    sceneName: Stage_N1
     stageImage: {fileID: 21300000, guid: 98fe9bde48b424a49b67f5164eea87be, type: 3}
     stagePoint: {fileID: 964534780}
   - stageName: N2

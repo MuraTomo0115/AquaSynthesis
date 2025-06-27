@@ -50,12 +50,6 @@ public class Menu : MonoBehaviour
         _backButtonOutline.effectColor = OutlineDefaultColor;
         _originalBackButtonScale = _backButton.GetComponent<RectTransform>().localScale;
 
-        // InputActionHolder����MenuInputActions���擾���ăC�x���g�o�^
-        var menuActions = InputActionHolder.Instance.menuInputActions;
-        menuActions.Menu.Move.performed += ctx => OnMove(ctx.ReadValue<Vector2>().x);
-        menuActions.Menu.Vertical.performed += ctx => OnVertical(ctx.ReadValue<Vector2>().y);
-        menuActions.Menu.Click.performed += ctx => OnClick();
-
         if (_fadeImage != null)
         {
             _fadeImage.color = new Color(0, 0, 0, 1); // �O�̂���Alpha=1
@@ -171,15 +165,6 @@ public class Menu : MonoBehaviour
             stateMenu.time = 0f;
             stateMenu.speed = 1f;
         }
-    }
-
-    /// <summary>
-
-    /// �L�������ɓ��̓A�N�V������L���ɂ���
-    /// </summary>
-    private void OnEnable()
-    {
-        InputActionHolder.Instance.menuInputActions.Menu.Enable();
     }
 
     /// <summary>
