@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections; 
 using UnityEngine.SceneManagement;
+using TMPro;
+using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// ゴール地点のトリガー。ADV再生・リザルト表示・シーン遷移・フェードアウトを制御。
@@ -14,11 +17,13 @@ public class GoalTrigger : MonoBehaviour
     [SerializeField] private GameObject _resultPanel;
     [SerializeField] private string _nextSceneName; // 遷移先シーン名
     [SerializeField] private CanvasGroup _fadeCanvasGroup; // フェード用
+    [SerializeField] private TextMeshProUGUI _pressAnyKeyText; // 「Press Any Key」用
 
     private int _addExp = 0; // クリア時に取得する経験値
     private PlayerInputActions _inputActions;
     private bool _waitForAdvEnd = false;
     private bool _isResultOpen = false;
+    private bool _waitForAnyKey = false;
 
     private void Awake()
     {
@@ -33,6 +38,8 @@ public class GoalTrigger : MonoBehaviour
         }
         _inputActions = new PlayerInputActions();
         _inputActions.Enable();
+        if (_pressAnyKeyText != null)
+            _pressAnyKeyText.gameObject.SetActive(false);
     }
 
     private void OnDestroy()
@@ -56,7 +63,7 @@ public class GoalTrigger : MonoBehaviour
     }
 
     /// <summary>
-    /// ゲームクリア時の処理（リザルト表示・当たり判定無効化・時止め・遷移コルーチン開始）
+    /// ゲームクリア時の処理
     /// </summary>
     private void StageClear()
     {
@@ -73,28 +80,42 @@ public class GoalTrigger : MonoBehaviour
             _resultPanel.SetActive(true);
             _isResultOpen = true;
             Time.timeScale = 0f;
-            StartCoroutine(ResultAndSceneTransition());
+            StartCoroutine(ResultAndWaitForAnyKey());
         }
     }
 
     /// <summary>
-    /// リザルト表示→フェードアウト→シーン遷移
+    /// リザルト表示→「Press Any Key」→キー入力待ち→フェードアウト→シーン遷移
     /// </summary>
-    private IEnumerator ResultAndSceneTransition()
+    private IEnumerator ResultAndWaitForAnyKey()
     {
-        yield return new WaitForSecondsRealtime(3f); // リザルト3秒表示
+        yield return new WaitForSecondsRealtime(3f); // 3秒リザルト表示
 
-        // フェードアウト（リザルトを表示したまま黒をかぶせる）
+        // 「Press Any Key」表示
+        if (_pressAnyKeyText != null)
+            _pressAnyKeyText.gameObject.SetActive(true);
+
+        _waitForAnyKey = true;
+
+        // ここではキー入力待ちをUpdateで判定
+        while (_waitForAnyKey)
+        {
+            yield return null;
+        }
+
+        // フェードアウト
         yield return StartCoroutine(FadeOut(1f));
 
-        // フェード後にリザルトパネルを非表示
+        // フェード後にリザルトパネルとテキストを非表示
         if (_resultPanel != null && _isResultOpen)
         {
             _resultPanel.SetActive(false);
             _isResultOpen = false;
         }
+        if (_pressAnyKeyText != null)
+            _pressAnyKeyText.gameObject.SetActive(false);
 
-        Time.timeScale = 1f; // シーン遷移前に時を戻す
+        Time.timeScale = 1f;
         if (!string.IsNullOrEmpty(_nextSceneName))
         {
             SceneManager.LoadScene(_nextSceneName);
@@ -131,6 +152,21 @@ public class GoalTrigger : MonoBehaviour
             // 念のため当たり判定を無効化
             Collider2D col = GetComponent<Collider2D>();
             if (col != null) col.enabled = false;
+        }
+
+        // 「Press Any Key」待ち
+        if (_waitForAnyKey)
+        {
+            if (Keyboard.current == null) return;
+
+            foreach (KeyControl key in Keyboard.current.allKeys)
+            {
+                if (key.wasPressedThisFrame)
+                {
+                    _waitForAnyKey = false;
+                    break;
+                }
+            }
         }
     }
 }
