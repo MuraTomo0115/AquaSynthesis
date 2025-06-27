@@ -216,6 +216,7 @@ GameObject:
   - component: {fileID: 2576802292478774004}
   - component: {fileID: 2790447860103461208}
   - component: {fileID: 8026316697547528240}
+  - component: {fileID: 2732571017538391733}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -377,6 +378,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterName: Shizuku
+  _expPrefab: {fileID: 0}
 --- !u!114 &8026316697547528240
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -406,6 +408,20 @@ MonoBehaviour:
   _invincibleTime: 1
   _offset: 0.2
   _supportManager: {fileID: 0}
+--- !u!114 &2732571017538391733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3238423601163293309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34cf45f297af50b43a8789e4e035279d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hpSlider: {fileID: 0}
+  playerCharacter: {fileID: 2790447860103461208}
 --- !u!1 &4000682774063797656
 GameObject:
   m_ObjectHideFlags: 0

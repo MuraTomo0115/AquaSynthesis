@@ -76,7 +76,9 @@ public class ADVManager : MonoBehaviour
 	{
 		if (_isPlay) return;
 
-		AudioManager.Instance.StopAllSE(); // ‚·‚×‚Ä‚ÌSE‚ð’âŽ~
+		InputActionHolder.Instance.playerInputActions.Disable();
+
+        AudioManager.Instance.StopAllSE(); // ‚·‚×‚Ä‚ÌSE‚ð’âŽ~
 
         _isPlay = true;
 		Time.timeScale = 0f;
@@ -169,6 +171,7 @@ public class ADVManager : MonoBehaviour
 			UnityEngine.Debug.Log("ƒVƒiƒŠƒII—¹");
 			_isPlay = false;
 			Time.timeScale = 1f; // ƒQ[ƒ€‚ÌŽžŠÔ‚ðŒ³‚É–ß‚·
+            InputActionHolder.Instance.playerInputActions.Enable();
 
             _canvasGroup.DOFade(0f, 0.2f).OnComplete(() =>
 			{
