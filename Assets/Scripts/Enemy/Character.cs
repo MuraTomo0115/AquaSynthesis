@@ -6,6 +6,9 @@ public class Character : MonoBehaviour
 {
     [SerializeField] private string _characterName;
     [SerializeField] private GameObject _expPrefab;
+    [SerializeField] private float _hpBarShowTime = 2f;
+    private EnemyHPBar _hpBar;
+
 
     private int _maxHealth;
     private int _currentHealth;
@@ -46,20 +49,45 @@ public class Character : MonoBehaviour
     /// <param name="damage">ダメージ量</param>
     public void HitAttack(int damage)
     {
-        if (_isDead) return; // 死亡してたら処理スキップ
+        if (_isDead) return;
 
         if (CompareTag("Player"))
         {
             var playerList = DatabaseManager.GetAllCharacters();
             var playerData = playerList.Find(c => c.name == "Shizuku");
-
             AudioManager.Instance.PlaySE("Player", playerData.damage_se);
+
+            // ダメージ計算
+            _currentHealth -= damage;
+        }
+        else if (CompareTag("Enemy"))
+        {
+            // HPバーが未生成なら生成
+            if (_hpBar == null)
+            {
+                var canvas = FindObjectOfType<Canvas>();
+                var prefab = Resources.Load<EnemyHPBar>("Prefab/HPBar/EnemyHealth");
+                if (prefab == null)
+                {
+                    Debug.LogError("EnemyHPBarプレハブがロードできません。パスやスクリプトのアタッチを確認してください。");
+                }
+                else
+                {
+                    _hpBar = Instantiate(prefab, canvas.transform);
+                    _hpBar.Init(transform);
+                }
+            }
+
+            // ダメージ計算
+            _currentHealth -= damage;
+
+            // HPバー更新＆表示
+            _hpBar.SetHP(_currentHealth, _maxHealth);
+            _hpBar.ShowForSeconds(_hpBarShowTime);
         }
 
-        _currentHealth -= damage;
         UnityEngine.Debug.Log($"{_characterName} はダメージを {damage} 食らいました。残りHP: {_currentHealth}");
 
-        // 赤くする
         if (_spriteRenderer != null && _currentHealth > 0)
             StartCoroutine(FlashRed());
         else if (_spriteRenderer != null && _currentHealth <= 0)
@@ -81,8 +109,15 @@ public class Character : MonoBehaviour
     /// </summary>
     protected virtual void Die()
     {
-        if (_isDead) return; // 念のため多重実行防止
-        _isDead = true;      // フラグON（1回だけ死亡処理）
+        if (_isDead) return;
+        _isDead = true;
+
+        // HPバーを破棄
+        if (_hpBar != null)
+        {
+            _hpBar.FadeOutAndDestroy(0.3f);
+            _hpBar = null;
+        }
 
         // 破壊可能オブジェクトの場合処理を分ける
         if (CompareTag("Destructible"))
@@ -97,7 +132,6 @@ public class Character : MonoBehaviour
         {
             InputActionHolder.Instance.playerInputActions.Player.Disable();
 
-            // Rigidbody2D があれば動きを停止
             var rb = GetComponent<Rigidbody2D>();
             if (rb != null)
             {
@@ -105,26 +139,23 @@ public class Character : MonoBehaviour
                 rb.isKinematic = true;
             }
 
-            // Collider2D 無効化（攻撃判定など受けなくする）
             var collider = GetComponent<Collider2D>();
             if (collider != null)
             {
                 collider.enabled = false;
             }
 
-            Destroy(gameObject, 10.0f); // 死亡アニメーション再生後に削除
-
+            Destroy(gameObject, 10.0f);
             return;
         }
 
-        // 全MonoBehaviourを無効化（自分以外）
         foreach (var comp in GetComponents<MonoBehaviour>())
         {
             if (comp != this)
                 comp.enabled = false;
         }
 
-        Destroy(gameObject, 1.0f); // 死亡アニメーション再生後に削除
+        Destroy(gameObject, 1.0f);
     }
 
     public void Heal(float amount)
