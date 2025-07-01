@@ -3,27 +3,42 @@ using UnityEngine.UI;
 
 public class PlayerHPBar : MonoBehaviour
 {
-    [SerializeField] private Slider hpSlider;
-    [SerializeField] private Character playerCharacter;
+    [SerializeField] private Slider _hpSlider;
+    [SerializeField] private Image _fillImage;
+    [SerializeField] private Character _playerCharacter;
 
     private void Start()
     {
-        if (playerCharacter == null)
+        if (_playerCharacter == null)
         {
             // プレイヤーのCharacterコンポーネントを自動取得
             var playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null)
-                playerCharacter = playerObj.GetComponent<Character>();
+                _playerCharacter = playerObj.GetComponent<Character>();
         }
-        if (playerCharacter != null)
-            hpSlider.maxValue = playerCharacter.MaxHealth;
+        if (_playerCharacter != null)
+            _hpSlider.maxValue = _playerCharacter.MaxHealth;
     }
 
     private void Update()
     {
-        if (playerCharacter != null)
+        if (_playerCharacter != null)
         {
-            hpSlider.value = playerCharacter.CurrentHealth;
+            _hpSlider.value = _playerCharacter.CurrentHealth;
+
+            float rate = (float)_playerCharacter.CurrentHealth / _playerCharacter.MaxHealth;
+
+            // 色変化（緑→黄→赤）
+            if (rate > 0.5f)
+            {
+                float t = (rate - 0.5f) / 0.5f; // 0.5～1.0→0～1
+                _fillImage.color = Color.Lerp(Color.yellow, Color.green, t);
+            }
+            else
+            {
+                float t = rate / 0.5f; // 0～0.5→0～1
+                _fillImage.color = Color.Lerp(Color.red, Color.yellow, t);
+            }
         }
     }
 }

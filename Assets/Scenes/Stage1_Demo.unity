@@ -4271,6 +4271,7 @@ GameObject:
   - component: {fileID: 412310444}
   - component: {fileID: 412310443}
   - component: {fileID: 412310442}
+  - component: {fileID: 412310448}
   m_Layer: 0
   m_Name: Enemy3
   m_TagString: Enemy
@@ -4335,6 +4336,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterName: TestEnemy1
   _expPrefab: {fileID: 1389163234}
+  _hpBarShowTime: 2
 --- !u!95 &412310444
 Animator:
   serializedVersion: 3
@@ -4453,6 +4455,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &412310448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 412310440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a339c93cb7799f4ebdaf5e6113ea79a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _slider: {fileID: 5784378061335004803, guid: 8247642f11078e848b3e70d198719ea5, type: 3}
+  _fillImage: {fileID: 0}
+  _fadeTime: 0
 --- !u!1 &418780897
 GameObject:
   m_ObjectHideFlags: 0
@@ -5793,6 +5810,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 568453918}
   m_CullTransparentMesh: 1
+--- !u!4 &580672898 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5731298416421337268, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
+  m_PrefabInstance: {fileID: 1997810703}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &592307235
 GameObject:
   m_ObjectHideFlags: 0
@@ -8683,7 +8705,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0a515e2692d41f4cac5f56287febc3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  summonPosition: {fileID: 0}
+  summonPosition: {fileID: 580672898}
 --- !u!1 &857616631
 GameObject:
   m_ObjectHideFlags: 0
@@ -9515,6 +9537,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _advManager: {fileID: 907733006}
   _scenarioFileName: sample
+  _resultPanel: {fileID: 0}
+  _nextSceneName: 
+  _fadeCanvasGroup: {fileID: 0}
+  _pressAnyKeyText: {fileID: 0}
+  _resultDelay: 3
+  _fadeDuration: 1
+  _stageClearDelay: 0.25
 --- !u!61 &952621308
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -9556,6 +9585,7 @@ GameObject:
   - component: {fileID: 955090399}
   - component: {fileID: 955090398}
   - component: {fileID: 955090397}
+  - component: {fileID: 955090403}
   m_Layer: 0
   m_Name: Enemy2
   m_TagString: Enemy
@@ -9620,6 +9650,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterName: TestEnemy1
   _expPrefab: {fileID: 1389163234}
+  _hpBarShowTime: 2
 --- !u!95 &955090399
 Animator:
   serializedVersion: 3
@@ -9738,6 +9769,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &955090403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 955090395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a339c93cb7799f4ebdaf5e6113ea79a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _slider: {fileID: 5784378061335004803, guid: 8247642f11078e848b3e70d198719ea5, type: 3}
+  _fillImage: {fileID: 0}
+  _fadeTime: 0
 --- !u!1 &975693773
 GameObject:
   m_ObjectHideFlags: 0
@@ -13338,6 +13384,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3238423601163293309, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
   m_PrefabInstance: {fileID: 1997810703}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1389163237 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2790447860103461208, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
+  m_PrefabInstance: {fileID: 1997810703}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1389163234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 938b323c97307b6449b6282f7a76c142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1403911436
 GameObject:
   m_ObjectHideFlags: 0
@@ -13621,6 +13678,7 @@ GameObject:
   - component: {fileID: 1421639860}
   - component: {fileID: 1421639859}
   - component: {fileID: 1421639858}
+  - component: {fileID: 1421639864}
   m_Layer: 0
   m_Name: Enemy1
   m_TagString: Enemy
@@ -13685,6 +13743,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterName: TestEnemy2
   _expPrefab: {fileID: 1389163234}
+  _hpBarShowTime: 2
 --- !u!95 &1421639860
 Animator:
   serializedVersion: 3
@@ -13803,6 +13862,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1421639864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1421639856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a339c93cb7799f4ebdaf5e6113ea79a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _slider: {fileID: 5784378061335004803, guid: 8247642f11078e848b3e70d198719ea5, type: 3}
+  _fillImage: {fileID: 0}
+  _fadeTime: 0
 --- !u!1 &1428574821
 GameObject:
   m_ObjectHideFlags: 0
@@ -14724,7 +14798,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 0, y: 130}
-  m_SizeDelta: {x: 400, y: 20}
+  m_SizeDelta: {x: 400, y: 45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1578975688
 MonoBehaviour:
@@ -19607,6 +19681,18 @@ PrefabInstance:
       propertyPath: hpSlider
       value: 
       objectReference: {fileID: 1578975688}
+    - target: {fileID: 2732571017538391733, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
+      propertyPath: _hpSlider
+      value: 
+      objectReference: {fileID: 1578975688}
+    - target: {fileID: 2732571017538391733, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
+      propertyPath: _fillImage
+      value: 
+      objectReference: {fileID: 1548556021}
+    - target: {fileID: 2732571017538391733, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
+      propertyPath: _playerCharacter
+      value: 
+      objectReference: {fileID: 1389163237}
     - target: {fileID: 2941540954094989962, guid: eeba2752a98f1c74f82fe5c1d48707f7, type: 3}
       propertyPath: m_RootOrder
       value: 0
