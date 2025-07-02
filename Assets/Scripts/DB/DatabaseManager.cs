@@ -4,6 +4,7 @@ using SQLite4Unity3d;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using UnityEditor.MemoryProfiler;
 
 // 主製作者：村田智哉
 
@@ -132,7 +133,7 @@ public class DatabaseManager
 		{
 			//Connection.Execute("ALTER TABLE player_status ADD COLUMN Exp INTEGER DEFAULT 100;");
 		}
-	}
+    }
 
     /// player_statusテーブルの全レコードを取得
     /// </summary>
@@ -227,26 +228,58 @@ public class DatabaseManager
 		Connection.Execute(
 			"INSERT INTO PistolStatus (AttackPower, DisableTime) VALUES (?, ?)",
 			pistol.AttackPower, pistol.DisableTime);
+    }
+
+    /// <summary>
+    /// StageStatusテーブルに新しいステージデータを挿入
+    /// </summary>
+    public static void InsertStage(string stageName,int is_clear,int support1,int support2,int support3)
+	{
+		Connection.Execute(
+			"INSERT INTO stage_status (stage,is_clear,support1,support2,support3) VALUES (?, ?, ?, ?, ?)",
+			stageName,is_clear, support1, support2,support3);
 	}
 
-	/// <summary>
-	/// player_statusテーブルのプレイヤーステータスを更新
-	/// </summary>
-	/// <param name="id">更新するプレイヤーのID</param>
-	/// <param name="newHP">新しいHP</param>
-	/// <param name="newAttackPower">新しい攻撃力</param>
-	/// <param name="newLevel">新しいレベル</param>
-	public static void UpdatePlayerStatus(int id, int newHP, int newAttackPower, int newLevel)
+    /// <summary>
+    /// ステージクリア関数
+    /// </summary>
+    public static void ClearStage(string stageName,int is_clear)
+	{
+		Connection.Execute(
+            "UPDATE stage_status SET is_clear = ? WHERE stage = ?",
+            is_clear, stageName);
+	}
+
+/// <summary>
+/// player_statusテーブルのプレイヤーステータスを更新
+/// </summary>
+/// <param name="id">更新するプレイヤーのID</param>
+/// <param name="newHP">新しいHP</param>
+/// <param name="newAttackPower">新しい攻撃力</param>
+/// <param name="newLevel">新しいレベル</param>
+public static void UpdatePlayerStatus(int id, int newHP, int newAttackPower, int newLevel)
 	{
 		Connection.Execute(
 			"UPDATE player_status SET HP = ?, attack_power = ?, Level = ? WHERE Id = ?",
 			newHP, newAttackPower, newLevel, id);
 	}
 
-	/// <summary>
-	/// デバッグ用にテーブルをリセットする処理
-	/// </summary>
-	private static void Resetplayer_statusTable()
+    /// <summary>
+    /// 指定したステージIDの進行状況（クリア・サポート使用可否など）をstage_statusテーブルから取得
+    /// </summary>
+    /// <param name="stage">ステージID（例: "stage1"）</param>
+    /// <returns>該当ステージのStageStatusオブジェクト。存在しない場合はnull。</returns>
+    public static StageStatus GetStageStatus(string stage)
+    {
+        return Connection.Query<StageStatus>(
+            "SELECT * FROM stage_status WHERE stage = ?", stage
+        ).FirstOrDefault();
+    }
+
+    /// <summary>
+    /// デバッグ用にテーブルをリセットする処理
+    /// </summary>
+    private static void Resetplayer_statusTable()
 	{
 		Connection.Execute("DROP TABLE IF EXISTS player_status;");
 		Connection.Execute("DROP TABLE IF EXISTS EnemyStatus;");

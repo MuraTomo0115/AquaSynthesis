@@ -69,6 +69,23 @@ public class GoalTrigger : MonoBehaviour
         _addExp = ExpManager.Instance.CurrentExp;
         _addExp = 0;
 
+        // ゴールしたステージ名を取得
+        string stageName = SceneManager.GetActiveScene().name;
+
+        // 進行状況をクリアに更新
+        var status = DatabaseManager.GetStageStatus(stageName);
+        if (status != null)
+        {
+            status.is_clear = 1;
+            // 既存レコードがあればUPDATE
+            DatabaseManager.InsertStage(stageName, 1, status.support1, status.support2, status.support3);
+        }
+        else
+        {
+            // レコードがなければ新規挿入
+            DatabaseManager.InsertStage(stageName, 1, 0, 0, 0);
+        }
+
         // トリガーの当たり判定を無効化
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
