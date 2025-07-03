@@ -117,14 +117,6 @@ public class StageSelector : MonoBehaviour
         }
         UpdateStageView();
         MovePlayerInstant();
-
-        if (_playerObject != null)
-        {
-            _player = _playerObject.transform;
-            _playerAnimator = _playerObject.GetComponent<Animator>();
-        }
-        UpdateStageView();
-        MovePlayerInstant();
     }
 
     // “ü—ÍƒCƒxƒ“ƒg: ˆÚ“®
