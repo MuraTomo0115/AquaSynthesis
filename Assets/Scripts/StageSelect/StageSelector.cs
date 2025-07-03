@@ -99,6 +99,25 @@ public class StageSelector : MonoBehaviour
 
         _currentIndex = 0;
 
+        // クリアしたステージ名を取得し、_currentIndexを更新
+        string lastClearedStage = PlayerPrefs.GetString("LastClearedStage", "");
+        if (!string.IsNullOrEmpty(lastClearedStage))
+        {
+            int foundIndex = _allStages.FindIndex(s => s.stageName == lastClearedStage);
+            if (foundIndex >= 0)
+            {
+                _currentIndex = foundIndex;
+            }
+        }
+
+        if (_playerObject != null)
+        {
+            _player = _playerObject.transform;
+            _playerAnimator = _playerObject.GetComponent<Animator>();
+        }
+        UpdateStageView();
+        MovePlayerInstant();
+
         if (_playerObject != null)
         {
             _player = _playerObject.transform;

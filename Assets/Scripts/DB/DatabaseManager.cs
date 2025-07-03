@@ -250,14 +250,29 @@ public class DatabaseManager
             is_clear, stageName);
 	}
 
-/// <summary>
-/// player_statusテーブルのプレイヤーステータスを更新
-/// </summary>
-/// <param name="id">更新するプレイヤーのID</param>
-/// <param name="newHP">新しいHP</param>
-/// <param name="newAttackPower">新しい攻撃力</param>
-/// <param name="newLevel">新しいレベル</param>
-public static void UpdatePlayerStatus(int id, int newHP, int newAttackPower, int newLevel)
+    /// <summary>
+    /// 指定したステージの進行状況を更新する
+    /// </summary>
+    /// <param name="stageName">ステージ名</param>
+    /// <param name="is_clear">クリア状態</param>
+    /// <param name="support1">サポート1</param>
+    /// <param name="support2">サポート2</param>
+    /// <param name="support3">サポート3</param>
+    public static void UpdateStage(string stageName, int is_clear, int support1, int support2, int support3)
+    {
+        Connection.Execute(
+            "UPDATE stage_status SET is_clear = ?, support1 = ?, support2 = ?, support3 = ? WHERE stage = ?",
+            is_clear, support1, support2, support3, stageName);
+    }
+
+    /// <summary>
+    /// player_statusテーブルのプレイヤーステータスを更新
+    /// </summary>
+    /// <param name="id">更新するプレイヤーのID</param>
+    /// <param name="newHP">新しいHP</param>
+    /// <param name="newAttackPower">新しい攻撃力</param>
+    /// <param name="newLevel">新しいレベル</param>
+    public static void UpdatePlayerStatus(int id, int newHP, int newAttackPower, int newLevel)
 	{
 		Connection.Execute(
 			"UPDATE player_status SET HP = ?, attack_power = ?, Level = ? WHERE Id = ?",

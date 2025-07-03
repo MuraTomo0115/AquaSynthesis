@@ -69,21 +69,18 @@ public class GoalTrigger : MonoBehaviour
         _addExp = ExpManager.Instance.CurrentExp;
         _addExp = 0;
 
-        // ゴールしたステージ名を取得
-        string stageName = SceneManager.GetActiveScene().name;
+        // ゴールしたシーン名を取得
+        string sceneName = SceneManager.GetActiveScene().name;
+
+        // シーン名を保存
+        PlayerPrefs.SetString("LastClearedStage", sceneName);
+        PlayerPrefs.Save();
 
         // 進行状況をクリアに更新
-        var status = DatabaseManager.GetStageStatus(stageName);
+        var status = DatabaseManager.GetStageStatus(sceneName);
         if (status != null)
         {
-            status.is_clear = 1;
-            // 既存レコードがあればUPDATE
-            DatabaseManager.InsertStage(stageName, 1, status.support1, status.support2, status.support3);
-        }
-        else
-        {
-            // レコードがなければ新規挿入
-            DatabaseManager.InsertStage(stageName, 1, 0, 0, 0);
+            DatabaseManager.UpdateStage(sceneName, 1, status.support1, status.support2, status.support3);
         }
 
         // トリガーの当たり判定を無効化
