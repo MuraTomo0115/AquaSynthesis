@@ -99,6 +99,17 @@ public class StageSelector : MonoBehaviour
 
         _currentIndex = 0;
 
+        // クリアしたステージ名を取得し、_currentIndexを更新
+        string lastClearedStage = PlayerPrefs.GetString("LastClearedStage", "");
+        if (!string.IsNullOrEmpty(lastClearedStage))
+        {
+            int foundIndex = _allStages.FindIndex(s => s.stageName == lastClearedStage);
+            if (foundIndex >= 0)
+            {
+                _currentIndex = foundIndex;
+            }
+        }
+
         if (_playerObject != null)
         {
             _player = _playerObject.transform;
@@ -137,7 +148,20 @@ public class StageSelector : MonoBehaviour
     /// <param name="direction">移動方向（-1:左, 1:右）</param>
     private void MoveToStage(int newIndex, int direction)
     {
+        // 0番目（最初のステージ）は常に選択可能
         if (newIndex < 0 || newIndex >= _allStages.Count) return;
+        if (newIndex > 0)
+        {
+            // 直前のステージ名を取得
+            string prevStageName = _allStages[newIndex - 1].stageName;
+            var prevStatus = DatabaseManager.GetStageStatus(prevStageName);
+            // 直前のステージが未クリアなら進めない
+            if (prevStatus == null || prevStatus.is_clear == 0)
+            {
+                Debug.Log("前のステージをクリアしていません。");
+                return;
+            }
+        }
         _currentIndex = newIndex;
         _moveDirection = direction;
         UpdateStageView();

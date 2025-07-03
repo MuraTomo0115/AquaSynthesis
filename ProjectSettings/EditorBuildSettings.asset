@@ -12,7 +12,10 @@ EditorBuildSettings:
     path: Assets/Scenes/StageSelect.unity
     guid: 9cc25aef18e7a2946890fbb139b76259
   - enabled: 1
-    path: Assets/Scenes/Stage_N1.unity
+    path: Assets/Scenes/n1.unity
     guid: 4a1e7dedea92267479927d98e408a738
+  - enabled: 1
+    path: Assets/Scenes/n2.unity
+    guid: c2813dff55b90c8419fcca64b2248b9d
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 7fe14dce02486884a86e9ecb311344a8, type: 2}

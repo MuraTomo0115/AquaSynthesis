@@ -792,20 +792,20 @@ MonoBehaviour:
   _moveSpeed: 1
   _playerYOffset: 0.5
   _nStages:
-  - stageName: N1
-    sceneName: Stage_N1
+  - stageName: n1
+    sceneName: n1
     stageImage: {fileID: 21300000, guid: 98fe9bde48b424a49b67f5164eea87be, type: 3}
     stagePoint: {fileID: 964534780}
-  - stageName: N2
-    sceneName: Stage_N2
+  - stageName: n2
+    sceneName: n2
     stageImage: {fileID: 21300000, guid: d0669f4921d2c1f4ebcccae3305d1622, type: 3}
     stagePoint: {fileID: 1588876854}
-  - stageName: N3
-    sceneName: Stage_N3
+  - stageName: n3
+    sceneName: n3
     stageImage: {fileID: 21300000, guid: 67f85fceeddda7344bd459bf673be3ec, type: 3}
     stagePoint: {fileID: 1855848917}
-  - stageName: N4
-    sceneName: Stage_N4
+  - stageName: n4
+    sceneName: n4
     stageImage: {fileID: 21300000, guid: 03052b5cd36772344969b183828a37ea, type: 3}
     stagePoint: {fileID: 897169410}
   _aStages:
