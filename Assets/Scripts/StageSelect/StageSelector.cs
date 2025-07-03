@@ -49,6 +49,10 @@ public class StageSelector : MonoBehaviour
     private Transform _player; // プレイヤーのTransform
     private Animator _playerAnimator; // プレイヤーのAnimator
 
+    // === 追加: 道オブジェクトの参照 ===
+    [Header("道オブジェクト（ステージ間ごとにセット）")]
+    [SerializeField] private List<GameObject> _pathObjects;
+
     private void Awake()
     {
         // InputActions初期化
@@ -99,17 +103,23 @@ public class StageSelector : MonoBehaviour
 
         _currentIndex = 0;
 
-        // クリアしたステージ名を取得し、_currentIndexを更新
+        // クリアしたシーン名を取得し、_currentIndexを更新
         string lastClearedStage = PlayerPrefs.GetString("LastClearedStage", "");
+        // 直前クリアステージの初クリア判定と演出
         if (!string.IsNullOrEmpty(lastClearedStage))
         {
-            int foundIndex = _allStages.FindIndex(s => s.stageName == lastClearedStage);
-            if (foundIndex >= 0)
+            var status = DatabaseManager.GetStageStatus(lastClearedStage);
+            if (status != null && status.is_clear == 1 && !PlayerPrefs.HasKey("PathAnimationPlayed_" + lastClearedStage))
             {
-                _currentIndex = foundIndex;
+                int pathIndex = _allStages.FindIndex(s => s.sceneName == lastClearedStage);
+                if (pathIndex >= 0 && pathIndex < _pathObjects.Count)
+                {
+                    StartCoroutine(StretchPathCoroutine(_pathObjects[pathIndex]));
+                }
+                PlayerPrefs.SetInt("PathAnimationPlayed_" + lastClearedStage, 1);
+                PlayerPrefs.Save();
             }
         }
-
         if (_playerObject != null)
         {
             _player = _playerObject.transform;
@@ -117,6 +127,46 @@ public class StageSelector : MonoBehaviour
         }
         UpdateStageView();
         MovePlayerInstant();
+
+        // === 追加: すでに解放済みの道は常時表示 ===
+        for (int i = 0; i < _pathObjects.Count; i++)
+        {
+            // i番目の道は、i+1番目のステージがクリア済みなら常時表示
+            if (i + 1 < _allStages.Count)
+            {
+                var status = DatabaseManager.GetStageStatus(_allStages[i + 1].sceneName);
+                if (status != null && status.is_clear == 1)
+                {
+                    if (_pathObjects[i] != null)
+                    {
+                        _pathObjects[i].SetActive(true);
+                        // スケールを1にしておく
+                        var t = _pathObjects[i].transform;
+                        var s = t.localScale;
+                        s.x = 1f;
+                        t.localScale = s;
+                    }
+                }
+            }
+        }
+
+        // === 追加: 直前クリアステージの初クリア判定と演出 ===
+        if (!string.IsNullOrEmpty(lastClearedStage))
+        {
+            var status = DatabaseManager.GetStageStatus(lastClearedStage);
+            // is_clear==1 かつ、まだ演出していなければ
+            if (status != null && status.is_clear == 1 && !PlayerPrefs.HasKey("PathAnimationPlayed_" + lastClearedStage))
+            {
+                // ステージ間の道インデックスを取得（例: n2クリア時はn1→n2間の道を伸ばす）
+                int pathIndex = _allStages.FindIndex(s => s.sceneName == lastClearedStage) - 1;
+                if (pathIndex >= 0 && pathIndex < _pathObjects.Count)
+                {
+                    StartCoroutine(StretchPathCoroutine(_pathObjects[pathIndex]));
+                }
+                PlayerPrefs.SetInt("PathAnimationPlayed_" + lastClearedStage, 1);
+                PlayerPrefs.Save();
+            }
+        }
     }
 
     // 入力イベント: 移動
@@ -235,6 +285,34 @@ public class StageSelector : MonoBehaviour
             _playerAnimator.SetBool("isRunning", false);
 
         _isMoving = false;
+    }
+
+    /// <summary>
+    /// 道が伸びる演出コルーチン
+    /// </summary>
+    private IEnumerator StretchPathCoroutine(GameObject pathObject)
+    {
+        if (pathObject == null) yield break;
+        pathObject.SetActive(true);
+        Transform pathTransform = pathObject.transform;
+        Vector3 originalScale = pathTransform.localScale;
+        float targetX = originalScale.x;
+        Vector3 scale = originalScale;
+        scale.x = 0f;
+        pathTransform.localScale = scale;
+
+        float duration = 1.0f;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            scale.x = Mathf.Lerp(0f, targetX, t);
+            pathTransform.localScale = scale;
+            yield return null;
+        }
+        scale.x = targetX;
+        pathTransform.localScale = scale;
     }
 
     // ステージクリア時や分岐フラグを踏んだ時に呼ぶ
