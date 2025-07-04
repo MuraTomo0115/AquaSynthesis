@@ -37,6 +37,9 @@ public class CharacterManager : MonoBehaviour
         // Playerタグが付いたオブジェクトを1つだけ取得
         GameObject player = GameObject.FindGameObjectWithTag("Player");
 
+        // Bossタグが付いたすべてのオブジェクトを取得
+        GameObject[] bosses = GameObject.FindGameObjectsWithTag("Boss");
+
         if (enemies.Length == 0)
         {
             Debug.LogError("Enemyタグが付いたオブジェクトが見つかりません！");
@@ -98,6 +101,31 @@ public class CharacterManager : MonoBehaviour
             }
         }
 
+        // すべてのBossオブジェクトに対して処理を行う
+        foreach (GameObject bossObject in bosses)
+        {
+            Character bossCharacter = bossObject.GetComponent<Character>();
+
+            if (bossCharacter != null)
+            {
+                characterName = bossCharacter.CharacterName;
+                Debug.Log($"取得したボスキャラクター名: {characterName}");
+
+                if (string.IsNullOrEmpty(characterName))
+                {
+                    Debug.LogError("ボスのキャラクター名が空です！");
+                    continue;
+                }
+
+                // テーブルからデータを読み込む
+                LoadCharacterDataFromTable(characterName, bossCharacter, false, true);
+            }
+            else
+            {
+                Debug.LogError("BossのCharacterコンポーネントが見つかりません！");
+            }
+        }
+
         // Playerオブジェクトに対して処理
         Character playerCharacter = player.GetComponent<Character>();
 
@@ -122,7 +150,8 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
-    private void LoadCharacterDataFromTable(string name, Character character, bool isPlayer = false)
+    // isPlayer: プレイヤーかどうか, isBoss: ボスかどうか
+    private void LoadCharacterDataFromTable(string name, Character character, bool isPlayer = false, bool isBoss = false)
     {
         if (isPlayer)
         {
@@ -139,6 +168,20 @@ public class CharacterManager : MonoBehaviour
             else
             {
                 Debug.LogError($"player_statusテーブルにName '{name}' のデータがありません");
+            }
+        }
+        else if (isBoss)
+        {
+            var bossList = DatabaseManager.GetAllBosses();
+            var bossData = bossList.Find(b => b.name == name);
+            if (bossData != null)
+            {
+                character.SetStats(bossData.hp, bossData.attack_power);
+                Debug.Log($"ボスキャラクターのステータスを設定: HP={bossData.hp}, AttackPower={bossData.attack_power}");
+            }
+            else
+            {
+                Debug.LogError($"bossesテーブルにName '{name}' のデータがありません");
             }
         }
         else if (character.CompareTag("Enemy"))

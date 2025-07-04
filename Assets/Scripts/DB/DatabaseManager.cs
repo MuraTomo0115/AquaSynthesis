@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using UnityEditor.MemoryProfiler;
+using UnityEditor.SceneManagement;
 
 // 主製作者：村田智哉
 
@@ -104,6 +105,19 @@ public class DatabaseManager
             );
         ");
 
+        // ボステーブル
+        Connection.Execute(@"
+            CREATE TABLE IF NOT EXISTS bosses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                hp INTEGER NOT NULL,
+                attack_power INTEGER NOT NULL,
+                exp INTEGER NOT NULL DEFAULT 0,
+                flag TEXT,
+        		FOREIGN KEY (flag) REFERENCES route_flags(flag_name)
+            );
+        ");
+
         // 初期データの挿入
         var playerCount = _connection.ExecuteScalar<int>("SELECT COUNT(*) FROM player_status");
         if(playerCount == 0)
@@ -127,12 +141,12 @@ public class DatabaseManager
 								.Select(c => c.name)
 								.ToList();
 
-		// Expカラムが存在しない場合、追加する処理の例
-		// 例えば、経験値を追加したい場合などに使用
-		if (!columns.Contains("Exp"))
-		{
-			//Connection.Execute("ALTER TABLE player_status ADD COLUMN Exp INTEGER DEFAULT 100;");
-		}
+        // Expカラムが存在しない場合、追加する処理の例
+        // 例えば、経験値を追加したい場合などに使用
+        if (!columns.Contains("Exp"))
+        {
+            //Connection.Execute("ALTER TABLE player_status ADD COLUMN Exp INTEGER DEFAULT 100;");
+        }
     }
 
     /// player_statusテーブルの全レコードを取得
@@ -219,11 +233,26 @@ public class DatabaseManager
 			enemy.HP, enemy.AttackPower);
 	}
 
-	/// <summary>
-	/// PistolStatusテーブルに新しいピストルデータを挿入
-	/// </summary>
-	/// <param name="pistol">挿入するPistolStatusオブジェクト</param>
-	public static void InsertPistol(PistolStatus pistol)
+    /// <summary>
+    /// Bossesテーブルに新しいボスデータを挿入
+    /// </summary>
+    /// <param name="name">名称</param>
+    /// <param name="hp">体力</param>
+    /// <param name="attackPower">攻撃力</param>
+    /// <param name="exp">経験値</param>
+    /// <param name="flag">フラグ名（NULL可）</param>
+    public static void InsertBoss(string name, int hp, int attackPower, int exp, string flag)
+    {
+        Connection.Execute(
+            "INSERT INTO bosses (name, hp, attack_power, exp, flag) VALUES (?, ?, ?, ?, ?)",
+            name, hp, attackPower, exp, flag);
+    }
+
+    /// <summary>
+    /// PistolStatusテーブルに新しいピストルデータを挿入
+    /// </summary>
+    /// <param name="pistol">挿入するPistolStatusオブジェクト</param>
+    public static void InsertPistol(PistolStatus pistol)
 	{
 		Connection.Execute(
 			"INSERT INTO PistolStatus (AttackPower, DisableTime) VALUES (?, ?)",
@@ -289,6 +318,14 @@ public class DatabaseManager
         return Connection.Query<StageStatus>(
             "SELECT * FROM stage_status WHERE stage = ?", stage
         ).FirstOrDefault();
+    }
+
+    /// <summary>
+    /// ボスのリストを取得するメソッドを追加
+    /// </summary>
+    public static List<Bosses> GetAllBosses()
+    {
+        return Connection.Query<Bosses>("SELECT * FROM bosses");
     }
 
     /// <summary>

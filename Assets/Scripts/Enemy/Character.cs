@@ -37,6 +37,10 @@ public class Character : MonoBehaviour
         _animator = GetComponent<Animator>();
         _animation = GetComponent<Animation>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        if (_spriteRenderer == null)
+        {
+            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        }
         if (_spriteRenderer != null)
             _defaultColor = _spriteRenderer.color;
         _player = GameObject.FindGameObjectWithTag("Player");
@@ -85,6 +89,19 @@ public class Character : MonoBehaviour
             _hpBar.SetHP(_currentHealth, _maxHealth);
             _hpBar.ShowForSeconds(_hpBarShowTime);
         }
+        else if (CompareTag("Boss"))
+        {
+            // ダメージ計算
+            _currentHealth -= damage;
+
+            // ボスHPバーを更新
+            BossHPBar bossHpBar = FindObjectOfType<BossHPBar>();
+            if (bossHpBar != null)
+            {
+                bossHpBar.SetHP(_currentHealth, _maxHealth);
+                bossHpBar.AppearHPBar(true);
+            }
+        }
 
         UnityEngine.Debug.Log($"{_characterName} はダメージを {damage} 食らいました。残りHP: {_currentHealth}");
 
@@ -119,6 +136,16 @@ public class Character : MonoBehaviour
             _hpBar = null;
         }
 
+        // ボスHPバーを非表示
+        if (CompareTag("Boss"))
+        {
+            BossHPBar bossHpBar = FindObjectOfType<BossHPBar>();
+            if (bossHpBar != null)
+            {
+                bossHpBar.AppearHPBar(false);
+            }
+        }
+
         // 破壊可能オブジェクトの場合処理を分ける
         if (CompareTag("Destructible"))
         {
@@ -126,7 +153,8 @@ public class Character : MonoBehaviour
             return;
         }
 
-        _animator?.SetTrigger("Die");
+        if(_animator != null)
+            _animator?.SetTrigger("Die");
 
         if (CompareTag("Player"))
         {
