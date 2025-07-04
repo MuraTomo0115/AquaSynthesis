@@ -8,26 +8,28 @@ using System.Collections;
 [System.Serializable]
 public class StageData
 {
-    public string stageName;      // 表示名
-    public string sceneName;      // シーン名
-    public Sprite stageImage;     // 背景画像
-    public Transform stagePoint;  // ステージ位置
+    public string stageName;            // 表示名
+    public string sceneName;            // シーン名
+    public Sprite stageImage;           // 背景画像
+    public Transform stagePoint;        // ステージ位置
+    public GameObject pathObject;       // Inspectorでアタッチ
+    public string animationTriggerName; // トリガー名（Triggerを使う場合のみ）
 }
 
 public class StageSelector : MonoBehaviour
 {
     [Header("プレイヤーオブジェクト")]
-    [SerializeField] private GameObject _playerObject; // プレイヤーのGameObject
+    [SerializeField] private GameObject _playerObject;  // プレイヤーのGameObject
 
     [Header("背景画像UI")]
-    [SerializeField] private Image _backgroundImage; // 背景画像を表示するUI
+    [SerializeField] private Image _backgroundImage;    // 背景画像を表示するUI
 
     [Header("移動速度")]
-    [SerializeField] private float _moveSpeed; // ステージ間の移動にかかる秒数
+    [SerializeField] private float _moveSpeed;          // ステージ間の移動にかかる秒数
 
-    [SerializeField] private float _playerYOffset; // プレイヤーのY軸オフセット
+    [SerializeField] private float _playerYOffset;      // プレイヤーのY軸オフセット
 
-    private List<StageData> _allStages; // 進行順で全ステージを登録
+    private List<StageData> _allStages;                 // 進行順で全ステージを登録
 
     // N/A/Gルートの全候補
     [Header("Nルートステージリスト (N1~N8)")]
@@ -37,9 +39,9 @@ public class StageSelector : MonoBehaviour
     [Header("Gルートステージリスト (G4~G8)")]
     [SerializeField] private List<StageData> _gStages;
 
-    private int _currentIndex = 0; // 現在選択中のステージ番号
-    private bool _isMoving = false; // プレイヤーが移動中かどうか
-    private int _moveDirection = 1; // -1:左, 1:右（移動方向）
+    private int _currentIndex = 0;      // 現在選択中のステージ番号
+    private bool _isMoving = false;     // プレイヤーが移動中かどうか
+    private int _moveDirection = 1;     // -1:左, 1:右（移動方向）
 
     // ルート分岐フラグ
     private bool _isARoute = false;
@@ -103,22 +105,44 @@ public class StageSelector : MonoBehaviour
 
         _currentIndex = 0;
 
+
         // クリアしたシーン名を取得し、_currentIndexを更新
         string lastClearedStage = PlayerPrefs.GetString("LastClearedStage", "");
-        // 直前クリアステージの初クリア判定と演出
+        Debug.Log($"[StageSelector] lastClearedStage: {lastClearedStage}");
+
         if (!string.IsNullOrEmpty(lastClearedStage))
         {
+            int stageIndex = _allStages.FindIndex(s => s.sceneName == lastClearedStage);
+            Debug.Log($"[StageSelector] stageIndex: {stageIndex}");
+
+            if (stageIndex >= 0)
+            {
+                _currentIndex = stageIndex;
+            }
+
+            // 直前クリアステージの初クリア判定と演出
             var status = DatabaseManager.GetStageStatus(lastClearedStage);
+            Debug.Log($"[StageSelector] status: {(status != null ? $"is_clear={status.is_clear}" : "null")}");
+
             if (status != null && status.is_clear == 1 && !PlayerPrefs.HasKey("PathAnimationPlayed_" + lastClearedStage))
             {
-                int pathIndex = _allStages.FindIndex(s => s.sceneName == lastClearedStage);
-                if (pathIndex >= 0 && pathIndex < _pathObjects.Count)
+                var stageData = _allStages[stageIndex];
+                Debug.Log($"[StageSelector] pathObject: {(stageData.pathObject != null ? stageData.pathObject.name : "null")}, trigger: {stageData.animationTriggerName}");
+                if (stageData.pathObject != null)
                 {
-                    StartCoroutine(StretchPathCoroutine(_pathObjects[pathIndex]));
+                    PlayPathAnimation(stageData.pathObject, stageData.animationTriggerName);
                 }
                 PlayerPrefs.SetInt("PathAnimationPlayed_" + lastClearedStage, 1);
                 PlayerPrefs.Save();
             }
+            else
+            {
+                Debug.Log("[StageSelector] PlayPathAnimationの条件を満たしていません");
+            }
+        }
+        else
+        {
+            Debug.Log("[StageSelector] lastClearedStageが空です");
         }
         if (_playerObject != null)
         {
@@ -140,31 +164,9 @@ public class StageSelector : MonoBehaviour
                     if (_pathObjects[i] != null)
                     {
                         _pathObjects[i].SetActive(true);
-                        // スケールを1にしておく
-                        var t = _pathObjects[i].transform;
-                        var s = t.localScale;
-                        s.x = 1f;
-                        t.localScale = s;
+                        // Animatorで演出済みならスケールはアニメーションに任せる
                     }
                 }
-            }
-        }
-
-        // === 追加: 直前クリアステージの初クリア判定と演出 ===
-        if (!string.IsNullOrEmpty(lastClearedStage))
-        {
-            var status = DatabaseManager.GetStageStatus(lastClearedStage);
-            // is_clear==1 かつ、まだ演出していなければ
-            if (status != null && status.is_clear == 1 && !PlayerPrefs.HasKey("PathAnimationPlayed_" + lastClearedStage))
-            {
-                // ステージ間の道インデックスを取得（例: n2クリア時はn1→n2間の道を伸ばす）
-                int pathIndex = _allStages.FindIndex(s => s.sceneName == lastClearedStage) - 1;
-                if (pathIndex >= 0 && pathIndex < _pathObjects.Count)
-                {
-                    StartCoroutine(StretchPathCoroutine(_pathObjects[pathIndex]));
-                }
-                PlayerPrefs.SetInt("PathAnimationPlayed_" + lastClearedStage, 1);
-                PlayerPrefs.Save();
             }
         }
     }
@@ -253,6 +255,32 @@ public class StageSelector : MonoBehaviour
     }
 
     /// <summary>
+    /// 道のアニメーションを再生
+    /// </summary>
+    private void PlayPathAnimation(GameObject pathObject, string triggerName)
+    {
+        Debug.Log($"[PlayPathAnimation] 呼び出し: pathObject={(pathObject != null ? pathObject.name : "null")}, triggerName={triggerName}");
+
+        if (pathObject == null)
+        {
+            Debug.LogWarning("[PlayPathAnimation] pathObjectがnullです");
+            return;
+        }
+        var animator = pathObject.GetComponent<Animator>();
+        if (animator == null)
+        {
+            Debug.LogWarning($"[PlayPathAnimation] {pathObject.name} にAnimatorがアタッチされていません");
+            return;
+        }
+        Debug.Log($"[PlayPathAnimation] Animator取得成功。Trigger名: {triggerName}");
+
+        pathObject.SetActive(true);
+        animator.ResetTrigger(triggerName); // 念のためリセット
+        animator.SetTrigger(triggerName);
+        Debug.Log($"[PlayPathAnimation] Trigger {triggerName} をセットしました");
+    }
+
+    /// <summary>
     /// プレイヤーをスライド移動させるコルーチン
     /// </summary>
     private IEnumerator MovePlayerCoroutine()
@@ -287,34 +315,6 @@ public class StageSelector : MonoBehaviour
         _isMoving = false;
     }
 
-    /// <summary>
-    /// 道が伸びる演出コルーチン
-    /// </summary>
-    private IEnumerator StretchPathCoroutine(GameObject pathObject)
-    {
-        if (pathObject == null) yield break;
-        pathObject.SetActive(true);
-        Transform pathTransform = pathObject.transform;
-        Vector3 originalScale = pathTransform.localScale;
-        float targetX = originalScale.x;
-        Vector3 scale = originalScale;
-        scale.x = 0f;
-        pathTransform.localScale = scale;
-
-        float duration = 1.0f;
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            scale.x = Mathf.Lerp(0f, targetX, t);
-            pathTransform.localScale = scale;
-            yield return null;
-        }
-        scale.x = targetX;
-        pathTransform.localScale = scale;
-    }
-
     // ステージクリア時や分岐フラグを踏んだ時に呼ぶ
     public void OnStageFlagTriggered(string flag)
     {
@@ -347,4 +347,5 @@ public class StageSelector : MonoBehaviour
             MovePlayerInstant();
         }
     }
+
 }
