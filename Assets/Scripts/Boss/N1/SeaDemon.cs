@@ -3,51 +3,55 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// å»ìÒF‘º“c’qÆ
+// ï¿½å»ï¿½ï¿½ÒFï¿½ï¿½ï¿½cï¿½qï¿½ï¿½
 public class SeaDemon : MonoBehaviour
 {
-    // ƒ{ƒX‚Ìó‘Ô
+    // ï¿½{ï¿½Xï¿½Ìï¿½ï¿½
     private enum State
     {
         Hovering,
         Attacking
     }
 
-    [Header("ã‰ºˆÚ“®İ’è")]
+    [Header("ï¿½ã‰ºï¿½Ú“ï¿½ï¿½İ’ï¿½")]
     public float hoverHeight = 3.0f;
     public float hoverSpeed = 2.0f;
     public float hoverAmplitude = 0.5f;
 
-    [Header("ˆÚ“®İ’è")]
+    [Header("ï¿½Ú“ï¿½ï¿½İ’ï¿½")]
     public float swimSpeed = 2.0f;
     public float directionChangeInterval = 3.0f;
 
-    [Header("UŒ‚ƒ^ƒCƒ~ƒ“ƒO")]
+    [Header("ï¿½Uï¿½ï¿½ï¿½^ï¿½Cï¿½~ï¿½ï¿½ï¿½O")]
     public float timeBetweenAttacks = 2.0f;
 
-    [Header("ÕŒ‚”gİ’è")]
-    [SerializeField] private GameObject wavePrefab; // WaveObject‚ÌƒvƒŒƒtƒ@ƒu
+    [Header("ï¿½ÕŒï¿½ï¿½gï¿½İ’ï¿½")]
+    [SerializeField] private GameObject wavePrefab; // WaveObjectï¿½Ìƒvï¿½ï¿½ï¿½tï¿½@ï¿½u
     [SerializeField] private float waveInitialSpeed = 2f;
     [SerializeField] private float waveAcceleration = 3f;
 
-    [Header("‹¤’Ê‘Ì—ÍƒIƒuƒWƒFƒNƒg")]
+    [Header("ï¿½ï¿½ï¿½Ê‘Ì—ÍƒIï¿½uï¿½Wï¿½Fï¿½Nï¿½g")]
     public Character _sharedCharacter;
 
     private State currentState = State.Hovering;
     private float hoverBaseY;
     private float attackTimer;
 
-    [Header("UŒ‚—Í”{—¦")]
-    [SerializeField] private float _rushMagnification = 1.5f; // “ËiUŒ‚‚Ì”{—¦
-    [SerializeField] private float _waveMagnification = 1.1f; // ”gUŒ‚”{—¦
+    [Header("ï¿½Uï¿½ï¿½ï¿½Í”{ï¿½ï¿½")]
+    [SerializeField] private float _rushMagnification = 1.5f; // ï¿½Ëiï¿½Uï¿½ï¿½ï¿½Ì”{ï¿½ï¿½
+    [SerializeField] private float _waveMagnification = 1.1f; // ï¿½gï¿½Uï¿½ï¿½ï¿½{ï¿½ï¿½
 
-    [Header("“ËiUŒ‚İ’è")]
-    [SerializeField] private float _rushSpeed = 5f;     // “Ëi‘¬“x
-    [SerializeField] private float _rushDuration = 1f;  // “Ëi‘±ŠÔ
-    [SerializeField] private float _rushStop = 2f;      // “ËiŒã‚Ì’â~ŠÔ
+    [Header("ï¿½Ëiï¿½Uï¿½ï¿½ï¿½İ’ï¿½")]
+    [SerializeField] private float _rushSpeed = 5f;     // ï¿½Ëiï¿½ï¿½ï¿½x
+    [SerializeField] private float _rushDuration = 1f;  // ï¿½Ëiï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [SerializeField] private float _rushStop = 2f;      // ï¿½Ëiï¿½ï¿½Ì’ï¿½~ï¿½ï¿½ï¿½ï¿½
+
+    [Header("éŸ³å£°è¨­å®š")]
+    [SerializeField] private float _voiceMinInterval = 3f;  // éŸ³å£°å†ç”Ÿã®æœ€å°é–“éš”
+    [SerializeField] private float _voiceMaxInterval = 8f;  // éŸ³å£°å†ç”Ÿã®æœ€å¤§é–“éš”
 
     // --- Swimming movement variables ---
-    private int _moveDirection = 1; // 1: ‰E, -1: ¶
+    private int _moveDirection = 1; // 1: ï¿½E, -1: ï¿½ï¿½
     private float _directionChangeTimer;
     private int _attackPower;
 
@@ -60,9 +64,13 @@ public class SeaDemon : MonoBehaviour
     private Vector3 originalPosition;
     private Vector3 originalScale;
 
-    private bool isDashing = false; // “Ëi’†Y²ŒÅ’è‰ğœ—p
-    private bool isDashInterrupted = false; // “Ëi’†‚ÉÕ“Ë‚µ‚½‚©
-    private Vector3 dashInterruptPosition;   // Õ“Ë‚ÌˆÊ’u
+    private bool isDashing = false; // ï¿½Ëiï¿½ï¿½Yï¿½ï¿½ï¿½Å’ï¿½ï¿½ï¿½ï¿½ï¿½p
+    private bool isDashInterrupted = false; // ï¿½Ëiï¿½ï¿½ï¿½ÉÕ“Ë‚ï¿½ï¿½ï¿½ï¿½ï¿½
+    private Vector3 dashInterruptPosition;   // ï¿½Õ“Ëï¿½ï¿½ÌˆÊ’u
+
+    // éŸ³å£°é–¢é€£
+    private float _nextVoiceTime;
+    private bool _isPlayingVoice = false;
 
     void Start()
     {
@@ -71,16 +79,16 @@ public class SeaDemon : MonoBehaviour
         _directionChangeTimer = directionChangeInterval;
         _attackPower = _sharedCharacter.AttackPower;
 
-        // Rigidbody2D‚ÌfreezeRotation‚ğ—LŒø‰»‚µ‚Ä‰ñ“]‚ğ–h~
+        // Rigidbody2Dï¿½ï¿½freezeRotationï¿½ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰ï¿½]ï¿½ï¿½hï¿½~
         rb2d = GetComponent<Rigidbody2D>();
         if (rb2d != null)
         {
             rb2d.freezeRotation = true;
-            // Rigidbody2D‚ÌBody Type‚ğKinematic‚É‚·‚éê‡‚ÍA‰º‹L‚à„§
+            // Rigidbody2Dï¿½ï¿½Body Typeï¿½ï¿½Kinematicï¿½É‚ï¿½ï¿½ï¿½ê‡ï¿½ÍAï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             // rb2d.bodyType = RigidbodyType2D.Kinematic;
         }
 
-        // ƒvƒŒƒCƒ„[‚ÌTransform‚ğæ“¾iƒ^ƒO"Player"‚ğ‘z’èj
+        // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½Transformï¿½ï¿½ï¿½æ“¾ï¿½iï¿½^ï¿½O"Player"ï¿½ï¿½zï¿½ï¿½j
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
@@ -90,6 +98,9 @@ public class SeaDemon : MonoBehaviour
         {
             Debug.LogWarning("SeaDemon: Player object not found!");
         }
+
+        // æœ€åˆã®éŸ³å£°å†ç”Ÿã‚¿ã‚¤ãƒŸãƒ³ã‚°ã‚’è¨­å®š
+        SetNextVoiceTime();
     }
 
     void Update()
@@ -97,10 +108,13 @@ public class SeaDemon : MonoBehaviour
         if (isPerformingAttack)
             return;
 
+        // éŸ³å£°å†ç”Ÿãƒã‚§ãƒƒã‚¯ï¼ˆæ”»æ’ƒä¸­ã§ãªã„å ´åˆã®ã¿ï¼‰
+        CheckAndPlayVoice();
+
         switch (currentState)
         {
             case State.Hovering:
-                // “Ëi’†‚Å‚È‚¯‚ê‚ÎHover
+                // ï¿½Ëiï¿½ï¿½ï¿½Å‚È‚ï¿½ï¿½ï¿½ï¿½Hover
                 if (!isDashing)
                     Hover();
                 Move();
@@ -124,7 +138,7 @@ public class SeaDemon : MonoBehaviour
         }
     }
 
-    // ‹ó’†‚ğ•Y‚¤‹““®
+    // ï¿½ó’†‚ï¿½Yï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     private void Hover()
     {
         Vector3 pos = transform.position;
@@ -132,7 +146,7 @@ public class SeaDemon : MonoBehaviour
         transform.position = pos;
     }
 
-    // ¶‰EˆÚ“®i‰j‚®‹““®j
+    // ï¿½ï¿½ï¿½Eï¿½Ú“ï¿½ï¿½iï¿½jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½j
     private void Move()
     {
         Vector3 pos = transform.position;
@@ -140,26 +154,24 @@ public class SeaDemon : MonoBehaviour
         transform.position = pos;
     }
 
-    // •ûŒü“]Š·
+    // ï¿½ï¿½ï¿½ï¿½ï¿½]ï¿½ï¿½
     private void ReverseDirection()
     {
         _moveDirection *= -1;
-        // Optional: ”½“]‚ÉƒXƒvƒ‰ƒCƒg‚ğ¶‰E”½“]
+        // Optional: ï¿½ï¿½ï¿½]ï¿½ï¿½ï¿½ÉƒXï¿½vï¿½ï¿½ï¿½Cï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½]
         Vector3 scale = transform.localScale;
         scale.x = Mathf.Abs(scale.x) * _moveDirection;
         transform.localScale = scale;
     }
 
-    // ...existing code...
-
-    // Õ“Ë‚É•ûŒü“]Š· or ƒ_ƒbƒVƒ…’†’f
+    // ï¿½Õ“Ëï¿½ï¿½É•ï¿½ï¿½ï¿½ï¿½]ï¿½ï¿½ or ï¿½_ï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½f
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (isDashing)
         {
-            // ƒ_ƒbƒVƒ…’†‚È‚ç’†’fƒtƒ‰ƒO‚ğ—§‚Ä‚ÄˆÊ’u‚ğ‹L˜^iY‚à‚»‚Ì‚Ü‚Ü•Ûj
+            // ï¿½_ï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½È‚ç’†ï¿½fï¿½tï¿½ï¿½ï¿½Oï¿½ğ—§‚Ä‚ÄˆÊ’uï¿½ï¿½ï¿½Lï¿½^ï¿½iYï¿½ï¿½ï¿½ï¿½ï¿½Ì‚Ü‚Ü•Ûï¿½ï¿½j
             isDashInterrupted = true;
-            dashInterruptPosition = transform.position; // ©Y‚à‚»‚Ì‚Ü‚Ü
+            dashInterruptPosition = transform.position; // ï¿½ï¿½Yï¿½ï¿½ï¿½ï¿½ï¿½Ì‚Ü‚ï¿½
         }
         else
         {
@@ -169,12 +181,12 @@ public class SeaDemon : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Player"))
         {
-            // ƒvƒŒƒCƒ„[‚ÌCharacterƒRƒ“ƒ|[ƒlƒ“ƒg‚ğæ“¾
+            // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½Characterï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½gï¿½ï¿½ï¿½æ“¾
             Character playerCharacter = collision.gameObject.GetComponent<Character>();
             if (playerCharacter != null)
             {
                 int damage = _attackPower;
-                // ƒ_ƒbƒVƒ…’†‚È‚ç”{—¦‚ğ‚©‚¯‚é
+                // ï¿½_ï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½{ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 if (isDashing)
                 {
                     damage = Mathf.RoundToInt(damage * _rushMagnification);
@@ -185,10 +197,10 @@ public class SeaDemon : MonoBehaviour
         }
     }
 
-    // ƒ‰ƒ“ƒ_ƒ€‚ÅUŒ‚ƒpƒ^[ƒ“‚ğ‘I‘ğ‚µ‚ÄÀs
+    // ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ÅUï¿½ï¿½ï¿½pï¿½^ï¿½[ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½s
     private void PerformRandomAttack()
     {
-        int patternCount = 3; // UŒ‚ƒpƒ^[ƒ“‚Ì”
+        int patternCount = 3; // ï¿½Uï¿½ï¿½ï¿½pï¿½^ï¿½[ï¿½ï¿½ï¿½Ìï¿½
         int pattern = random.Next(patternCount);
         switch (pattern)
         {
@@ -204,7 +216,7 @@ public class SeaDemon : MonoBehaviour
         }
     }
 
-    // UŒ‚ƒpƒ^[ƒ“A: ƒvƒŒƒCƒ„[‚ÉŒü‚¯‚Ä“Ëi
+    // ï¿½Uï¿½ï¿½ï¿½pï¿½^ï¿½[ï¿½ï¿½A: ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ÉŒï¿½ï¿½ï¿½ï¿½Ä“Ëi
     private void AttackPatternA()
     {
         if (playerTransform == null)
@@ -215,131 +227,193 @@ public class SeaDemon : MonoBehaviour
         StartCoroutine(DashAttackCoroutine());
     }
 
-    // ...existing code...
-
     private IEnumerator DashAttackCoroutine()
     {
         isPerformingAttack = true;
-        isDashInterrupted = false;
-
-        // 1. ‚»‚Ìê‚É’â~i2•bj: —‰º‚µ‚È‚¢‚æ‚¤‚Érb2d.velocity‚ÍG‚ç‚¸AXˆÚ“®‚¾‚¯’â~
-        originalPosition = transform.position;
-        originalScale = transform.localScale;
-
-        // 2•bŠÔAHoveriY•ûŒü‚Ì‚İj‚ğˆÛ‚µAXˆÚ“®‚ğ~‚ß‚é
-        float waitTime = 2f;
-        float timer = 0f;
-        while (timer < waitTime)
-        {
-            Vector3 pos = transform.position;
-            pos.y = hoverBaseY + Mathf.Sin(Time.time * hoverSpeed) * hoverAmplitude;
-            transform.position = pos;
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        // 2. ƒvƒŒƒCƒ„[•ûŒü‚ÉŒü‚­
-        Vector3 toPlayer = playerTransform.position - transform.position;
-        int dashDirection = toPlayer.x >= 0 ? 1 : -1;
-        Vector3 scale = transform.localScale;
-        scale.x = Mathf.Abs(scale.x) * dashDirection;
-        transform.localScale = scale;
-
-        // 3. ’â~i2•bj: “¯—l‚ÉHover‚Ì‚İ
-        waitTime = 2f;
-        timer = 0f;
-        while (timer < waitTime)
-        {
-            Vector3 pos = transform.position;
-            pos.y = hoverBaseY + Mathf.Sin(Time.time * hoverSpeed) * hoverAmplitude;
-            transform.position = pos;
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        isDashing = true;
-        float elapsed = 0f;
-        float startY = transform.position.y;
-        float targetY = playerTransform.position.y;
-        bool interrupted = false;
-        while (elapsed < _rushDuration)
-        {
-            if (isDashInterrupted)
-            {
-                interrupted = true;
-                break;
-            }
-            Vector3 pos = transform.position;
-            pos.x += dashDirection * _rushSpeed * Time.deltaTime;
-            pos.y = Mathf.Lerp(startY, targetY, elapsed / _rushDuration);
-            transform.position = pos;
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
         isDashing = false;
-
-        // 5. ‚»‚Ìê‚É’â~i4•bj: Õ“Ë‚Í‚»‚ÌêA–¢Õ“Ë‚Íƒ_ƒbƒVƒ…I—¹ˆÊ’u
-        Vector3 stopPosition = interrupted ? dashInterruptPosition : transform.position;
-        timer = 0f;
-        while (timer < _rushStop)
-        {
-            // Õ“Ë‚ÍY‚à‚»‚Ì‚Ü‚ÜˆÛ
-            transform.position = stopPosition;
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        // 6. Œ³‚ÌˆÊ’u‚É’¼ü‚Å–ß‚éiY‚àLerp‚Å©‘R‚É–ß‚·j
-        float returnSpeed = swimSpeed;
-        Vector3 startPos = transform.position;
-        float returnDistance = Vector3.Distance(startPos, originalPosition);
-        float returnDuration = returnDistance / Mathf.Max(returnSpeed, 0.01f);
-        float t = 0f;
-        while (t < 1f)
-        {
-            t += Time.deltaTime / Mathf.Max(returnDuration, 0.01f);
-            Vector3 pos = transform.position;
-            pos.x = Mathf.Lerp(startPos.x, originalPosition.x, Mathf.Clamp01(t));
-            pos.y = Mathf.Lerp(startPos.y, originalPosition.y, Mathf.Clamp01(t));
-            transform.position = pos;
-            yield return null;
-        }
-        transform.position = new Vector3(originalPosition.x, originalPosition.y, originalPosition.z);
-        transform.localScale = originalScale;
-
         isDashInterrupted = false;
+        
+        // 1. ãã®å ´ã§åœæ­¢ï¼ˆä½ç½®å›ºå®šï¼‰
+        Vector3 startPosition = transform.position;
+        originalPosition = startPosition; // æˆ»ã‚‹ä½ç½®ã‚’è¨˜éŒ²
+        
+        // ç©ºä¸­ã§ãã®å ´ã«å®Œå…¨åœæ­¢ï¼ˆé‡åŠ›ã®å½±éŸ¿ã‚’ä¸€æ™‚çš„ã«ç„¡åŠ¹åŒ–ï¼‰
+        float originalGravityScale = 0f;
+        if (rb2d != null)
+        {
+            originalGravityScale = rb2d.gravityScale;
+            rb2d.gravityScale = 0f; // é‡åŠ›ã‚’ç„¡åŠ¹åŒ–
+            rb2d.velocity = Vector2.zero;
+        }
+        
+        // 2. ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ–¹ã‚’å‘ãï¼ˆ2ç§’åœæ­¢ï¼‰
+        Vector3 playerDirection = (playerTransform.position - transform.position).normalized;
+        
+        // ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ–¹å‘ã«å‘ã‘ã‚‹
+        if (playerDirection.x > 0)
+        {
+            // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå³å´ã«ã„ã‚‹å ´åˆ
+            Vector3 scale = transform.localScale;
+            scale.x = Mathf.Abs(scale.x);
+            transform.localScale = scale;
+        }
+        else
+        {
+            // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå·¦å´ã«ã„ã‚‹å ´åˆ
+            Vector3 scale = transform.localScale;
+            scale.x = -Mathf.Abs(scale.x);
+            transform.localScale = scale;
+        }
+        
+        // 2ç§’é–“åœæ­¢ï¼ˆä½ç½®ã‚’å›ºå®šï¼‰
+        float waitTimer = 0f;
+        while (waitTimer < 2f)
+        {
+            // ä½ç½®ã‚’å›ºå®šã—ã¦è½ä¸‹ã‚’é˜²ã
+            transform.position = originalPosition;
+            waitTimer += Time.deltaTime;
+            yield return null;
+        }
+        
+        // 3. ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«å‘ã‘ç›´ç·šç§»å‹•ã§çªé€²
+        isDashing = true;
+        Vector3 dashDirection = (playerTransform.position - transform.position).normalized;
+        float dashTimer = 0f;
+        
+        while (dashTimer < _rushDuration && !isDashInterrupted)
+        {
+            if (rb2d != null)
+            {
+                // Rigidbody2Dã‚’ä½¿ã£ã¦ç§»å‹•
+                rb2d.velocity = dashDirection * _rushSpeed;
+            }
+            else
+            {
+                // Transform.Translateã‚’ä½¿ã£ã¦ç§»å‹•
+                transform.Translate(dashDirection * _rushSpeed * Time.deltaTime, Space.World);
+            }
+            dashTimer += Time.deltaTime;
+            yield return null;
+        }
+        
+        // çªé€²å¾Œã«é€Ÿåº¦ã‚’0ã«ã—ã¦åœæ­¢
+        if (rb2d != null)
+        {
+            rb2d.velocity = Vector2.zero;
+        }
+        
+        // 4. çªé€²ä¸­ã«ä½•ã‹ã«è¡çªã—ãŸå ´åˆã¯ãã®å ´ã§æ•°ç§’åœæ­¢
+        if (isDashInterrupted)
+        {
+            // è¡çªã—ãŸä½ç½®ã§åœæ­¢
+            yield return new WaitForSeconds(_rushStop);
+        }
+        
+        isDashing = false;
+        
+        // 5. çªé€²ã™ã‚‹å‰ã®ä½ç½®ã«æˆ»ã‚‹
+        float returnSpeed = _rushSpeed * 0.7f; // æˆ»ã‚‹é€Ÿåº¦ã¯å°‘ã—é…ã‚ã«
+        while (Vector3.Distance(transform.position, originalPosition) > 0.1f)
+        {
+            Vector3 returnDirection = (originalPosition - transform.position).normalized;
+            
+            if (rb2d != null)
+            {
+                // Rigidbody2Dã‚’ä½¿ã£ã¦æˆ»ã‚‹
+                rb2d.velocity = returnDirection * returnSpeed;
+            }
+            else
+            {
+                // Transform.Translateã‚’ä½¿ã£ã¦æˆ»ã‚‹
+                transform.Translate(returnDirection * returnSpeed * Time.deltaTime, Space.World);
+            }
+            yield return null;
+        }
+        
+        // æ­£ç¢ºã«å…ƒã®ä½ç½®ã«æˆ»ã—ã¦é€Ÿåº¦ã‚’0ã«
+        if (rb2d != null)
+        {
+            rb2d.velocity = Vector2.zero;
+            // é‡åŠ›ã‚¹ã‚±ãƒ¼ãƒ«ã‚’å…ƒã«æˆ»ã™
+            rb2d.gravityScale = originalGravityScale;
+        }
+        transform.position = originalPosition;
+        
         isPerformingAttack = false;
+        isDashInterrupted = false;
     }
 
-    // UŒ‚ƒpƒ^[ƒ“B
+    // ï¿½Uï¿½ï¿½ï¿½pï¿½^ï¿½[ï¿½ï¿½B
     private void AttackPatternB()
     {
-        // ƒvƒŒƒCƒ„[‚ª‘¶İ‚µ‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+        // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½Í‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½
         if (playerTransform == null || wavePrefab == null)
         {
             Debug.LogWarning("SeaDemon: Player or wavePrefab not set for AttackPatternB");
             return;
         }
 
-        // ”gƒIƒuƒWƒFƒNƒg‚ğ¶¬
+        // ï¿½gï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ğ¶ï¿½
         GameObject waveObj = Instantiate(wavePrefab, transform.position, Quaternion.identity);
 
-        // WaveAttackƒXƒNƒŠƒvƒg‚ğæ“¾‚µAƒ^[ƒQƒbƒgEUŒ‚—ÍE‰Á‘¬ƒpƒ‰ƒ[ƒ^‚ğİ’è
+        // WaveAttackï¿½Xï¿½Nï¿½ï¿½ï¿½vï¿½gï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½Aï¿½^ï¿½[ï¿½Qï¿½bï¿½gï¿½Eï¿½Uï¿½ï¿½ï¿½ÍEï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½İ’ï¿½
         var waveAttack = waveObj.GetComponent<WaveAttack>();
         if (waveAttack != null)
         {
             waveAttack.SetTarget(playerTransform);
             waveAttack.SetAttackPower(Mathf.RoundToInt(_attackPower * _waveMagnification));
             waveAttack.SetSpeedAndAcceleration(waveInitialSpeed, waveAcceleration);
-            // ‹¤’Ê‘Ì—Í‚ğ“n‚·
+            // ï¿½ï¿½ï¿½Ê‘Ì—Í‚ï¿½nï¿½ï¿½
             waveAttack.SetSharedBossCharacter(_sharedCharacter);
         }
     }
 
-    // UŒ‚ƒpƒ^[ƒ“C
+    // ï¿½Uï¿½ï¿½ï¿½pï¿½^ï¿½[ï¿½ï¿½C
     private void AttackPatternC()
     {
-        // TODO: ƒpƒ^[ƒ“C‚ÌUŒ‚ˆ—‚ğÀ‘•
+        // TODO: ï¿½pï¿½^ï¿½[ï¿½ï¿½Cï¿½ÌUï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Debug.Log("SeaDemon: Attack Pattern C");
+    }
+
+    // éŸ³å£°å†ç”Ÿé–¢é€£ãƒ¡ã‚½ãƒƒãƒ‰
+    private void CheckAndPlayVoice()
+    {
+        // æ”»æ’ƒä¸­ã‚„éŸ³å£°å†ç”Ÿä¸­ã¯ä½•ã‚‚ã—ãªã„
+        if (isPerformingAttack || _isPlayingVoice)
+            return;
+
+        // æ¬¡ã®éŸ³å£°å†ç”Ÿæ™‚é–“ã«é”ã—ãŸã‹ãƒã‚§ãƒƒã‚¯
+        if (Time.time >= _nextVoiceTime)
+        {
+            PlayVoice();
+        }
+    }
+
+    private void PlayVoice()
+    {
+        _isPlayingVoice = true;
+        
+        // AudioManagerã§éŸ³å£°ã‚’å†ç”Ÿ
+        AudioManager.Instance.PlaySE("Boss", "SeaDemonVoice1", "N1");
+        
+        // éŸ³å£°çµ‚äº†å¾Œã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’é–‹å§‹
+        StartCoroutine(VoiceEndCoroutine());
+    }
+
+    private IEnumerator VoiceEndCoroutine()
+    {
+        // éŸ³å£°ã®é•·ã•ã‚’ä»®å®šï¼ˆå®Ÿéš›ã®éŸ³å£°ãƒ•ã‚¡ã‚¤ãƒ«ã®é•·ã•ã«åˆã‚ã›ã¦èª¿æ•´ï¼‰
+        float voiceDuration = 2f; // 2ç§’ã¨ä»®å®š
+        yield return new WaitForSeconds(voiceDuration);
+        
+        _isPlayingVoice = false;
+        SetNextVoiceTime();
+    }
+
+    private void SetNextVoiceTime()
+    {
+        // ãƒ©ãƒ³ãƒ€ãƒ ãªé–“éš”ã§æ¬¡ã®éŸ³å£°å†ç”Ÿæ™‚é–“ã‚’è¨­å®š
+        float interval = UnityEngine.Random.Range(_voiceMinInterval, _voiceMaxInterval);
+        _nextVoiceTime = Time.time + interval;
     }
 }

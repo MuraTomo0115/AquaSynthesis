@@ -3,13 +3,15 @@ using SQLite4Unity3d;
 public class Bosses
 {
     [PrimaryKey]
-    public string name { get; set; } // ƒXƒe[ƒWIDi—á: "stage1" ‚È‚Çj
+    public string name { get; set; } // ï¿½Xï¿½eï¿½[ï¿½WIDï¿½iï¿½ï¿½: "stage1" ï¿½È‚Çj
 
-    public int hp { get; set; } // ƒ{ƒX‚Ì‘Ì—Í
+    public int hp { get; set; } // ï¿½{ï¿½Xï¿½Ì‘Ì—ï¿½
 
-    public int attack_power { get; set; } // ƒ{ƒX‚ÌUŒ‚—Í
+    public int attack_power { get; set; } // ï¿½{ï¿½Xï¿½ÌUï¿½ï¿½ï¿½ï¿½
 
-    public int exp { get; set; } // ŒoŒ±’l
+    public int exp { get; set; } // ï¿½oï¿½ï¿½ï¿½l
 
-    public string flag { get; set; } // ƒtƒ‰ƒO–¼
+    public string flag { get; set; } // ï¿½tï¿½ï¿½ï¿½Oï¿½ï¿½
+
+    public string idle_voice { get; set; } // ï¿½ï¿½ï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½v
 }

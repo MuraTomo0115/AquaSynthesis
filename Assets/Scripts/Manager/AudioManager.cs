@@ -30,18 +30,35 @@ public class AudioManager : MonoBehaviour
     /// 効果音を再生
     /// </summary>
     /// <param name="category">カテゴリ</param>
+    /// <param name="folder">フォルダ名</param>
     /// <param name="seName">再生する効果音の名前</param>
-    public void PlaySE(string category, string seName)
+    public void PlaySE(string category, string seName, string folder = null)
     {
-        string sePath = $"Audio/SE/{category}/{seName}";
-        AudioClip clip = Resources.Load<AudioClip>(sePath);
-        if (clip != null)
+        if (folder == null)
         {
-            _sfxSource.PlayOneShot(clip);
+            string sePath = $"Audio/SE/{category}/{seName}";
+            AudioClip clip = Resources.Load<AudioClip>(sePath);
+            if (clip != null)
+            {
+                _sfxSource.PlayOneShot(clip);
+            }
+            else
+            {
+                Debug.LogWarning($"SEファイルが見つかりません: {sePath}");
+            }
         }
         else
         {
-            Debug.LogWarning($"SEファイルが見つかりません: {sePath}");
+            string sePath = $"Audio/SE/{category}/{folder}/{seName}";
+            AudioClip clip = Resources.Load<AudioClip>(sePath);
+            if (clip != null)
+            {
+                _sfxSource.PlayOneShot(clip);
+            }
+            else
+            {
+                Debug.LogWarning($"SEファイルが見つかりません: {sePath}");
+            }
         }
     }
 

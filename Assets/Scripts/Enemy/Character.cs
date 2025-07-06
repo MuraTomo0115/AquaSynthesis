@@ -16,11 +16,11 @@ public class Character : MonoBehaviour
     private int _pistolPower = 0;
     protected Animator _animator;
     protected Animation _animation;
-    private SpriteRenderer _spriteRenderer;
-    private Color _defaultColor;
+    private SpriteRenderer[] _spriteRenderers;
+    private Color[] _defaultColors;
     private GameObject _player;
     private PlayerMovement _playerMovement;
-    private bool _isDead = false; // €–S‚µ‚½‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
+    private bool _isDead = false; // ï¿½ï¿½ï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½ï¿½Ìƒtï¿½ï¿½ï¿½O
     private string _seFile;
 
     public float HP { get; private set; }
@@ -36,21 +36,28 @@ public class Character : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
         _animation = GetComponent<Animation>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
-        if (_spriteRenderer == null)
+        
+        // è‡ªåˆ†ã¨ã™ã¹ã¦ã®å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‹ã‚‰SpriteRendererã‚’å–å¾—
+        _spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+        
+        // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚«ãƒ©ãƒ¼ã‚’ä¿å­˜
+        if (_spriteRenderers != null && _spriteRenderers.Length > 0)
         {
-            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+            _defaultColors = new Color[_spriteRenderers.Length];
+            for (int i = 0; i < _spriteRenderers.Length; i++)
+            {
+                _defaultColors[i] = _spriteRenderers[i].color;
+            }
         }
-        if (_spriteRenderer != null)
-            _defaultColor = _spriteRenderer.color;
+        
         _player = GameObject.FindGameObjectWithTag("Player");
         _playerMovement = _player.GetComponent<PlayerMovement>();
     }
 
     /// <summary>
-    /// ƒ_ƒ[ƒW‚ğó‚¯‚½‚Ìˆ—
+    /// ï¿½_ï¿½ï¿½ï¿½[ï¿½Wï¿½ï¿½ï¿½ó‚¯‚ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
     /// </summary>
-    /// <param name="damage">ƒ_ƒ[ƒW—Ê</param>
+    /// <param name="damage">ï¿½_ï¿½ï¿½ï¿½[ï¿½Wï¿½ï¿½</param>
     public void HitAttack(int damage)
     {
         if (_isDead) return;
@@ -61,19 +68,19 @@ public class Character : MonoBehaviour
             var playerData = playerList.Find(c => c.name == "Shizuku");
             AudioManager.Instance.PlaySE("Player", playerData.damage_se);
 
-            // ƒ_ƒ[ƒWŒvZ
+            // ï¿½_ï¿½ï¿½ï¿½[ï¿½Wï¿½vï¿½Z
             _currentHealth -= damage;
         }
         else if (CompareTag("Enemy"))
         {
-            // HPƒo[‚ª–¢¶¬‚È‚ç¶¬
+            // HPï¿½oï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ç¶ï¿½ï¿½
             if (_hpBar == null)
             {
                 var canvas = FindObjectOfType<Canvas>();
                 var prefab = Resources.Load<EnemyHPBar>("Prefab/HPBar/EnemyHealth");
                 if (prefab == null)
                 {
-                    Debug.LogError("EnemyHPBarƒvƒŒƒnƒu‚ªƒ[ƒh‚Å‚«‚Ü‚¹‚ñBƒpƒX‚âƒXƒNƒŠƒvƒg‚ÌƒAƒ^ƒbƒ`‚ğŠm”F‚µ‚Ä‚­‚¾‚³‚¢B");
+                    Debug.LogError("EnemyHPBarï¿½vï¿½ï¿½ï¿½nï¿½uï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½Å‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½Bï¿½pï¿½Xï¿½ï¿½Xï¿½Nï¿½ï¿½ï¿½vï¿½gï¿½ÌƒAï¿½^ï¿½bï¿½`ï¿½ï¿½ï¿½mï¿½Fï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B");
                 }
                 else
                 {
@@ -82,19 +89,22 @@ public class Character : MonoBehaviour
                 }
             }
 
-            // ƒ_ƒ[ƒWŒvZ
+            // ï¿½_ï¿½ï¿½ï¿½[ï¿½Wï¿½vï¿½Z
             _currentHealth -= damage;
 
-            // HPƒo[XV••\¦
+            // HPï¿½oï¿½[ï¿½Xï¿½Vï¿½ï¿½ï¿½\ï¿½ï¿½
             _hpBar.SetHP(_currentHealth, _maxHealth);
             _hpBar.ShowForSeconds(_hpBarShowTime);
         }
         else if (CompareTag("Boss"))
         {
-            // ƒ_ƒ[ƒWŒvZ
+            var boss = DatabaseManager.GetBossByName("SeaDemon");
+            AudioManager.Instance.PlaySE("Boss", boss.idle_voice, "N1");
+
+            // ï¿½_ï¿½ï¿½ï¿½[ï¿½Wï¿½vï¿½Z
             _currentHealth -= damage;
 
-            // ƒ{ƒXHPƒo[‚ğXV
+            // ï¿½{ï¿½XHPï¿½oï¿½[ï¿½ï¿½ï¿½Xï¿½V
             BossHPBar bossHpBar = FindObjectOfType<BossHPBar>();
             if (bossHpBar != null)
             {
@@ -103,40 +113,58 @@ public class Character : MonoBehaviour
             }
         }
 
-        UnityEngine.Debug.Log($"{_characterName} ‚Íƒ_ƒ[ƒW‚ğ {damage} H‚ç‚¢‚Ü‚µ‚½Bc‚èHP: {_currentHealth}");
+        UnityEngine.Debug.Log($"{_characterName} ï¿½Íƒ_ï¿½ï¿½ï¿½[ï¿½Wï¿½ï¿½ {damage} ï¿½Hï¿½ç‚¢ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½Bï¿½cï¿½ï¿½HP: {_currentHealth}");
 
-        if (_spriteRenderer != null && _currentHealth > 0)
+        if (_spriteRenderers != null && _spriteRenderers.Length > 0 && _currentHealth > 0)
             StartCoroutine(FlashRed());
-        else if (_spriteRenderer != null && _currentHealth <= 0)
+        else if (_spriteRenderers != null && _spriteRenderers.Length > 0 && _currentHealth <= 0)
             Die();
     }
 
     /// <summary>
-    /// Ô‚­“_–Å‚³‚¹‚éƒRƒ‹[ƒ`ƒ“
+    /// èµ¤ãç‚¹æ»…ã•ã›ã‚‹ã‚³ãƒ«ãƒ¼ãƒãƒ³
     /// </summary>
     private IEnumerator FlashRed()
     {
-        _spriteRenderer.color = Color.red;
+        // ã™ã¹ã¦ã®SpriteRendererã‚’èµ¤ãã™ã‚‹
+        if (_spriteRenderers != null)
+        {
+            for (int i = 0; i < _spriteRenderers.Length; i++)
+            {
+                if (_spriteRenderers[i] != null)
+                    _spriteRenderers[i].color = Color.red;
+            }
+        }
+        
         yield return new WaitForSeconds(0.15f);
-        _spriteRenderer.color = _defaultColor;
+        
+        // ã™ã¹ã¦ã®SpriteRendererã‚’å…ƒã®è‰²ã«æˆ»ã™
+        if (_spriteRenderers != null && _defaultColors != null)
+        {
+            for (int i = 0; i < _spriteRenderers.Length && i < _defaultColors.Length; i++)
+            {
+                if (_spriteRenderers[i] != null)
+                    _spriteRenderers[i].color = _defaultColors[i];
+            }
+        }
     }
 
     /// <summary>
-    /// €–S‚Ìˆ—
+    /// ï¿½ï¿½ï¿½Sï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
     /// </summary>
     protected virtual void Die()
     {
         if (_isDead) return;
         _isDead = true;
 
-        // HPƒo[‚ğ”jŠü
+        // HPï¿½oï¿½[ï¿½ï¿½jï¿½ï¿½
         if (_hpBar != null)
         {
             _hpBar.FadeOutAndDestroy(0.3f);
             _hpBar = null;
         }
 
-        // ƒ{ƒXHPƒo[‚ğ”ñ•\¦
+        // ï¿½{ï¿½XHPï¿½oï¿½[ï¿½ï¿½ï¿½\ï¿½ï¿½
         if (CompareTag("Boss"))
         {
             BossHPBar bossHpBar = FindObjectOfType<BossHPBar>();
@@ -146,7 +174,7 @@ public class Character : MonoBehaviour
             }
         }
 
-        // ”j‰ó‰Â”\ƒIƒuƒWƒFƒNƒg‚Ìê‡ˆ—‚ğ•ª‚¯‚é
+        // ï¿½jï¿½ï¿½Â”\ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½Ìê‡ï¿½ï¿½ï¿½ï¿½ï¿½ğ•ª‚ï¿½ï¿½ï¿½
         if (CompareTag("Destructible"))
         {
             DestructibleObj();
@@ -188,17 +216,17 @@ public class Character : MonoBehaviour
 
     public void Heal(float amount)
     {
-        // _currentHealth‚ğ‰ñ•œiÅ‘å’l‚ğ’´‚¦‚È‚¢j
+        // _currentHealthï¿½ï¿½ï¿½ñ•œiï¿½Å‘ï¿½lï¿½ğ’´‚ï¿½ï¿½È‚ï¿½ï¿½j
         _currentHealth = Mathf.Min(_currentHealth + Mathf.RoundToInt(amount), _maxHealth);
 
-        // HPƒvƒƒpƒeƒB‚à“¯ŠúifloatŒ^‚Åg‚¤ê‡‚Ì‚İj
+        // HPï¿½vï¿½ï¿½ï¿½pï¿½eï¿½Bï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ifloatï¿½^ï¿½Ågï¿½ï¿½ï¿½ê‡ï¿½Ì‚İj
         HP = _currentHealth;
         MaxHP = _maxHealth;
 
         Debug.Log($"{_characterName} healed! Current HP: {_currentHealth}");
     }
 
-    // “G—p‚È‚Ç pistolPower ‚ª–³‚¢ê‡
+    // ï¿½Gï¿½pï¿½È‚ï¿½ pistolPower ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡
     public void SetStats(int maxHp, int atk)
     {
         _maxHealth = maxHp;
@@ -207,7 +235,7 @@ public class Character : MonoBehaviour
         _pistolPower = 0;
     }
 
-    // ƒvƒŒƒCƒ„[—p‚È‚Ç pistolPower ‚ğ“n‚·ê‡
+    // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½pï¿½È‚ï¿½ pistolPower ï¿½ï¿½nï¿½ï¿½ï¿½ê‡
     public void SetStats(int maxHp, int atk, int pistol)
     {
         _maxHealth = maxHp;
@@ -222,7 +250,7 @@ public class Character : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘¼‚ÌCharacter‚©‚çƒXƒe[ƒ^ƒX‚ğƒRƒs[‚·‚é
+    /// ï¿½ï¿½ï¿½ï¿½Characterï¿½ï¿½ï¿½ï¿½Xï¿½eï¿½[ï¿½^ï¿½Xï¿½ï¿½ï¿½Rï¿½sï¿½[ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public void CopyStatsFrom(Character other)
     {
@@ -236,12 +264,12 @@ public class Character : MonoBehaviour
     }
 
     /// <summary>
-    /// ”j‰ó‰Â”\ƒIƒuƒWƒFƒNƒg‚Ìˆ—
+    /// ï¿½jï¿½ï¿½Â”\ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½Ìï¿½ï¿½ï¿½
     /// </summary>
     private void DestructibleObj()
     {
         AudioManager.Instance.PlaySE("StageObj", _seFile);
-        float dropChance = 0.8f; // 80%‚ÌŠm—¦
+        float dropChance = 0.8f; // 80%ï¿½ÌŠmï¿½ï¿½
         if (Random.value < dropChance && _expPrefab != null)
         {
             GameObject exp = Instantiate(_expPrefab, transform.position, Quaternion.identity, this.transform);
