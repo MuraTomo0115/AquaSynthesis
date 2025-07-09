@@ -75,6 +75,11 @@ public class StageSelector : MonoBehaviour
 
     private void Start()
     {
+        foreach (var stage in _nStages)
+        {
+            PlayerPrefs.DeleteKey("PathAnimationPlayed_" + stage.sceneName);
+        }
+        PlayerPrefs.Save();
         _currentRoute = DatabaseManager.GetCurrentRouteById(1);
         Debug.Log("現在のルート: " + _currentRoute);
 
@@ -105,7 +110,6 @@ public class StageSelector : MonoBehaviour
 
         _currentIndex = 0;
 
-
         // クリアしたシーン名を取得し、_currentIndexを更新
         string lastClearedStage = PlayerPrefs.GetString("LastClearedStage", "");
         Debug.Log($"[StageSelector] lastClearedStage: {lastClearedStage}");
@@ -126,11 +130,27 @@ public class StageSelector : MonoBehaviour
 
             if (status != null && status.is_clear == 1 && !PlayerPrefs.HasKey("PathAnimationPlayed_" + lastClearedStage))
             {
-                var stageData = _allStages[stageIndex];
-                Debug.Log($"[StageSelector] pathObject: {(stageData.pathObject != null ? stageData.pathObject.name : "null")}, trigger: {stageData.animationTriggerName}");
-                if (stageData.pathObject != null)
+                GameObject pathObj = null;
+                string trigger = null;
+
+                // n1クリア時はn1→n2間の道
+                if (stageIndex == 0 && _allStages.Count > 1)
                 {
-                    PlayPathAnimation(stageData.pathObject, stageData.animationTriggerName);
+                    pathObj = _allStages[1].pathObject;
+                    trigger = _allStages[1].animationTriggerName;
+                    Debug.Log("[StageSelector] n1クリア時: n1→n2間の道アニメーションを再生");
+                }
+                else if (stageIndex > 0)
+                {
+                    pathObj = _allStages[stageIndex].pathObject;
+                    trigger = _allStages[stageIndex].animationTriggerName;
+                }
+
+                Debug.Log($"[StageSelector] pathObject: {(pathObj != null ? pathObj.name : "null")}, trigger: {trigger}");
+
+                if (pathObj != null)
+                {
+                    PlayPathAnimation(pathObj, trigger);
                 }
                 PlayerPrefs.SetInt("PathAnimationPlayed_" + lastClearedStage, 1);
                 PlayerPrefs.Save();
