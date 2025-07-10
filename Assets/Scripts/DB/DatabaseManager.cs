@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using UnityEditor.MemoryProfiler;
+using UnityEditor.SceneManagement;
 
-// å»ìÒF‘º“c’qÆ
+// ï¿½å»ï¿½ï¿½ÒFï¿½ï¿½ï¿½cï¿½qï¿½ï¿½
 
 public class TableInfo
 {
@@ -19,12 +20,12 @@ public class TableInfo
 }
 
 /// <summary>
-/// SQLite‚ÌÚ‘±E‰Šú‰»Eƒe[ƒuƒ‹ì¬‚ğŠÇ—‚·‚éƒNƒ‰ƒX
-/// StreamingAssets ‚É .db ‚ğ’u‚©‚¸A©“®¶¬‚Å‘Î‰
+/// SQLiteï¿½ÌÚ‘ï¿½ï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½Ç—ï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½X
+/// StreamingAssets ï¿½ï¿½ .db ï¿½ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å‘Î‰ï¿½
 /// </summary>
 public class DatabaseManager
 {
-	private const bool _debugMode = false; // ƒfƒoƒbƒOƒ‚[ƒhƒtƒ‰ƒOiƒe[ƒuƒ‹‚Ìíœ“™‚Ég—pj
+	private const bool _debugMode = false; // ï¿½fï¿½oï¿½bï¿½Oï¿½ï¿½ï¿½[ï¿½hï¿½tï¿½ï¿½ï¿½Oï¿½iï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Ìíœï¿½ï¿½ï¿½Égï¿½pï¿½j
 
 	private static SQLiteConnection _connection;
 
@@ -34,13 +35,13 @@ public class DatabaseManager
 		{
 			if (_connection == null)
 			{
-				// StreamingAssets‚ÉDBƒtƒ@ƒCƒ‹‚ğì¬
+				// StreamingAssetsï¿½ï¿½DBï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ì¬
 				string dbPath = Path.Combine(Application.streamingAssetsPath, "game.db");
 
-				// SQLite Ú‘±i“Ç‚İ‘‚«EV‹Kì¬ƒ‚[ƒhj
+				// SQLite ï¿½Ú‘ï¿½ï¿½iï¿½Ç‚İï¿½ï¿½ï¿½ï¿½Eï¿½Vï¿½Kï¿½ì¬ï¿½ï¿½ï¿½[ï¿½hï¿½j
 				_connection = new SQLiteConnection(dbPath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create);
 
-				// ƒe[ƒuƒ‹‚ª–³‚¯‚ê‚Îì¬
+				// ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îì¬
 				CreateTables();
 			}
 
@@ -59,11 +60,11 @@ public class DatabaseManager
     }
 
     /// <summary>
-    /// ƒAƒvƒŠ‰‰ñ‹N“®‚È‚Ç‚É•K—v‚Èƒe[ƒuƒ‹‚ğì¬‚·‚éˆ—
+    /// ï¿½Aï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½È‚Ç‚É•Kï¿½vï¿½Èƒeï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½éˆï¿½ï¿½
     /// </summary>
     private static void CreateTables()
     {
-        // “GƒLƒƒƒ‰‚ÌƒXƒe[ƒ^ƒXƒe[ƒuƒ‹
+        // ï¿½Gï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ÌƒXï¿½eï¿½[ï¿½^ï¿½Xï¿½eï¿½[ï¿½uï¿½ï¿½
         _connection.Execute(@"
             CREATE TABLE IF NOT EXISTS EnemyStatus (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -73,7 +74,7 @@ public class DatabaseManager
         ");
 
         //_connection.Execute("PRAGMA foreign_keys = ON;");
-        //// ƒvƒŒƒCƒ„[ƒXƒe[ƒ^ƒXƒe[ƒuƒ‹
+        //// ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Xï¿½eï¿½[ï¿½^ï¿½Xï¿½eï¿½[ï¿½uï¿½ï¿½
         Connection.Execute(@"
         	CREATE TABLE IF NOT EXISTS player_status (
         		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -95,7 +96,7 @@ public class DatabaseManager
 			);
 		");
 
-        // ƒsƒXƒgƒ‹i•Šíjƒe[ƒuƒ‹
+        // ï¿½sï¿½Xï¿½gï¿½ï¿½ï¿½iï¿½ï¿½ï¿½ï¿½jï¿½eï¿½[ï¿½uï¿½ï¿½
         _connection.Execute(@"
             CREATE TABLE IF NOT EXISTS PistolStatus (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -104,46 +105,59 @@ public class DatabaseManager
             );
         ");
 
-        // ‰Šúƒf[ƒ^‚Ì‘}“ü
+        // ï¿½{ï¿½Xï¿½eï¿½[ï¿½uï¿½ï¿½
+        Connection.Execute(@"
+            CREATE TABLE IF NOT EXISTS bosses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                hp INTEGER NOT NULL,
+                attack_power INTEGER NOT NULL,
+                exp INTEGER NOT NULL DEFAULT 0,
+                flag TEXT,
+        		FOREIGN KEY (flag) REFERENCES route_flags(flag_name)
+            );
+        ");
+
+        // ï¿½ï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½Ì‘}ï¿½ï¿½
         var playerCount = _connection.ExecuteScalar<int>("SELECT COUNT(*) FROM player_status");
         if(playerCount == 0)
         {
             _connection.Execute(
                 "INSERT INTO player_status (HP, attack_power) VALUES (?, ?)",
-                10, 3, 0); // HP10AUŒ‚—Í3AƒRƒCƒ“‚O‚Å“o˜^
+                10, 3, 0); // HP10ï¿½Aï¿½Uï¿½ï¿½ï¿½ï¿½3ï¿½Aï¿½Rï¿½Cï¿½ï¿½ï¿½Oï¿½Å“oï¿½^
         }
         var pistolCount = _connection.ExecuteScalar<int>("SELECT COUNT(*) FROM PistolStatus");
         if(pistolCount == 0)
         {
             _connection.Execute(
                 "INSERT INTO PistolStatus (AttackPower, DisableTime) VALUES (?, ?)",
-                2, 6); // UŒ‚—Í‚QA’e‚ªÁ‚¦‚é‚Ü‚Å‚ÌŠÔ‚U‚Å“o˜^
+                2, 6); // ï¿½Uï¿½ï¿½ï¿½Í‚Qï¿½Aï¿½eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚Å‚Ìï¿½ï¿½Ô‚Uï¿½Å“oï¿½^
 		}
 	}
 
-	public static void Migrate()
-	{
-		var columns = Connection.Query<TableInfo>("PRAGMA table_info(player_status);")
-								.Select(c => c.name)
-								.ToList();
+    public static void Migrate()
+    {
+        var columns = Connection.Query<TableInfo>("PRAGMA table_info(player_status);")
+                                .Select(c => c.name)
+                                .ToList();
 
-		// ExpƒJƒ‰ƒ€‚ª‘¶İ‚µ‚È‚¢ê‡A’Ç‰Á‚·‚éˆ—‚Ì—á
-		// —á‚¦‚ÎAŒoŒ±’l‚ğ’Ç‰Á‚µ‚½‚¢ê‡‚È‚Ç‚Ég—p
-		if (!columns.Contains("Exp"))
-		{
-			//Connection.Execute("ALTER TABLE player_status ADD COLUMN Exp INTEGER DEFAULT 100;");
-		}
+        // Expï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½Aï¿½Ç‰ï¿½ï¿½ï¿½ï¿½éˆï¿½ï¿½ï¿½Ì—ï¿½
+        // ï¿½á‚¦ï¿½ÎAï¿½oï¿½ï¿½ï¿½lï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½È‚Ç‚Égï¿½p
+        if (!columns.Contains("Exp"))
+        {
+            //Connection.Execute("ALTER TABLE player_status ADD COLUMN Exp INTEGER DEFAULT 100;");
+        }
     }
 
-    /// player_statusƒe[ƒuƒ‹‚Ì‘SƒŒƒR[ƒh‚ğæ“¾
+    /// player_statusï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Ì‘Sï¿½ï¿½ï¿½Rï¿½[ï¿½hï¿½ï¿½ï¿½æ“¾
     /// </summary>
     public static List<player_status> GetAllCharacters()
-	{
-		return Connection.Query<player_status>("SELECT * FROM player_status");
-	}
+    {
+        return Connection.Query<player_status>("SELECT * FROM player_status");
+    }
 
 	/// <summary>
-	/// EnemyStatusƒe[ƒuƒ‹‚Ì‘SƒŒƒR[ƒh‚ğæ“¾
+	/// EnemyStatusï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Ì‘Sï¿½ï¿½ï¿½Rï¿½[ï¿½hï¿½ï¿½ï¿½æ“¾
 	/// </summary>
 	public static List<EnemyStatus> GetAllEnemies()
 	{
@@ -151,7 +165,7 @@ public class DatabaseManager
 	}
 
 	/// <summary>
-	/// EnemyStatusƒe[ƒuƒ‹‚Ì‘SƒŒƒR[ƒh‚ğæ“¾
+	/// EnemyStatusï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Ì‘Sï¿½ï¿½ï¿½Rï¿½[ï¿½hï¿½ï¿½ï¿½æ“¾
 	/// </summary>
 	public static List<DestructibleObjs> GetAllDestructibleObjs()
 	{
@@ -159,7 +173,7 @@ public class DatabaseManager
 	}
 
 	/// <summary>
-	/// PistolStatusƒe[ƒuƒ‹‚Ì‘SƒŒƒR[ƒh‚ğæ“¾
+	/// PistolStatusï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Ì‘Sï¿½ï¿½ï¿½Rï¿½[ï¿½hï¿½ï¿½ï¿½æ“¾
 	/// </summary>
 	public static List<PistolStatus> GetAllPistols()
 	{
@@ -167,7 +181,7 @@ public class DatabaseManager
 	}
 
 	/// <summary>
-	/// ƒTƒ|[ƒgƒXƒe[ƒ^ƒX‚Ì‘SƒŒƒR[ƒh‚ğæ“¾
+	/// ï¿½Tï¿½|ï¿½[ï¿½gï¿½Xï¿½eï¿½[ï¿½^ï¿½Xï¿½Ì‘Sï¿½ï¿½ï¿½Rï¿½[ï¿½hï¿½ï¿½ï¿½æ“¾
 	/// </summary>
 	/// <returns></returns>
 	public static List<SupportStatus> GetAllSupportStatuses()
@@ -176,7 +190,7 @@ public class DatabaseManager
 	}
 
 	/// <summary>
-	/// ƒTƒ|[ƒgƒXƒe[ƒ^ƒX‚ğ–¼‘O‚Åæ“¾
+	/// ï¿½Tï¿½|ï¿½[ï¿½gï¿½Xï¿½eï¿½[ï¿½^ï¿½Xï¿½ğ–¼‘Oï¿½Åæ“¾
 	/// </summary>
 	/// <param name="name"></param>
 	/// <returns></returns>
@@ -187,43 +201,69 @@ public class DatabaseManager
 	}
 
     /// <summary>
-    /// player_statusƒe[ƒuƒ‹‚ÌŒ»İ‚Ìƒ‹[ƒg‚ğid‚Åæ“¾
+    /// player_statusï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ÌŒï¿½ï¿½İ‚Ìƒï¿½ï¿½[ï¿½gï¿½ï¿½idï¿½Åæ“¾
     /// </summary>
     /// <param name="id"></param>
-    /// <returns>Œ»İ‚Ìƒ‹[ƒg</returns>
+    /// <returns>ï¿½ï¿½ï¿½İ‚Ìƒï¿½ï¿½[ï¿½g</returns>
     public static string GetCurrentRouteById(int id)
     {
         return Connection.ExecuteScalar<string>("SELECT current_route FROM player_status WHERE id = ?", id);
     }
 
+	/// <summary>
+	/// ãƒœã‚¹åã§å˜ä¸€ã®ãƒœã‚¹ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
+	/// </summary>
+	/// <param name="name">ãƒœã‚¹å</param>
+	/// <returns>ãƒœã‚¹ãƒ‡ãƒ¼ã‚¿ï¼ˆè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯nullï¼‰</returns>
+	public static Bosses GetBossByName(string name)
+	{
+		var list = Connection.Query<Bosses>("SELECT * FROM bosses WHERE name = ?", name);
+		return list.FirstOrDefault();
+	}
+
     /// <summary>
-    /// w’è‚µ‚½ƒvƒŒƒCƒ„[ID‚Ìƒ‹[ƒg‚ğ•ÏX‚·‚é
+    /// ï¿½wï¿½è‚µï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[IDï¿½Ìƒï¿½ï¿½[ï¿½gï¿½ï¿½ÏXï¿½ï¿½ï¿½ï¿½
     /// </summary>
-    /// <param name="id">player_statusƒe[ƒuƒ‹‚Ìid</param>
-    /// <param name="route">V‚µ‚¢ƒ‹[ƒg–¼i—á: "N", "A", "G"j</param>
+    /// <param name="id">player_statusï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½id</param>
+    /// <param name="route">ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½gï¿½ï¿½ï¿½iï¿½ï¿½: "N", "A", "G"ï¿½j</param>
     public static void UpdateCurrentRoute(int id, string route)
     {
         Connection.Execute("UPDATE player_status SET current_route = ? WHERE id = ?", route, id);
-		Debug.Log($"ƒvƒŒƒCƒ„[ID {id} ‚Ìƒ‹[ƒg‚ğ '{route}' ‚ÉXV‚µ‚Ü‚µ‚½B");
+        Debug.Log($"ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ID {id} ï¿½Ìƒï¿½ï¿½[ï¿½gï¿½ï¿½ '{route}' ï¿½ÉXï¿½Vï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½B");
     }
 
     /// <summary>
-    /// EnemyStatusƒe[ƒuƒ‹‚ÉV‚µ‚¢“Gƒf[ƒ^‚ğ‘}“ü
+    /// EnemyStatusï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ÉVï¿½ï¿½ï¿½ï¿½ï¿½Gï¿½fï¿½[ï¿½^ï¿½ï¿½}ï¿½ï¿½
     /// </summary>
-    /// <param name="enemy">‘}“ü‚·‚éEnemyStatusƒIƒuƒWƒFƒNƒg</param>
+    /// <param name="enemy">ï¿½}ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½EnemyStatusï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½g</param>
     public static void InsertEnemy(EnemyStatus enemy)
 	{
-		// INSERT`:‚Ç‚Ìƒe[ƒuƒ‹‚Ì‚Ç‚ÌƒJƒ‰ƒ€‚Éƒf[ƒ^‚ğ“ü‚ê‚é‚©w’è VALUES:ÀÛ‚É‚Ç‚ñ‚È’l‚ğ“ü‚ê‚é‚©w’è(?‚ÍƒvƒŒ[ƒXƒzƒ‹ƒ_[)
+		// INSERTï¿½`:ï¿½Ç‚Ìƒeï¿½[ï¿½uï¿½ï¿½ï¿½Ì‚Ç‚ÌƒJï¿½ï¿½ï¿½ï¿½ï¿½Éƒfï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½wï¿½ï¿½ VALUES:ï¿½ï¿½ï¿½Û‚É‚Ç‚ï¿½È’lï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½wï¿½ï¿½(?ï¿½Íƒvï¿½ï¿½ï¿½[ï¿½Xï¿½zï¿½ï¿½ï¿½_ï¿½[)
 		Connection.Execute(
 			"INSERT INTO EnemyStatus (HP, AttackPower) VALUES (?, ?)",
 			enemy.HP, enemy.AttackPower);
 	}
 
-	/// <summary>
-	/// PistolStatusƒe[ƒuƒ‹‚ÉV‚µ‚¢ƒsƒXƒgƒ‹ƒf[ƒ^‚ğ‘}“ü
-	/// </summary>
-	/// <param name="pistol">‘}“ü‚·‚éPistolStatusƒIƒuƒWƒFƒNƒg</param>
-	public static void InsertPistol(PistolStatus pistol)
+    /// <summary>
+    /// Bossesï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ÉVï¿½ï¿½ï¿½ï¿½ï¿½{ï¿½Xï¿½fï¿½[ï¿½^ï¿½ï¿½}ï¿½ï¿½
+    /// </summary>
+    /// <param name="name">ï¿½ï¿½ï¿½ï¿½</param>
+    /// <param name="hp">ï¿½Ì—ï¿½</param>
+    /// <param name="attackPower">ï¿½Uï¿½ï¿½ï¿½ï¿½</param>
+    /// <param name="exp">ï¿½oï¿½ï¿½ï¿½l</param>
+    /// <param name="flag">ï¿½tï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½iNULLï¿½Âj</param>
+    public static void InsertBoss(string name, int hp, int attackPower, int exp, string flag)
+    {
+        Connection.Execute(
+            "INSERT INTO bosses (name, hp, attack_power, exp, flag) VALUES (?, ?, ?, ?, ?)",
+            name, hp, attackPower, exp, flag);
+    }
+
+    /// <summary>
+    /// PistolStatusï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ÉVï¿½ï¿½ï¿½ï¿½ï¿½sï¿½Xï¿½gï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½}ï¿½ï¿½
+    /// </summary>
+    /// <param name="pistol">ï¿½}ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½PistolStatusï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½g</param>
+    public static void InsertPistol(PistolStatus pistol)
 	{
 		Connection.Execute(
 			"INSERT INTO PistolStatus (AttackPower, DisableTime) VALUES (?, ?)",
@@ -231,7 +271,7 @@ public class DatabaseManager
     }
 
     /// <summary>
-    /// StageStatusƒe[ƒuƒ‹‚ÉV‚µ‚¢ƒXƒe[ƒWƒf[ƒ^‚ğ‘}“ü
+    /// StageStatusï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ÉVï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½eï¿½[ï¿½Wï¿½fï¿½[ï¿½^ï¿½ï¿½}ï¿½ï¿½
     /// </summary>
     public static void InsertStage(string stageName,int is_clear,int support1,int support2,int support3)
 	{
@@ -241,7 +281,7 @@ public class DatabaseManager
 	}
 
     /// <summary>
-    /// ƒXƒe[ƒWƒNƒŠƒAŠÖ”
+    /// ï¿½Xï¿½eï¿½[ï¿½Wï¿½Nï¿½ï¿½ï¿½Aï¿½Öï¿½
     /// </summary>
     public static void ClearStage(string stageName,int is_clear)
 	{
@@ -251,13 +291,13 @@ public class DatabaseManager
 	}
 
     /// <summary>
-    /// w’è‚µ‚½ƒXƒe[ƒW‚Ìisó‹µ‚ğXV‚·‚é
+    /// ï¿½wï¿½è‚µï¿½ï¿½ï¿½Xï¿½eï¿½[ï¿½Wï¿½Ìiï¿½sï¿½ó‹µ‚ï¿½ï¿½Xï¿½Vï¿½ï¿½ï¿½ï¿½
     /// </summary>
-    /// <param name="stageName">ƒXƒe[ƒW–¼</param>
-    /// <param name="is_clear">ƒNƒŠƒAó‘Ô</param>
-    /// <param name="support1">ƒTƒ|[ƒg1</param>
-    /// <param name="support2">ƒTƒ|[ƒg2</param>
-    /// <param name="support3">ƒTƒ|[ƒg3</param>
+    /// <param name="stageName">ï¿½Xï¿½eï¿½[ï¿½Wï¿½ï¿½</param>
+    /// <param name="is_clear">ï¿½Nï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½</param>
+    /// <param name="support1">ï¿½Tï¿½|ï¿½[ï¿½g1</param>
+    /// <param name="support2">ï¿½Tï¿½|ï¿½[ï¿½g2</param>
+    /// <param name="support3">ï¿½Tï¿½|ï¿½[ï¿½g3</param>
     public static void UpdateStage(string stageName, int is_clear, int support1, int support2, int support3)
     {
         Connection.Execute(
@@ -266,12 +306,12 @@ public class DatabaseManager
     }
 
     /// <summary>
-    /// player_statusƒe[ƒuƒ‹‚ÌƒvƒŒƒCƒ„[ƒXƒe[ƒ^ƒX‚ğXV
+    /// player_statusï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½Ìƒvï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Xï¿½eï¿½[ï¿½^ï¿½Xï¿½ï¿½ï¿½Xï¿½V
     /// </summary>
-    /// <param name="id">XV‚·‚éƒvƒŒƒCƒ„[‚ÌID</param>
-    /// <param name="newHP">V‚µ‚¢HP</param>
-    /// <param name="newAttackPower">V‚µ‚¢UŒ‚—Í</param>
-    /// <param name="newLevel">V‚µ‚¢ƒŒƒxƒ‹</param>
+    /// <param name="id">ï¿½Xï¿½Vï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½ID</param>
+    /// <param name="newHP">ï¿½Vï¿½ï¿½ï¿½ï¿½HP</param>
+    /// <param name="newAttackPower">ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½ï¿½</param>
+    /// <param name="newLevel">ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½xï¿½ï¿½</param>
     public static void UpdatePlayerStatus(int id, int newHP, int newAttackPower, int newLevel)
 	{
 		Connection.Execute(
@@ -280,10 +320,10 @@ public class DatabaseManager
 	}
 
     /// <summary>
-    /// w’è‚µ‚½ƒXƒe[ƒWID‚Ìisó‹µiƒNƒŠƒAEƒTƒ|[ƒgg—p‰Â”Û‚È‚Çj‚ğstage_statusƒe[ƒuƒ‹‚©‚çæ“¾
+    /// ï¿½wï¿½è‚µï¿½ï¿½ï¿½Xï¿½eï¿½[ï¿½WIDï¿½Ìiï¿½sï¿½ó‹µiï¿½Nï¿½ï¿½ï¿½Aï¿½Eï¿½Tï¿½|ï¿½[ï¿½gï¿½gï¿½pï¿½Â”Û‚È‚Çjï¿½ï¿½stage_statusï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ“¾
     /// </summary>
-    /// <param name="stage">ƒXƒe[ƒWIDi—á: "stage1"j</param>
-    /// <returns>ŠY“–ƒXƒe[ƒW‚ÌStageStatusƒIƒuƒWƒFƒNƒgB‘¶İ‚µ‚È‚¢ê‡‚ÍnullB</returns>
+    /// <param name="stage">ï¿½Xï¿½eï¿½[ï¿½WIDï¿½iï¿½ï¿½: "stage1"ï¿½j</param>
+    /// <returns>ï¿½Yï¿½ï¿½ï¿½Xï¿½eï¿½[ï¿½Wï¿½ï¿½StageStatusï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½Bï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ï¿½nullï¿½B</returns>
     public static StageStatus GetStageStatus(string stage)
     {
         return Connection.Query<StageStatus>(
@@ -292,7 +332,15 @@ public class DatabaseManager
     }
 
     /// <summary>
-    /// ƒfƒoƒbƒO—p‚Éƒe[ƒuƒ‹‚ğƒŠƒZƒbƒg‚·‚éˆ—
+    /// ï¿½{ï¿½Xï¿½Ìƒï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½éƒï¿½\ï¿½bï¿½hï¿½ï¿½Ç‰ï¿½
+    /// </summary>
+    public static List<Bosses> GetAllBosses()
+    {
+        return Connection.Query<Bosses>("SELECT * FROM bosses");
+    }
+
+    /// <summary>
+    /// ï¿½fï¿½oï¿½bï¿½Oï¿½pï¿½Éƒeï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½bï¿½gï¿½ï¿½ï¿½éˆï¿½ï¿½
     /// </summary>
     private static void Resetplayer_statusTable()
 	{
@@ -333,6 +381,6 @@ public class DatabaseManager
 			"TestEnemy2", 25, 5);
 
 		Connection.Execute("DROP TABLE IF EXISTS SupportStatus;");
-		UnityEngine.Debug.Log("player_statusƒe[ƒuƒ‹‚ğƒŠƒZƒbƒg‚µ‚Ü‚µ‚½B‰Šúƒf[ƒ^‚ğ‘}“ü‚µ‚Ü‚µ‚½B");
+		UnityEngine.Debug.Log("player_statusï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½bï¿½gï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½Bï¿½ï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½}ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½B");
 	}
 }
