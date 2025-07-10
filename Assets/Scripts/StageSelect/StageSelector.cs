@@ -152,20 +152,22 @@ public class StageSelector : MonoBehaviour
         UpdateStageView();
         MovePlayerInstant();
 
+
+        int pathCount = _pathObjects.Count;
+        int stageCount = _allStages.Count - 1; // i+1でアクセスするため-1
+        int loopCount = Mathf.Min(pathCount, stageCount);
+
         // === 追加: すでに解放済みの道は常時表示 ===
-        for (int i = 0; i < _pathObjects.Count; i++)
+        for (int i = 0; i < loopCount; i++)
         {
             // i番目の道は、i+1番目のステージがクリア済みなら常時表示
-            if (i + 1 < _allStages.Count)
+            var status = DatabaseManager.GetStageStatus(_allStages[i + 1].sceneName);
+            if (status != null && status.is_clear == 1)
             {
-                var status = DatabaseManager.GetStageStatus(_allStages[i + 1].sceneName);
-                if (status != null && status.is_clear == 1)
+                if (_pathObjects[i] != null)
                 {
-                    if (_pathObjects[i] != null)
-                    {
-                        _pathObjects[i].SetActive(true);
-                        // Animatorで演出済みならスケールはアニメーションに任せる
-                    }
+                    _pathObjects[i].SetActive(true);
+                    // Animatorで演出済みならスケールはアニメーションに任せる
                 }
             }
         }
