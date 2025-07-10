@@ -21,6 +21,7 @@ public class GoalTrigger : MonoBehaviour
     [SerializeField] private float _stageClearDelay = 0.25f; // ADV終了後の遅延秒数
 
     private int _addExp = 0; // クリア時に取得する経験値
+    private string _route;
     private PlayerInputActions _inputActions;
     private bool _waitForAdvEnd = false;
     private bool _isResultOpen = false;
@@ -72,6 +73,12 @@ public class GoalTrigger : MonoBehaviour
         _getExpName.text = _addExp.ToString();
         _addExp = 0;
         DatabaseManager.GetExp(1,ExpManager.Instance.GetCurrentExp());
+
+        if(_route != null)
+        {
+            DatabaseManager.UpdateCurrentRoute(1, _route);
+            _route = null;
+        }
 
         // ゴールしたシーン名を取得
         string sceneName = SceneManager.GetActiveScene().name;
@@ -185,5 +192,14 @@ public class GoalTrigger : MonoBehaviour
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// ゴールのルートを設定
+    /// </summary>
+    /// <param name="routeFlag"></param>
+    public void SetRoute(string routeFlag)
+    {
+        _route = routeFlag;
     }
 }
