@@ -271,6 +271,15 @@ public class PlayerMovement : MonoBehaviour
         {
             hitObject.HitAttack(_charaState.AttackPower);
         }
+        else
+        {
+            // 親または子にアタッチされている場合も考慮  
+            Character parentHitObject = other.GetComponentInParent<Character>();
+            if (parentHitObject != null)
+            {
+                parentHitObject.HitAttack(_charaState.AttackPower);
+            }
+        }
     }
 
     public void StartAttack()

@@ -10,6 +10,7 @@ TagManager:
   - Spike
   - Echo
   - Destructible
+  - Boss
   layers:
   - Default
   - TransparentFX
@@ -22,8 +23,10 @@ TagManager:
   - Enemy
   - Echo
   - Spike
-  - WaterWall
-  - 
+
+  - Boss
+  - SeaDemonDash
+
   - 
   - 
   - 

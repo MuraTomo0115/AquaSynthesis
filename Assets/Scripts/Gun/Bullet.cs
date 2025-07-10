@@ -93,9 +93,27 @@ public class Bullet : MonoBehaviour
                 destructible.HitAttack(_damage);
             }
         }
+        else if (collision.gameObject.tag == "Boss")
+        {
+            // ボスに当たった場合はダメージを与える
+            Character boss = collision.gameObject.GetComponent<Character>();
+            if (boss != null)
+            {
+                boss.HitAttack(_damage);
+            }
+            else
+            {
+                // 親または子にアタッチされている場合も考慮  
+                Character parentHitObject = collision.gameObject.GetComponentInParent<Character>();
+                if (parentHitObject != null)
+                {
+                    parentHitObject.HitAttack(_damage);
+                }
+            }
+        }
 
-            // 何かに当たったら弾を破棄
-            Destroy(this.gameObject);
+        // 何かに当たったら弾を破棄
+        Destroy(this.gameObject);
     }
 
     /// <summary>
