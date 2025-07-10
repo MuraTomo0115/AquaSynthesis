@@ -21,8 +21,10 @@ public class Character : MonoBehaviour
     private GameObject _player;
     private PlayerMovement _playerMovement;
     private bool _isDead = false; // ���S�������ǂ����̃t���O
+    private bool _isBoss = false;
     private string _seFile;
     private int _getExp = 0;
+    private string _route;
 
     public float HP { get; private set; }
     public float MaxHP { get; private set; }
@@ -53,6 +55,11 @@ public class Character : MonoBehaviour
         
         _player = GameObject.FindGameObjectWithTag("Player");
         _playerMovement = _player.GetComponent<PlayerMovement>();
+    }
+
+    private void Start()
+    {
+        _isBoss = CompareTag("Boss");
     }
 
     /// <summary>
@@ -159,6 +166,14 @@ public class Character : MonoBehaviour
     {
         if (_isDead) return;
         _isDead = true;
+
+        if(_isBoss)
+        {
+            var boss = DatabaseManager.GetBossByName(_characterName);
+
+            if (boss.flag != null)
+                GoalTrigger.Instance.SetRoute(boss.flag);
+        }
 
         ExpManager.Instance.AddExp(_getExp);
 

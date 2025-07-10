@@ -229,7 +229,6 @@ public class DatabaseManager
     public static void UpdateCurrentRoute(int id, string route)
     {
         Connection.Execute("UPDATE player_status SET current_route = ? WHERE id = ?", route, id);
-        Debug.Log($"�v���C���[ID {id} �̃��[�g�� '{route}' �ɍX�V���܂����B");
     }
 
     /// <summary>
