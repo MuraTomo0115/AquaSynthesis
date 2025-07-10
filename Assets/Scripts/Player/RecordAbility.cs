@@ -12,6 +12,7 @@ public class RecordAbility : MonoBehaviour
     [SerializeField] private float _recordInterval = 0.1f; // 記録間隔（秒）
     [SerializeField] private float _maxRecordTime = 10f;   // 最大記録時間（秒）
     [SerializeField] private GameObject _ghostPrefab;      // ゴーストのプレハブ
+    private WaterWallController[] _waterWalls;
 
     // 内部参照
     private Animator _animator;
@@ -65,12 +66,13 @@ public class RecordAbility : MonoBehaviour
             _animator = _target.GetComponent<Animator>();
             _spriteRenderer = _target.GetComponent<SpriteRenderer>();
             _playerMovement = _target.GetComponent<PlayerMovement>();
+            _waterWalls = FindObjectsOfType<WaterWallController>();
         }
     }
 
     private void SetFireWallTransparency(bool transparent)
     {
-        foreach (var wall in FindObjectsOfType<WaterWallController>())
+        foreach (var wall in _waterWalls)
         {
             wall.SetTransparent(transparent);
         }
