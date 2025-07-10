@@ -12,6 +12,7 @@ public class RecordAbility : MonoBehaviour
     [SerializeField] private float _recordInterval = 0.1f; // 記録間隔（秒）
     [SerializeField] private float _maxRecordTime = 10f;   // 最大記録時間（秒）
     [SerializeField] private GameObject _ghostPrefab;      // ゴーストのプレハブ
+    private WaterWallController[] _waterWalls;
 
     // 内部参照
     private Animator _animator;
@@ -66,6 +67,16 @@ public class RecordAbility : MonoBehaviour
             _spriteRenderer = _target.GetComponent<SpriteRenderer>();
             _playerMovement = _target.GetComponent<PlayerMovement>();
         }
+        _waterWalls = FindObjectsOfType<WaterWallController>();
+    }
+
+    private void SetFireWallTransparency(bool transparent)
+    {
+        if (_waterWalls == null) return;
+        foreach (var wall in _waterWalls)
+        {
+            wall.SetTransparent(transparent);
+        }
     }
 
     /// <summary>
@@ -76,11 +87,13 @@ public class RecordAbility : MonoBehaviour
         if (_isRecording || _recordCoroutine != null) return;
         if (_playerMovement != null)
         {
-            _playerMovement.IsRecording = true; // 記録モードON
+            _playerMovement.IsRecording = true;
+            _playerMovement.SetLayerByRecording(); // 追加
         }
-        _savedRecord.Clear(); // 新規記録
-        SaveCurrentFrame();   // ここで1フレーム分を即記録
+        _savedRecord.Clear();
+        SaveCurrentFrame();
         _recordCoroutine = StartCoroutine(RecordCoroutine());
+        SetFireWallTransparency(true);
     }
 
     /// <summary>
@@ -116,8 +129,10 @@ public class RecordAbility : MonoBehaviour
         _isRecording = false;
         if (_playerMovement != null)
         {
-            _playerMovement.IsRecording = false; // 記録モードOFF
+            _playerMovement.IsRecording = false;
+            _playerMovement.SetLayerByRecording(); // 追加
         }
+        SetFireWallTransparency(false);
     }
 
     /// <summary>

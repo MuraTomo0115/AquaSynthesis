@@ -343,4 +343,11 @@ public class PlayerMovement : MonoBehaviour
     {
         _charaState.Heal(healAmount);
     }
+    public void SetLayerByRecording()
+    {
+        if (IsRecording)
+            gameObject.layer = LayerMask.NameToLayer("Echo");
+        else
+            gameObject.layer = LayerMask.NameToLayer("Player");
+    }
 }
