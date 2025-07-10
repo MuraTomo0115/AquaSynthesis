@@ -68,6 +68,14 @@ public class RecordAbility : MonoBehaviour
         }
     }
 
+    private void SetFireWallTransparency(bool transparent)
+    {
+        foreach (var wall in FindObjectsOfType<WaterWallController>())
+        {
+            wall.SetTransparent(transparent);
+        }
+    }
+
     /// <summary>
     /// 記録開始
     /// </summary>
@@ -76,11 +84,13 @@ public class RecordAbility : MonoBehaviour
         if (_isRecording || _recordCoroutine != null) return;
         if (_playerMovement != null)
         {
-            _playerMovement.IsRecording = true; // 記録モードON
+            _playerMovement.IsRecording = true;
+            _playerMovement.SetLayerByRecording(); // 追加
         }
-        _savedRecord.Clear(); // 新規記録
-        SaveCurrentFrame();   // ここで1フレーム分を即記録
+        _savedRecord.Clear();
+        SaveCurrentFrame();
         _recordCoroutine = StartCoroutine(RecordCoroutine());
+        SetFireWallTransparency(true);
     }
 
     /// <summary>
@@ -116,8 +126,10 @@ public class RecordAbility : MonoBehaviour
         _isRecording = false;
         if (_playerMovement != null)
         {
-            _playerMovement.IsRecording = false; // 記録モードOFF
+            _playerMovement.IsRecording = false;
+            _playerMovement.SetLayerByRecording(); // 追加
         }
+        SetFireWallTransparency(false);
     }
 
     /// <summary>
