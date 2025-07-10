@@ -98,7 +98,7 @@ public class Character : MonoBehaviour
         }
         else if (CompareTag("Boss"))
         {
-            var boss = DatabaseManager.GetBossByName("SeaDemon");
+            var boss = DatabaseManager.GetBossByName(_characterName);
             AudioManager.Instance.PlaySE("Boss", boss.idle_voice, "N1");
 
             // �_���[�W�v�Z
