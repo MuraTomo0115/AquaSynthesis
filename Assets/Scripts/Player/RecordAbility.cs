@@ -66,12 +66,13 @@ public class RecordAbility : MonoBehaviour
             _animator = _target.GetComponent<Animator>();
             _spriteRenderer = _target.GetComponent<SpriteRenderer>();
             _playerMovement = _target.GetComponent<PlayerMovement>();
-            _waterWalls = FindObjectsOfType<WaterWallController>();
         }
+        _waterWalls = FindObjectsOfType<WaterWallController>();
     }
 
     private void SetFireWallTransparency(bool transparent)
     {
+        if (_waterWalls == null) return;
         foreach (var wall in _waterWalls)
         {
             wall.SetTransparent(transparent);
