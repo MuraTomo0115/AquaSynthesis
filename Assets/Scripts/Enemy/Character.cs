@@ -22,6 +22,7 @@ public class Character : MonoBehaviour
     private PlayerMovement _playerMovement;
     private bool _isDead = false; // ���S�������ǂ����̃t���O
     private string _seFile;
+    private int _getExp = 0;
 
     public float HP { get; private set; }
     public float MaxHP { get; private set; }
@@ -104,6 +105,8 @@ public class Character : MonoBehaviour
             // �_���[�W�v�Z
             _currentHealth -= damage;
 
+            _getExp = boss.exp;
+
             // �{�XHP�o�[���X�V
             BossHPBar bossHpBar = FindObjectOfType<BossHPBar>();
             if (bossHpBar != null)
@@ -156,6 +159,8 @@ public class Character : MonoBehaviour
     {
         if (_isDead) return;
         _isDead = true;
+
+        ExpManager.Instance.AddExp(_getExp);
 
         // HP�o�[��j��
         if (_hpBar != null)

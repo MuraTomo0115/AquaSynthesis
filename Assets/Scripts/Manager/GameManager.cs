@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour
             int newLevel = player.level + 1;
 
             // DBを更新
-            DatabaseManager.UpdatePlayerStatus(player.id, newHP, newAtk, newLevel);
+            //DatabaseManager.UpdatePlayerStatus(player.id, newHP, newAtk, newLevel);
 
             Debug.Log($"レベルアップ！ 新HP:{newHP}, 新攻撃力:{newAtk}, 新レベル:{newLevel}");
 

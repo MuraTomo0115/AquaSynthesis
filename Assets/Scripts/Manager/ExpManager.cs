@@ -40,6 +40,15 @@ public class ExpManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 現在の経験値を取得するメソッド
+    /// </summary>
+    /// <returns></returns>
+    public int GetCurrentExp()
+    {
+        return _currentExp;
+    }
+
+    /// <summary>
     /// 経験値表示UIを更新
     /// </summary>
     private void UpdateExpText()

@@ -13,6 +13,7 @@ public class GoalTrigger : MonoBehaviour
     [SerializeField] private string _scenarioFileName;
     [SerializeField] private GameObject _resultPanel;
     [SerializeField] private string _nextSceneName; // 遷移先シーン名
+    [SerializeField] private TextMeshProUGUI _getExpName; // 獲得経験値数
     [SerializeField] private CanvasGroup _fadeCanvasGroup; // フェード用
     [SerializeField] private TextMeshProUGUI _pressAnyKeyText; // 「Press Any Key」用
     [SerializeField] private float _resultDelay = 3f;      // リザルト表示時間（秒）
@@ -68,6 +69,10 @@ public class GoalTrigger : MonoBehaviour
     {
         _addExp = ExpManager.Instance.CurrentExp;
         _addExp = 0;
+
+        _getExpName.text = ExpManager.Instance.CurrentExp.ToString();
+
+        DatabaseManager.GetExp(1,ExpManager.Instance.GetCurrentExp());
 
         // ゴールしたシーン名を取得
         string sceneName = SceneManager.GetActiveScene().name;
