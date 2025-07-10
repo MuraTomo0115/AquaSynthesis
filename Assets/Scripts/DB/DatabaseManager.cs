@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using UnityEngine;
 using SQLite4Unity3d;
 using System.Collections.Generic;
@@ -318,6 +318,22 @@ public class DatabaseManager
 			"UPDATE player_status SET HP = ?, attack_power = ?, Level = ? WHERE Id = ?",
 			newHP, newAttackPower, newLevel, id);
 	}
+
+    /// <summary>
+    /// player_status�e�[�u���̃v���C���[�X�e�[�^�X���X�V
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="exp"></param>
+    public static void GetExp(int id, int exp)
+    {
+        // 現在の経験値を取得
+        var currentExp = Connection.ExecuteScalar<int>("SELECT current_exp FROM player_status WHERE id = ?", id);
+
+        // 新しい経験値を計算
+        var newExp = currentExp + exp;
+
+        Connection.Execute("UPDATE player_status SET current_exp = ? WHERE id = ?", newExp, id);
+    }
 
     /// <summary>
     /// �w�肵���X�e�[�WID�̐i�s�󋵁i�N���A�E�T�|�[�g�g�p�ۂȂǁj��stage_status�e�[�u������擾

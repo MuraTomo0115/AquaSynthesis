@@ -12,14 +12,15 @@ public class GoalTrigger : MonoBehaviour
     [SerializeField] private ADVManager _advManager;
     [SerializeField] private string _scenarioFileName;
     [SerializeField] private GameObject _resultPanel;
-    [SerializeField] private string _nextSceneName; // ‘JˆÚæƒV[ƒ“–¼
-    [SerializeField] private CanvasGroup _fadeCanvasGroup; // ƒtƒF[ƒh—p
-    [SerializeField] private TextMeshProUGUI _pressAnyKeyText; // uPress Any Keyv—p
-    [SerializeField] private float _resultDelay = 3f;      // ƒŠƒUƒ‹ƒg•\¦ŠÔi•bj
-    [SerializeField] private float _fadeDuration = 1f;     // ƒtƒF[ƒhƒAƒEƒgŠÔi•bj
-    [SerializeField] private float _stageClearDelay = 0.25f; // ADVI—¹Œã‚Ì’x‰„•b”
+    [SerializeField] private string _nextSceneName; // é·ç§»å…ˆã‚·ãƒ¼ãƒ³å
+    [SerializeField] private TextMeshProUGUI _getExpName; // ç²å¾—çµŒé¨“å€¤æ•°
+    [SerializeField] private CanvasGroup _fadeCanvasGroup; // ãƒ•ã‚§ãƒ¼ãƒ‰ç”¨
+    [SerializeField] private TextMeshProUGUI _pressAnyKeyText; // ã€ŒPress Any Keyã€ç”¨
+    [SerializeField] private float _resultDelay = 3f;      // ãƒªã‚¶ãƒ«ãƒˆè¡¨ç¤ºæ™‚é–“ï¼ˆç§’ï¼‰
+    [SerializeField] private float _fadeDuration = 1f;     // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“ï¼ˆç§’ï¼‰
+    [SerializeField] private float _stageClearDelay = 0.25f; // ADVçµ‚äº†å¾Œã®é…å»¶ç§’æ•°
 
-    private int _addExp = 0; // ƒNƒŠƒA‚Éæ“¾‚·‚éŒoŒ±’l
+    private int _addExp = 0; // ã‚¯ãƒªã‚¢æ™‚ã«å–å¾—ã™ã‚‹çµŒé¨“å€¤
     private PlayerInputActions _inputActions;
     private bool _waitForAdvEnd = false;
     private bool _isResultOpen = false;
@@ -62,32 +63,35 @@ public class GoalTrigger : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒQ[ƒ€ƒNƒŠƒA‚Ìˆ—
+    /// ã‚²ãƒ¼ãƒ ã‚¯ãƒªã‚¢æ™‚ã®å‡¦ç†
     /// </summary>
     private void StageClear()
     {
         _addExp = ExpManager.Instance.CurrentExp;
-        _addExp = 0;
 
-        // ƒS[ƒ‹‚µ‚½ƒV[ƒ“–¼‚ğæ“¾
+        _getExpName.text = _addExp.ToString();
+        _addExp = 0;
+        DatabaseManager.GetExp(1,ExpManager.Instance.GetCurrentExp());
+
+        // ã‚´ãƒ¼ãƒ«ã—ãŸã‚·ãƒ¼ãƒ³åã‚’å–å¾—
         string sceneName = SceneManager.GetActiveScene().name;
 
-        // ƒV[ƒ“–¼‚ğ•Û‘¶
+        // ã‚·ãƒ¼ãƒ³åã‚’ä¿å­˜
         PlayerPrefs.SetString("LastClearedStage", sceneName);
         PlayerPrefs.Save();
 
-        // isó‹µ‚ğƒNƒŠƒA‚ÉXV
+        // é€²è¡ŒçŠ¶æ³ã‚’ã‚¯ãƒªã‚¢ã«æ›´æ–°
         var status = DatabaseManager.GetStageStatus(sceneName);
         if (status != null)
         {
             DatabaseManager.UpdateStage(sceneName, 1, status.support1, status.support2, status.support3);
         }
 
-        // ƒgƒŠƒK[‚Ì“–‚½‚è”»’è‚ğ–³Œø‰»
+        // ãƒˆãƒªã‚¬ãƒ¼ã®å½“ãŸã‚Šåˆ¤å®šã‚’ç„¡åŠ¹åŒ–
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
-        // ƒŠƒUƒ‹ƒg•\¦
+        // ãƒªã‚¶ãƒ«ãƒˆè¡¨ç¤º
         if (_resultPanel != null)
         {
             _resultPanel.SetActive(true);
@@ -98,28 +102,28 @@ public class GoalTrigger : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒŠƒUƒ‹ƒg•\¦¨uPress Any Keyv¨ƒL[“ü—Í‘Ò‚¿¨ƒtƒF[ƒhƒAƒEƒg¨ƒV[ƒ“‘JˆÚ
+    /// ãƒªã‚¶ãƒ«ãƒˆè¡¨ç¤ºâ†’ã€ŒPress Any Keyã€â†’ã‚­ãƒ¼å…¥åŠ›å¾…ã¡â†’ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆâ†’ã‚·ãƒ¼ãƒ³é·ç§»
     /// </summary>
     private IEnumerator ResultAndWaitForAnyKey()
     {
-        yield return new WaitForSecondsRealtime(_resultDelay); // 3•bƒŠƒUƒ‹ƒg•\¦
+        yield return new WaitForSecondsRealtime(_resultDelay); // 3ç§’ãƒªã‚¶ãƒ«ãƒˆè¡¨ç¤º
 
-        // uPress Any Keyv•\¦
+        // ã€ŒPress Any Keyã€è¡¨ç¤º
         if (_pressAnyKeyText != null)
             _pressAnyKeyText.gameObject.SetActive(true);
 
         _waitForAnyKey = true;
 
-        // ‚±‚±‚Å‚ÍƒL[“ü—Í‘Ò‚¿‚ğUpdate‚Å”»’è
+        // ã“ã“ã§ã¯ã‚­ãƒ¼å…¥åŠ›å¾…ã¡ã‚’Updateã§åˆ¤å®š
         while (_waitForAnyKey)
         {
             yield return null;
         }
 
-        // ƒtƒF[ƒhƒAƒEƒg
+        // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆ
         yield return StartCoroutine(FadeOut(_fadeDuration));
 
-        // ƒtƒF[ƒhŒã‚ÉƒŠƒUƒ‹ƒgƒpƒlƒ‹‚ÆƒeƒLƒXƒg‚ğ”ñ•\¦
+        // ãƒ•ã‚§ãƒ¼ãƒ‰å¾Œã«ãƒªã‚¶ãƒ«ãƒˆãƒ‘ãƒãƒ«ã¨ãƒ†ã‚­ã‚¹ãƒˆã‚’éè¡¨ç¤º
         if (_resultPanel != null && _isResultOpen)
         {
             _resultPanel.SetActive(false);
@@ -136,7 +140,7 @@ public class GoalTrigger : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒtƒF[ƒhƒAƒEƒg‰‰o
+    /// ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ¼”å‡º
     /// </summary>
     private IEnumerator FadeOut(float duration)
     {
@@ -156,18 +160,18 @@ public class GoalTrigger : MonoBehaviour
 
     private void Update()
     {
-        // ADVI—¹‘Ò‚¿ó‘Ô‚ÅADV‚ªI‚í‚Á‚½‚çƒŠƒUƒ‹ƒgˆ—
+        // ADVçµ‚äº†å¾…ã¡çŠ¶æ…‹ã§ADVãŒçµ‚ã‚ã£ãŸã‚‰ãƒªã‚¶ãƒ«ãƒˆå‡¦ç†
         if (_waitForAdvEnd && _advManager != null && !_advManager.IsPlaying)
         {
             _waitForAdvEnd = false;
             Invoke(nameof(StageClear), _stageClearDelay);
 
-            // ”O‚Ì‚½‚ß“–‚½‚è”»’è‚ğ–³Œø‰»
+            // å¿µã®ãŸã‚å½“ãŸã‚Šåˆ¤å®šã‚’ç„¡åŠ¹åŒ–
             Collider2D col = GetComponent<Collider2D>();
             if (col != null) col.enabled = false;
         }
 
-        // uPress Any Keyv‘Ò‚¿
+        // ã€ŒPress Any Keyã€å¾…ã¡
         if (_waitForAnyKey)
         {
             if (Keyboard.current == null) return;
