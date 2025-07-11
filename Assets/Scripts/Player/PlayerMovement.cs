@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -94,6 +95,7 @@ public class PlayerMovement : MonoBehaviour
         playerActions.Player.Jump.performed += OnJumpPerformed;
         playerActions.Player.Attack.performed += OnAttackPerformed;
         playerActions.Player.Pistol.performed += OnPistolPerformed;
+        playerActions.Player.Action.performed += OnActionPerformed;
         playerActions.Support.SummonA.performed += OnSummonASupport;
         playerActions.Support.SummonB.performed += OnSummonBSupport;
 
@@ -114,6 +116,7 @@ public class PlayerMovement : MonoBehaviour
             playerActions.Player.Jump.performed -= OnJumpPerformed;
             playerActions.Player.Attack.performed -= OnAttackPerformed;
             playerActions.Player.Pistol.performed -= OnPistolPerformed;
+            playerActions.Player.Action.performed -= OnActionPerformed;
             playerActions.Support.SummonA.performed -= OnSummonASupport;
             playerActions.Support.SummonB.performed -= OnSummonBSupport;
         }
@@ -125,9 +128,10 @@ public class PlayerMovement : MonoBehaviour
     private void OnJumpPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => Jump();
     private void OnAttackPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => Attack();
     private void OnPistolPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => Pistol();
+    private void OnActionPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => TryActivateNearbyGimmick();
     private void OnSummonASupport(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => SummonSupport(1);
     private void OnSummonBSupport(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => SummonSupport(2);
-
+     
     private void FixedUpdate()
     {
         _rb.velocity = new Vector2(_movement.x * _moveSpeed, _rb.velocity.y);
@@ -349,5 +353,20 @@ public class PlayerMovement : MonoBehaviour
             gameObject.layer = LayerMask.NameToLayer("Echo");
         else
             gameObject.layer = LayerMask.NameToLayer("Player");
+    }
+    private bool TryActivateNearbyGimmick()
+    {
+        float checkRadius = 1.0f;
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, checkRadius);
+        foreach (var hit in hits)
+        {
+            var gimmick = hit.GetComponent<IGimmickActivatable>();
+            if (gimmick != null && gimmick.IsPlayerInRange(gameObject))
+            {
+                gimmick.Activate(gameObject);
+                return true;
+            }
+        }
+        return false;
     }
 }

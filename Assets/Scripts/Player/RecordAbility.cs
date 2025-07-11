@@ -320,4 +320,24 @@ public class RecordAbility : MonoBehaviour
         }
         return null;
     }
+    private bool TryActivateNearbyGimmick()
+    {
+        float checkRadius = 1.0f;
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, checkRadius);
+        foreach (var hit in hits)
+        {
+            var gimmick = hit.GetComponent<IGimmickActivatable>();
+            if (gimmick != null && gimmick.IsPlayerInRange(gameObject))
+            {
+                // Echo‰Â”Û‚ð”»’è
+                int echoLayer = LayerMask.NameToLayer("Echo");
+                if (gameObject.layer == echoLayer && !gimmick.CanActivateByEcho)
+                    continue;
+
+                gimmick.Activate(gameObject);
+                return true;
+            }
+        }
+        return false;
+    }
 }
