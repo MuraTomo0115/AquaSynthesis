@@ -3,25 +3,30 @@ using UnityEngine;
 
 public class BourBonMissile : MonoBehaviour
 {
-    [Header("Launch Settings")]
+    [Header("発射設定")]
     [SerializeField] private float _launchSpeed = 12f;            // 発射時の初速
     [SerializeField] private float _launchDuration = 0.5f;        // 発射フェーズの時間
-    
-    [Header("Deceleration Settings")]
     [SerializeField] private float _decelerationRate = 0.8f;      // 減速率
     [SerializeField] private float _rotationSpeed = 120f;         // 旋回速度（度/秒）
     [SerializeField] private float _minSpeed = 1f;                // 最低速度
     
-    [Header("Charge Settings")]
+    [Header("突撃設定")]
     [SerializeField] private float _chargeSpeed = 15f;            // 突撃時の最大速度
     [SerializeField] private float _aimThreshold = 30f;           // プレイヤーに向く角度の閾値（度）
     [SerializeField] private float _accelerationRate = 1.05f;     // 加速率（毎フレーム）
     
-    [Header("General Settings")]
+    [Header("爆発設定")]
     [SerializeField] private float _lifeTime = 10f;               // ミサイルの生存時間
     [SerializeField] private GameObject _explosionPrefab;         // 爆発エフェクトプレハブ
     [SerializeField] private float _explosionForce = 500f;        // 爆発の力
     [SerializeField] private float _explosionRadius = 2f;         // 爆発の範囲
+
+    [Header("攻撃倍率")]
+    [SerializeField] private float _attackMultiplier = 1.4f;      // 攻撃倍率
+
+    private float _attackPower; // 攻撃力
+
+    public BourBonMissile Instance { get; private set; }          // シングルトンインスタンス
     
     private enum MissileState
     {
@@ -30,14 +35,25 @@ public class BourBonMissile : MonoBehaviour
         Charge          // 突撃フェーズ
     }
     
-    private Vector3 _targetPosition;     // ターゲット位置
+    private Vector3 _targetPosition;     // ターゲット位置（固定）
     private Vector3 _launchDirection;    // 発射方向
+    private Vector3 _chargeDirection;    // 突撃方向（固定）
     private MissileState _currentState;  // 現在の状態
     private float _currentSpeed;         // 現在の速度
     private Rigidbody2D _rb;
     
     private void Awake()
     {
+        if(Instance == null)
+        {
+            Instance = this; // シングルトンインスタンスの設定
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject); // 既存のインスタンスがある場合は削除
+            return;
+        }
+
         _rb = GetComponent<Rigidbody2D>();
         if (_rb == null)
         {
@@ -59,6 +75,11 @@ public class BourBonMissile : MonoBehaviour
         
         StartCoroutine(MissileSequence());
     }
+
+    public void SetAttackPower(float power)
+    {
+        _attackPower = power * _attackMultiplier; // 攻撃力を設定（倍率を適用）
+    }
     
     /// <summary>
     /// ミサイルの初期化
@@ -67,21 +88,20 @@ public class BourBonMissile : MonoBehaviour
     public void Initialize(Vector3 targetPos)
     {
         _targetPosition = targetPos;
-        
-        // 発射方向を決定（敵の向いている方向に基づく）
-        // プレイヤー方向ではなく、発射時の向きを基準にする
+
+        // 発射方向を決定（敵の向きとは逆方向に発射）
         BourBonMovement enemy = FindObjectOfType<BourBonMovement>();
         if (enemy != null)
         {
-            // 敵の向きに基づいて発射方向を決定
+            // 敵の向きとは逆方向に発射
             bool enemyFacingRight = enemy.transform.localScale.x > 0;
             if (enemyFacingRight)
             {
-                _launchDirection = Vector3.right; // 右方向に発射
+                _launchDirection = Vector3.left; // 敵が右向きなら左方向に発射
             }
             else
             {
-                _launchDirection = Vector3.left; // 左方向に発射
+                _launchDirection = Vector3.right; // 敵が左向きなら右方向に発射
             }
         }
         else
@@ -89,9 +109,9 @@ public class BourBonMissile : MonoBehaviour
             // 敵が見つからない場合はターゲット方向
             _launchDirection = (_targetPosition - transform.position).normalized;
         }
-        
-        // 少しランダム性を追加（上下に±15度）
-        float randomAngle = Random.Range(-15f, 15f);
+
+        // 少しランダム性を追加（上下に±10度）
+        float randomAngle = Random.Range(-10f, 10f);
         _launchDirection = Quaternion.Euler(0, 0, randomAngle) * _launchDirection;
     }
     
@@ -117,9 +137,11 @@ public class BourBonMissile : MonoBehaviour
         {
             DecelerationPhase();
             
-            // プレイヤーに向いているかチェック
+            // 目標方向に向いているかチェック
             if (IsAimingAtPlayer())
             {
+                // 突撃方向を固定（この時点でのプレイヤー方向）
+                _chargeDirection = (_targetPosition - transform.position).normalized;
                 _currentState = MissileState.Charge;
             }
             
@@ -129,6 +151,7 @@ public class BourBonMissile : MonoBehaviour
         // 3. 突撃フェーズ
         while (_currentState == MissileState.Charge)
         {
+            // 突撃フェーズでは目標位置を更新しない（発射時の位置に向かって直進）
             ChargePhase();
             yield return null;
         }
@@ -142,7 +165,7 @@ public class BourBonMissile : MonoBehaviour
         // 発射方向に勢いよく移動
         _rb.velocity = _launchDirection * _currentSpeed;
         
-        // 移動方向に向きを合わせる
+        // 移動方向に向きを合わせる（スプライトが右向きの場合）
         float angle = Mathf.Atan2(_launchDirection.y, _launchDirection.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
@@ -155,12 +178,11 @@ public class BourBonMissile : MonoBehaviour
         // 減速
         _currentSpeed = Mathf.Max(_currentSpeed * _decelerationRate, _minSpeed);
         
-        // プレイヤー方向への旋回
-        Vector3 directionToPlayer = (_targetPosition - transform.position).normalized;
-        Vector3 currentDirection = transform.right; // ミサイルの向いている方向
+        // プレイヤー方向への旋回（通過点として扱う）
+        Vector3 directionToTarget = (_targetPosition - transform.position).normalized;
         
         // 目標角度を計算
-        float targetAngle = Mathf.Atan2(directionToPlayer.y, directionToPlayer.x) * Mathf.Rad2Deg;
+        float targetAngle = Mathf.Atan2(directionToTarget.y, directionToTarget.x) * Mathf.Rad2Deg;
         float currentAngle = transform.eulerAngles.z;
         
         // 角度差を計算（-180～180度の範囲に正規化）
@@ -178,8 +200,10 @@ public class BourBonMissile : MonoBehaviour
             transform.Rotate(0, 0, rotationDirection * rotationStep);
         }
         
-        // 現在の向きに向かって移動
-        _rb.velocity = transform.right * _currentSpeed;
+        // 現在の向きに向かって移動（transform.rightを使用）
+        Vector3 currentDirection = new Vector3(Mathf.Cos(transform.eulerAngles.z * Mathf.Deg2Rad), 
+                                             Mathf.Sin(transform.eulerAngles.z * Mathf.Deg2Rad), 0);
+        _rb.velocity = currentDirection * _currentSpeed;
     }
     
     /// <summary>
@@ -190,24 +214,25 @@ public class BourBonMissile : MonoBehaviour
         // 徐々に加速
         _currentSpeed = Mathf.Min(_currentSpeed * _accelerationRate, _chargeSpeed);
         
-        // プレイヤー方向に移動
-        Vector3 directionToPlayer = (_targetPosition - transform.position).normalized;
-        _rb.velocity = directionToPlayer * _currentSpeed;
+        // 固定された方向に直進（ホーミングしない）
+        _rb.velocity = _chargeDirection * _currentSpeed;
         
-        // 向きを更新
-        float angle = Mathf.Atan2(directionToPlayer.y, directionToPlayer.x) * Mathf.Rad2Deg;
+        // 突撃方向に向きを固定
+        float angle = Mathf.Atan2(_chargeDirection.y, _chargeDirection.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
     
     /// <summary>
-    /// プレイヤーに向いているかチェック
+    /// 目標方向に向いているかチェック
     /// </summary>
     private bool IsAimingAtPlayer()
     {
-        Vector3 directionToPlayer = (_targetPosition - transform.position).normalized;
-        Vector3 missileDirection = transform.right;
+        Vector3 directionToTarget = (_targetPosition - transform.position).normalized;
+        // 現在のミサイルの向きを正確に取得
+        Vector3 missileDirection = new Vector3(Mathf.Cos(transform.eulerAngles.z * Mathf.Deg2Rad), 
+                                             Mathf.Sin(transform.eulerAngles.z * Mathf.Deg2Rad), 0);
         
-        float angle = Vector3.Angle(missileDirection, directionToPlayer);
+        float angle = Vector3.Angle(missileDirection, directionToTarget);
         return angle <= _aimThreshold;
     }
     
@@ -216,8 +241,20 @@ public class BourBonMissile : MonoBehaviour
     /// </summary>
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // プレイヤーまたは地形との衝突で爆発
-        if (other.CompareTag("Player") || other.CompareTag("Ground") || other.CompareTag("Wall"))
+        // 自分自身以外のすべてのオブジェクトとの衝突で爆発
+        if (other.gameObject != gameObject && other.GetComponent<BourBonMissile>() == null)
+        {
+            Explode();
+        }
+    }
+    
+    /// <summary>
+    /// 物理衝突処理
+    /// </summary>
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // 自分自身以外のすべてのオブジェクトとの衝突で爆発
+        if (collision.gameObject != gameObject && collision.gameObject.GetComponent<BourBonMissile>() == null)
         {
             Explode();
         }
@@ -231,7 +268,7 @@ public class BourBonMissile : MonoBehaviour
         // 爆発エフェクト生成
         if (_explosionPrefab != null)
         {
-            Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+            GameObject explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         }
         
         // 周囲のオブジェクトに爆発の影響を与える
@@ -242,8 +279,14 @@ public class BourBonMissile : MonoBehaviour
             // プレイヤーにダメージを与える処理
             if (hitCollider.CompareTag("Player"))
             {
-                // プレイヤーのダメージ処理をここに追加
-                Debug.Log("Player hit by missile explosion!");
+                // プレイヤーのダメージ処理
+                Character playerCharacter = hitCollider.gameObject.GetComponent<Character>();
+                if (playerCharacter != null)
+                {
+                    // 攻撃力に倍率を適用してダメージを計算
+                    int damage = Mathf.RoundToInt(_attackPower * _attackMultiplier);
+                    playerCharacter.HitAttack(damage);
+                }
                 
                 // 物理的な力を加える
                 Rigidbody2D playerRb = hitCollider.GetComponent<Rigidbody2D>();
@@ -293,7 +336,12 @@ public class BourBonMissile : MonoBehaviour
                     Gizmos.DrawWireSphere(labelPos, 0.1f);
                     break;
                 case MissileState.Charge:
-                    Gizmos.DrawRay(transform.position, transform.right * 2f);
+                    // 突撃方向を表示
+                    if (_chargeDirection != Vector3.zero)
+                    {
+                        Gizmos.color = Color.cyan;
+                        Gizmos.DrawRay(transform.position, _chargeDirection * 3f);
+                    }
                     break;
             }
         }

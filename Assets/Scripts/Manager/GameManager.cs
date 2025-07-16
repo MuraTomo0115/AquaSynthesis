@@ -16,10 +16,10 @@ public enum GameState
 
 public class GameManager : MonoBehaviour
 {
-    private GameState                   _gameState;          // ƒQ[ƒ€‚Ìó‘Ô‚ğŠÇ—‚·‚é•Ï”
-    public static GameManager Instance { get; private set; } // ƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX
+    private GameState                   _gameState;          // ï¿½Qï¿½[ï¿½ï¿½ï¿½Ìï¿½Ô‚ï¿½ï¿½Ç—ï¿½ï¿½ï¿½ï¿½ï¿½Ïï¿½
+    public static GameManager Instance { get; private set; } // ï¿½Vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½X
     public GameState GameState => _gameState;
-    [SerializeField] private CharacterManager _characterManager; // ƒLƒƒƒ‰ƒNƒ^[ŠÇ——p‚ÌQÆ
+    [SerializeField] private CharacterManager _characterManager; // ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½Ç—ï¿½ï¿½pï¿½ÌQï¿½ï¿½
 
 	private void Awake()
     {
@@ -33,12 +33,12 @@ public class GameManager : MonoBehaviour
             Instance = this;
         }
 
-        // DBÚ‘±E‰Šú‰»
+        // DBï¿½Ú‘ï¿½ï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         var db = DatabaseManager.Connection;
         DatabaseManager.Initialize();
         _characterManager.LoadPlayerStatus();
 
-        // —áFplayer_statusƒe[ƒuƒ‹‚ÌÅ‰‚ÌƒvƒŒƒCƒ„[î•ñ‚ğæ“¾‚µ‚ÄƒƒO•\¦
+        // ï¿½ï¿½Fplayer_statusï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ÌÅï¿½ï¿½Ìƒvï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½Äƒï¿½ï¿½Oï¿½\ï¿½ï¿½
         var player = db.Table<player_status>().FirstOrDefault();
         if (player != null)
         {
@@ -48,49 +48,49 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("PlayerStatus table is empty.");
         }
-        // Œ»óƒ^ƒCƒgƒ‹‚ª‚È‚¢‚½‚ßƒXƒe[ƒW‚Éİ’è
+        // ï¿½ï¿½ï¿½ï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ßƒXï¿½eï¿½[ï¿½Wï¿½Éİ’ï¿½
         _gameState = GameState.Stage;
     }
 
     private void Update()
     {
-        // InputSystem‚ÅJƒL[‰Ÿ‰º‚ğŒŸ’m
+        // InputSystemï¿½ï¿½Jï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½m
         if (Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame)
         {
-            Debug.Log("JƒL[‚ª‰Ÿ‚³‚ê‚Ü‚µ‚½iƒfƒoƒbƒO—pƒŒƒxƒ‹ƒAƒbƒvj");
+            Debug.Log("Jï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½iï¿½fï¿½oï¿½bï¿½Oï¿½pï¿½ï¿½ï¿½xï¿½ï¿½ï¿½Aï¿½bï¿½vï¿½j");
             LevelUpPlayer();
         }
     }
 
     private void LevelUpPlayer()
     {
-        // ƒvƒŒƒCƒ„[‚ÌŒ»İƒf[ƒ^æ“¾
-        var player = DatabaseManager.GetAllCharacters().Find(c => c.name == "Shizuku"); // —á: –¼‘O‚ÅŒŸõ
+        // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ÌŒï¿½ï¿½İƒfï¿½[ï¿½^ï¿½æ“¾
+        var player = DatabaseManager.GetAllCharacters().Find(c => c.name == "Shizuku"); // ï¿½ï¿½: ï¿½ï¿½ï¿½Oï¿½ÅŒï¿½ï¿½ï¿½
         if (player != null)
         {
-            // ƒXƒe[ƒ^ƒXã¸—áiHP+10, UŒ‚—Í+2, ƒŒƒxƒ‹+1j
+            // ï¿½Xï¿½eï¿½[ï¿½^ï¿½Xï¿½ã¸ï¿½ï¿½iHP+10, ï¿½Uï¿½ï¿½ï¿½ï¿½+2, ï¿½ï¿½ï¿½xï¿½ï¿½+1ï¿½j
             int newHP = player.hp + 10;
             int newAtk = player.attack_power + 2;
             int newLevel = player.level + 1;
 
-            // DB‚ğXV
+            // DBï¿½ï¿½ï¿½Xï¿½V
             //DatabaseManager.UpdatePlayerStatus(player.id, newHP, newAtk, newLevel);
 
-            Debug.Log($"ƒŒƒxƒ‹ƒAƒbƒvI VHP:{newHP}, VUŒ‚—Í:{newAtk}, VƒŒƒxƒ‹:{newLevel}");
+            Debug.Log($"ï¿½ï¿½ï¿½xï¿½ï¿½ï¿½Aï¿½bï¿½vï¿½I ï¿½VHP:{newHP}, ï¿½Vï¿½Uï¿½ï¿½ï¿½ï¿½:{newAtk}, ï¿½Vï¿½ï¿½ï¿½xï¿½ï¿½:{newLevel}");
 
-            // ‰æ–Êã‚ÌƒLƒƒƒ‰ƒNƒ^[‚É‚à”½‰f‚µ‚½‚¢ê‡‚ÍAÄ“Ç‚âSetStatsŒÄ‚Ño‚µ‚ğ’Ç‰Á
+            // ï¿½ï¿½Êï¿½ÌƒLï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½É‚ï¿½ï¿½ï¿½ï¿½fï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½ÍAï¿½Ä“Çï¿½ï¿½ï¿½SetStatsï¿½Ä‚Ñoï¿½ï¿½ï¿½ï¿½Ç‰ï¿½
             _characterManager.LoadPlayerStatus();
         }
         else
         {
-            Debug.LogWarning("ƒvƒŒƒCƒ„[ƒf[ƒ^‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
+            Debug.LogWarning("ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½");
         }
     }
 
     /// <summary>
-    /// ƒQ[ƒ€‚ÌƒXƒe[ƒ^ƒX‚ğ•ÏX‚·‚é
+    /// ï¿½Qï¿½[ï¿½ï¿½ï¿½ÌƒXï¿½eï¿½[ï¿½^ï¿½Xï¿½ï¿½ÏXï¿½ï¿½ï¿½ï¿½
     /// </summary>
-    /// <param name="state">•ÏX‚·‚éƒXƒe[ƒ^ƒX</param>
+    /// <param name="state">ï¿½ÏXï¿½ï¿½ï¿½ï¿½Xï¿½eï¿½[ï¿½^ï¿½X</param>
     public void ChangeState(GameState state)
     {
         _gameState = state;

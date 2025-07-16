@@ -3,21 +3,23 @@ using UnityEngine;
 
 public class BourBonMovement : MonoBehaviour
 {
-    [Header("Movement Settings")]
+    [Header("移動設定")]
     [SerializeField] private float _verticalSpeed = 1f;        // 垂直移動速度
     [SerializeField] private float _verticalRange = 2f;        // 上下移動の範囲
     [SerializeField] private float _hoverDuration = 3f;        // Y座標反転までの時間
     [SerializeField] private float _idealDistance = 2f;        // プレイヤーとの理想的な距離
     [SerializeField] private float _minDistance = 1f;          // プレイヤーとの最小距離
     [SerializeField] private float _escapeSpeed = 3f;          // 逃げる時の速度
+    [SerializeField] private float _patrolSpeed = 1.5f;        // 徘徊時の速度
+    [SerializeField] private float _horizontalRange = 3f;      // 左右徘徊の範囲
     
-    [Header("Detection Settings")]
+    [Header("追跡・復帰設定")]
     [SerializeField] private float _detectionRange = 8f;       // プレイヤー検知範囲
     [SerializeField] private LayerMask _playerLayer = -1;      // プレイヤーのレイヤー
     [SerializeField] private float _loseTargetTime = 3f;       // 追跡を止めるまでの時間
     [SerializeField] private float _returnSpeed = 1.5f;        // 元の位置に戻る速度
-    
-    [Header("Attack Settings")]
+
+    [Header("攻撃設定")]
     [SerializeField] private GameObject _missilePrefab;        // ミサイルプレハブ
     [SerializeField] private float _attackCooldown = 3f;       // 攻撃のクールダウン時間
     [SerializeField] private float _missileSpawnOffset = 1f;   // ミサイル発射位置のオフセット
@@ -31,43 +33,63 @@ public class BourBonMovement : MonoBehaviour
     private float _hoverTimer = 0f;
     private Transform _player;
     private bool _isCoolingDown = false;
-    
+    private int _attackPower;
+
     // 追跡・復帰システム用の変数
     private bool _isPlayerDetected = false;      // プレイヤーを検知中かどうか
     private float _loseTargetTimer = 0f;         // 追跡を止めるタイマー
     private bool _isReturningToPosition = false; // 元の位置に戻り中かどうか
     private Vector3 _discoveryPosition;          // 敵がプレイヤーを発見した時の敵自身の位置
     
+    // 徘徊システム用の変数
+    private bool _movingRight = true;            // 右に移動中かどうか
+    
+    // 衝突検知用の変数
+    private float _collisionCooldown = 0.5f;     // 衝突検知のクールダウン時間
+    private float _lastCollisionTime = 0f;       // 最後に衝突した時間
+    
     // 物理移動用
     private Rigidbody2D _rb;
+    
+    // 向き変更用
+    private bool _facingRight = true;            // 右向きかどうか
+    
+    private Character _character;                // キャラクターのステータスを管理するコンポーネント
     
     private void Start()
     {
         _startPosition = transform.position;
-        
+
+        _character = GetComponent<Character>();
+
+        _attackPower = _character.AttackPower;
+
         // Rigidbody2Dを取得または追加
         _rb = GetComponent<Rigidbody2D>();
         if (_rb == null)
         {
             _rb = gameObject.AddComponent<Rigidbody2D>();
         }
-        
+
         // Rigidbody2Dの設定
         _rb.gravityScale = 0f; // 重力を無効
         _rb.freezeRotation = true; // 回転を固定
-        
+
         // Collider2Dの確認
         if (GetComponent<Collider2D>() == null)
         {
             Debug.LogWarning($"{gameObject.name}: Collider2Dが見つかりません。壁の衝突判定のためにCollider2Dを追加してください。");
         }
-        
+
         // プレイヤーを検索
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject != null)
         {
             _player = playerObject.transform;
         }
+
+        // 初期向きを設定
+        _facingRight = transform.localScale.x > 0;
     }
     
     private void Update()
@@ -75,6 +97,7 @@ public class BourBonMovement : MonoBehaviour
         UpdatePlayerDetection();
         HandleMovement();
         DetectPlayer();
+        UpdateFacing();
     }
     
     /// <summary>
@@ -159,8 +182,8 @@ public class BourBonMovement : MonoBehaviour
         }
         else
         {
-            // プレイヤーがいない場合は移動しない
-            horizontalMovement = Vector2.zero;
+            // プレイヤーがいない場合は徘徊モード
+            horizontalMovement = HandlePatrolMovement();
         }
         
         // Rigidbody2Dを使用した物理移動
@@ -179,20 +202,19 @@ public class BourBonMovement : MonoBehaviour
     /// </summary>
     private void HandleReturnMovement()
     {
-        float distanceToDiscoveryPosition = Vector2.Distance(transform.position, _discoveryPosition);
+        float distanceToStartPosition = Vector2.Distance(transform.position, _startPosition);
         
-        if (distanceToDiscoveryPosition < 0.5f)
+        if (distanceToStartPosition < 0.5f)
         {
-            // 発見位置に到着
+            // 元の位置に到着
             _isReturningToPosition = false;
-            _startPosition = _discoveryPosition; // 発見位置を新しい基準位置に設定
             _rb.velocity = Vector2.zero; // 移動停止
         }
         else
         {
-            // 発見位置に向かって移動
-            Vector2 directionToDiscovery = (_discoveryPosition - transform.position).normalized;
-            Vector2 horizontalMovement = directionToDiscovery * _returnSpeed;
+            // 元の位置に向かって移動
+            Vector2 directionToStart = (_startPosition - transform.position).normalized;
+            Vector2 horizontalMovement = directionToStart * _returnSpeed;
             
             // 垂直移動も継続
             Vector2 verticalMovement = HandleVerticalMovement();
@@ -302,6 +324,9 @@ public class BourBonMovement : MonoBehaviour
                 
                 if (missileScript != null && _player != null)
                 {
+                    // 攻撃力を設定
+                    missileScript.SetAttackPower(_attackPower);
+                    
                     // ターゲット位置にランダムなズレを追加
                     Vector3 targetPosition = _player.position;
                     targetPosition.x += Random.Range(-_targetSpread, _targetSpread);
@@ -323,6 +348,66 @@ public class BourBonMovement : MonoBehaviour
     }
     
     /// <summary>
+    /// 徘徊移動の処理
+    /// </summary>
+    private Vector2 HandlePatrolMovement()
+    {
+        // 範囲制限チェック
+        if (transform.position.x >= _startPosition.x + _horizontalRange)
+        {
+            _movingRight = false;
+        }
+        else if (transform.position.x <= _startPosition.x - _horizontalRange)
+        {
+            _movingRight = true;
+        }
+        
+        // 移動方向を決定
+        float direction = _movingRight ? 1f : -1f;
+        return new Vector2(direction * _patrolSpeed, 0f);
+    }
+    
+    /// <summary>
+    /// 向きの更新
+    /// </summary>
+    private void UpdateFacing()
+    {
+        bool shouldFaceRight = true;
+        
+        if (_isPlayerDetected && _player != null)
+        {
+            // プレイヤー検知中はプレイヤーの方を向く
+            shouldFaceRight = _player.position.x > transform.position.x;
+        }
+        else if (!_isReturningToPosition)
+        {
+            // 徘徊中は移動方向を向く
+            shouldFaceRight = _movingRight;
+        }
+        else
+        {
+            // 復帰中は元の位置の方向を向く
+            shouldFaceRight = _startPosition.x > transform.position.x;
+        }
+        
+        if (shouldFaceRight != _facingRight)
+        {
+            Flip();
+        }
+    }
+    
+    /// <summary>
+    /// スプライトの向きを反転
+    /// </summary>
+    private void Flip()
+    {
+        _facingRight = !_facingRight;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1;
+        transform.localScale = scale;
+    }
+
+    /// <summary>
     /// デバッグ用：検知範囲を表示
     /// </summary>
     private void OnDrawGizmosSelected()
@@ -338,11 +423,11 @@ public class BourBonMovement : MonoBehaviour
         Gizmos.color = new Color(1f, 0.5f, 0f, 1f); // オレンジ色
         Gizmos.DrawWireSphere(transform.position, _minDistance);
         
-        // 発見位置を表示（復帰中の場合）
+        // 元の位置を表示（復帰中の場合）
         if (_isReturningToPosition)
         {
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireCube(_discoveryPosition, Vector3.one * 0.7f);
+            Gizmos.DrawWireCube(_startPosition, Vector3.one * 0.7f);
         }
         
         // 巡回範囲を表示（垂直方向のみ）
@@ -351,17 +436,88 @@ public class BourBonMovement : MonoBehaviour
         Vector3 bottomPosition = new Vector3(transform.position.x, _startPosition.y - _verticalRange, transform.position.z);
         Gizmos.DrawLine(topPosition, bottomPosition);
         
+        // 水平徘徊範囲を表示
+        Gizmos.color = Color.cyan;
+        Vector3 leftPosition = new Vector3(_startPosition.x - _horizontalRange, transform.position.y, transform.position.z);
+        Vector3 rightPosition = new Vector3(_startPosition.x + _horizontalRange, transform.position.y, transform.position.z);
+        Gizmos.DrawLine(leftPosition, rightPosition);
+        
+        // 徘徊範囲の端点を表示
+        Gizmos.DrawWireCube(leftPosition, Vector3.one * 0.3f);
+        Gizmos.DrawWireCube(rightPosition, Vector3.one * 0.3f);
+        
         // 状態表示
         if (_isReturningToPosition)
         {
             Gizmos.color = Color.magenta;
-            Gizmos.DrawLine(transform.position, _discoveryPosition);
+            Gizmos.DrawLine(transform.position, _startPosition);
         }
         
         if (_isPlayerDetected && _player != null)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawLine(transform.position, _player.position);
+        }
+        
+        // 衝突クールダウン状態の表示
+        if (Time.time - _lastCollisionTime < _collisionCooldown)
+        {
+            float cooldownProgress = (Time.time - _lastCollisionTime) / _collisionCooldown;
+            Gizmos.color = Color.Lerp(Color.red, Color.white, cooldownProgress);
+            Gizmos.DrawWireSphere(transform.position, 0.3f);
+        }
+    }
+    
+    /// <summary>
+    /// 衝突時の処理
+    /// </summary>
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // プレイヤー検知中や復帰中は衝突による方向転換をしない
+        if (_isPlayerDetected || _isReturningToPosition) return;
+        
+        // クールダウン中は処理しない（連続衝突を防ぐ）
+        if (Time.time - _lastCollisionTime < _collisionCooldown) return;
+        
+        // プレイヤーとの衝突は無視
+        if (collision.gameObject.CompareTag("Player")) return;
+        
+        // 衝突した方向を確認して反転
+        Vector2 collisionDirection = collision.contacts[0].normal;
+        
+        // 水平方向の衝突の場合のみ反転
+        if (Mathf.Abs(collisionDirection.x) > 0.5f)
+        {
+            _movingRight = !_movingRight;
+            _lastCollisionTime = Time.time;
+        }
+    }
+    
+    /// <summary>
+    /// 衝突継続中の処理
+    /// </summary>
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        // プレイヤー検知中や復帰中は衝突による方向転換をしない
+        if (_isPlayerDetected || _isReturningToPosition) return;
+        
+        // プレイヤーとの衝突は無視
+        if (collision.gameObject.CompareTag("Player")) return;
+        
+        // 継続的に壁に押し付けられている場合の処理
+        if (Time.time - _lastCollisionTime > _collisionCooldown)
+        {
+            Vector2 collisionDirection = collision.contacts[0].normal;
+            
+            // 現在の移動方向と衝突面の法線が逆の場合、方向転換
+            Vector2 currentDirection = _movingRight ? Vector2.right : Vector2.left;
+            if (Vector2.Dot(currentDirection, collisionDirection) < -0.5f)
+            {
+                _movingRight = !_movingRight;
+                _lastCollisionTime = Time.time;
+                
+                Debug.Log($"{gameObject.name}: 継続衝突により方向転換しました");
+            }
         }
     }
 }

@@ -9,7 +9,6 @@ public class Character : MonoBehaviour
     [SerializeField] private float _hpBarShowTime = 2f;
     private EnemyHPBar _hpBar;
 
-
     private int _maxHealth;
     private int _currentHealth;
     private int _attackPower;

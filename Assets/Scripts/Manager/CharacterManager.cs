@@ -5,16 +5,16 @@ using UnityEngine;
 [System.Serializable]
 public class CharacterData
 {
-    public string id;            // ƒLƒƒƒ‰ƒNƒ^[IDiplayer, enemy1, etc.j
-    public int maxHealth;        // Å‘åHP
-    public int attackPower;      // UŒ‚—Í
-    public int pistolPower;      // ƒvƒŒƒCƒ„[‚Ì‚İ‚ÌƒXƒe[ƒ^ƒXBƒsƒXƒgƒ‹UŒ‚—Í
+    public string id;            // ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[IDï¿½iplayer, enemy1, etc.ï¿½j
+    public int maxHealth;        // ï¿½Å‘ï¿½HP
+    public int attackPower;      // ï¿½Uï¿½ï¿½ï¿½ï¿½
+    public int pistolPower;      // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Ì‚İ‚ÌƒXï¿½eï¿½[ï¿½^ï¿½Xï¿½Bï¿½sï¿½Xï¿½gï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½ï¿½
 }
 
 [System.Serializable]
 public class CharacterDatabase
 {
-    public List<CharacterData> characters;  // ƒLƒƒƒ‰ƒNƒ^[î•ñ‚ÌƒŠƒXƒg
+    public List<CharacterData> characters;  // ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½ï¿½ï¿½Ìƒï¿½ï¿½Xï¿½g
 }
 
 public class CharacterManager : MonoBehaviour
@@ -28,30 +28,30 @@ public class CharacterManager : MonoBehaviour
 
     public void LoadPlayerStatus()
     {
-        // Enemyƒ^ƒO‚ª•t‚¢‚½‚·‚×‚Ä‚ÌƒIƒuƒWƒFƒNƒg‚ğæ“¾
+        // Enemyï¿½^ï¿½Oï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×‚Ä‚ÌƒIï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½æ“¾
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
-        // Destructibleƒ^ƒO‚ª•t‚¢‚½‚·‚×‚Ä‚ÌƒIƒuƒWƒFƒNƒg‚ğæ“¾
+        // Destructibleï¿½^ï¿½Oï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×‚Ä‚ÌƒIï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½æ“¾
         GameObject[] destructibleObjs = GameObject.FindGameObjectsWithTag("Destructible");
 
-        // Playerƒ^ƒO‚ª•t‚¢‚½ƒIƒuƒWƒFƒNƒg‚ğ1‚Â‚¾‚¯æ“¾
+        // Playerï¿½^ï¿½Oï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½1ï¿½Â‚ï¿½ï¿½ï¿½ï¿½æ“¾
         GameObject player = GameObject.FindGameObjectWithTag("Player");
 
-        // Bossƒ^ƒO‚ª•t‚¢‚½‚·‚×‚Ä‚ÌƒIƒuƒWƒFƒNƒg‚ğæ“¾
+        // Bossï¿½^ï¿½Oï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×‚Ä‚ÌƒIï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½æ“¾
         GameObject[] bosses = GameObject.FindGameObjectsWithTag("Boss");
 
         if (enemies.Length == 0)
         {
-            Debug.LogError("Enemyƒ^ƒO‚ª•t‚¢‚½ƒIƒuƒWƒFƒNƒg‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñI");
+            Debug.LogError("Enemyï¿½^ï¿½Oï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½I");
             return;
         }
         if (player == null)
         {
-            Debug.LogError("Playerƒ^ƒO‚ª‚Â‚¢‚½ƒIƒuƒWƒFƒNƒg‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñI");
+            Debug.LogError("Playerï¿½^ï¿½Oï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½I");
             return;
         }
 
-        // ‚·‚×‚Ä‚ÌEnemyƒIƒuƒWƒFƒNƒg‚É‘Î‚µ‚Äˆ—‚ğs‚¤
+        // ï¿½ï¿½ï¿½×‚Ä‚ï¿½Enemyï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½É‘Î‚ï¿½ï¿½Äï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½
         foreach (GameObject enemyObject in enemies)
         {
             Character enemy = enemyObject.GetComponent<Character>();
@@ -59,24 +59,24 @@ public class CharacterManager : MonoBehaviour
             if (enemy != null)
             {
                 characterName = enemy.CharacterName;
-                Debug.Log($"æ“¾‚µ‚½“GƒLƒƒƒ‰ƒNƒ^[–¼: {characterName}");
+                Debug.Log($"ï¿½æ“¾ï¿½ï¿½ï¿½ï¿½ï¿½Gï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½ï¿½: {characterName}");
 
                 if (string.IsNullOrEmpty(characterName))
                 {
-                    Debug.LogError("ƒLƒƒƒ‰ƒNƒ^[–¼‚ª‹ó‚Å‚·I");
+                    Debug.LogError("ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½I");
                     continue;
                 }
 
-                // ƒe[ƒuƒ‹‚©‚çƒf[ƒ^‚ğ“Ç‚İ‚Ş
+                // ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
                 LoadCharacterDataFromTable(characterName, enemy);
             }
             else
             {
-                Debug.LogError("EnemyƒRƒ“ƒ|[ƒlƒ“ƒg‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñI");
+                Debug.LogError("Enemyï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½I");
             }
         }
 
-        // ‚·‚×‚Ä‚ÌDestructibleƒIƒuƒWƒFƒNƒg‚É‘Î‚µ‚Äˆ—‚ğs‚¤
+        // ï¿½ï¿½ï¿½×‚Ä‚ï¿½Destructibleï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½É‘Î‚ï¿½ï¿½Äï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½
         foreach (GameObject destructibleObject in destructibleObjs)
         {
             Character obj = destructibleObject.GetComponent<Character>();
@@ -84,24 +84,24 @@ public class CharacterManager : MonoBehaviour
             if (obj != null)
             {
                 characterName = obj.CharacterName;
-                Debug.Log($"æ“¾‚µ‚½“GƒLƒƒƒ‰ƒNƒ^[–¼: {characterName}");
+                Debug.Log($"ï¿½æ“¾ï¿½ï¿½ï¿½ï¿½ï¿½Gï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½ï¿½: {characterName}");
 
                 if (string.IsNullOrEmpty(characterName))
                 {
-                    Debug.LogError("ƒLƒƒƒ‰ƒNƒ^[–¼‚ª‹ó‚Å‚·I");
+                    Debug.LogError("ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½I");
                     continue;
                 }
 
-                // ƒe[ƒuƒ‹‚©‚çƒf[ƒ^‚ğ“Ç‚İ‚Ş
+                // ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
                 LoadCharacterDataFromTable(characterName, obj);
             }
             else
             {
-                Debug.LogError("Destructible‚ÌCharacterƒRƒ“ƒ|[ƒlƒ“ƒg‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñI");
+                Debug.LogError("Destructibleï¿½ï¿½Characterï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½I");
             }
         }
 
-        // ‚·‚×‚Ä‚ÌBossƒIƒuƒWƒFƒNƒg‚É‘Î‚µ‚Äˆ—‚ğs‚¤
+        // ï¿½ï¿½ï¿½×‚Ä‚ï¿½Bossï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½É‘Î‚ï¿½ï¿½Äï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½
         foreach (GameObject bossObject in bosses)
         {
             Character bossCharacter = bossObject.GetComponent<Character>();
@@ -109,48 +109,48 @@ public class CharacterManager : MonoBehaviour
             if (bossCharacter != null)
             {
                 characterName = bossCharacter.CharacterName;
-                Debug.Log($"æ“¾‚µ‚½ƒ{ƒXƒLƒƒƒ‰ƒNƒ^[–¼: {characterName}");
+                Debug.Log($"Found Boss Character: {characterName}");
 
                 if (string.IsNullOrEmpty(characterName))
                 {
-                    Debug.LogError("ƒ{ƒX‚ÌƒLƒƒƒ‰ƒNƒ^[–¼‚ª‹ó‚Å‚·I");
+                    Debug.LogError("ï¿½{ï¿½Xï¿½ÌƒLï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½I");
                     continue;
                 }
 
-                // ƒe[ƒuƒ‹‚©‚çƒf[ƒ^‚ğ“Ç‚İ‚Ş
+                // ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
                 LoadCharacterDataFromTable(characterName, bossCharacter, false, true);
             }
             else
             {
-                Debug.LogError("Boss‚ÌCharacterƒRƒ“ƒ|[ƒlƒ“ƒg‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñI");
+                Debug.LogError("Bossï¿½ï¿½Characterï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½I");
             }
         }
 
-        // PlayerƒIƒuƒWƒFƒNƒg‚É‘Î‚µ‚Äˆ—
+        // Playerï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½É‘Î‚ï¿½ï¿½Äï¿½ï¿½ï¿½
         Character playerCharacter = player.GetComponent<Character>();
 
         if (playerCharacter != null)
         {
             characterName = playerCharacter.CharacterName;
-            Debug.Log($"æ“¾‚µ‚½ƒvƒŒƒCƒ„[ƒLƒƒƒ‰ƒNƒ^[–¼: {characterName}");
+            Debug.Log($"ï¿½æ“¾ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½ï¿½: {characterName}");
 
             if (string.IsNullOrEmpty(characterName))
             {
-                Debug.LogError("ƒvƒŒƒCƒ„[‚ÌƒLƒƒƒ‰ƒNƒ^[ID‚ª‹ó‚Å‚·I");
+                Debug.LogError("ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ÌƒLï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[IDï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½I");
             }
             else
             {
-                // ƒe[ƒuƒ‹‚©‚çƒf[ƒ^‚ğ“Ç‚İ‚Ş
+                // ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
                 LoadCharacterDataFromTable(characterName, playerCharacter, true);
             }
         }
         else
         {
-            Debug.LogError("Player‚ÌCharacterƒRƒ“ƒ|[ƒlƒ“ƒg‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñI");
+            Debug.LogError("Playerï¿½ï¿½Characterï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½I");
         }
     }
 
-    // isPlayer: ƒvƒŒƒCƒ„[‚©‚Ç‚¤‚©, isBoss: ƒ{ƒX‚©‚Ç‚¤‚©
+    // isPlayer: ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½, isBoss: ï¿½{ï¿½Xï¿½ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½
     private void LoadCharacterDataFromTable(string name, Character character, bool isPlayer = false, bool isBoss = false)
     {
         if (isPlayer)
@@ -162,12 +162,12 @@ public class CharacterManager : MonoBehaviour
             if (playerData != null)
             {
                 character.SetStats(playerData.hp, playerData.attack_power, pistolData.AttackPower);
-                Debug.Log($"ƒvƒŒƒCƒ„[‚ÌƒXƒe[ƒ^ƒX‚ğİ’è: HP={playerData.hp}, AttackPower={playerData.attack_power}, Level={playerData.level}");
-                Debug.Log($"ƒsƒXƒgƒ‹‚ÌUŒ‚—Í‚ğİ’è: PistolPower={pistolData.AttackPower}");
+                Debug.Log($"ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ÌƒXï¿½eï¿½[ï¿½^ï¿½Xï¿½ï¿½İ’ï¿½: HP={playerData.hp}, AttackPower={playerData.attack_power}, Level={playerData.level}");
+                Debug.Log($"ï¿½sï¿½Xï¿½gï¿½ï¿½ï¿½ÌUï¿½ï¿½ï¿½Í‚ï¿½İ’ï¿½: PistolPower={pistolData.AttackPower}");
             }
             else
             {
-                Debug.LogError($"player_statusƒe[ƒuƒ‹‚ÉName '{name}' ‚Ìƒf[ƒ^‚ª‚ ‚è‚Ü‚¹‚ñ");
+                Debug.LogError($"player_statusï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½ï¿½Name '{name}' ï¿½Ìƒfï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½");
             }
         }
         else if (isBoss)
@@ -177,25 +177,25 @@ public class CharacterManager : MonoBehaviour
             if (bossData != null)
             {
                 character.SetStats(bossData.hp, bossData.attack_power);
-                Debug.Log($"ƒ{ƒXƒLƒƒƒ‰ƒNƒ^[‚ÌƒXƒe[ƒ^ƒX‚ğİ’è: HP={bossData.hp}, AttackPower={bossData.attack_power}");
+                Debug.Log($"Boss Character Stats Set: HP={bossData.hp}, AttackPower={bossData.attack_power}");
             }
             else
             {
-                Debug.LogError($"bossesƒe[ƒuƒ‹‚ÉName '{name}' ‚Ìƒf[ƒ^‚ª‚ ‚è‚Ü‚¹‚ñ");
+                Debug.LogError($"Boss data not found for Name '{name}' in bosses table");
             }
         }
         else if (character.CompareTag("Enemy"))
         {
             var enemyList = DatabaseManager.GetAllEnemies();
-            var enemyData = enemyList.Find(e => e.Name == name);
+            var enemyData = enemyList.Find(e => e.name == name);
             if (enemyData != null)
             {
-                character.SetStats(enemyData.HP, enemyData.AttackPower);
-                Debug.Log($"“GƒLƒƒƒ‰ƒNƒ^[‚ÌƒXƒe[ƒ^ƒX‚ğİ’è: HP={enemyData.HP}, AttackPower={enemyData.AttackPower}");
+                character.SetStats(enemyData.hp, enemyData.attack_power);
+                Debug.Log($"æ•µã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å–å¾—: åå‰={enemyData.name}, HP={enemyData.hp}, AttackPower={enemyData.attack_power}");
             }
             else
             {
-                Debug.LogError($"EnemyStatusƒe[ƒuƒ‹‚ÉName '{name}' ‚Ìƒf[ƒ^‚ª‚ ‚è‚Ü‚¹‚ñ");
+                Debug.LogError($"enemy_statusãƒ†ãƒ¼ãƒ–ãƒ«ã«Name '{name}' ã®ãƒ‡ãƒ¼ã‚¿ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸ");
             }
         }
         else if (character.CompareTag("Destructible"))
@@ -203,7 +203,7 @@ public class CharacterManager : MonoBehaviour
             var destructibleList = DatabaseManager.GetAllDestructibleObjs();
             var destructibleData = destructibleList.Find(e => e.Name == name);
             character.SetSE(destructibleData.DestroySE);
-            Debug.Log($"Destructible‚ÌƒXƒe[ƒ^ƒX‚ğİ’è: HP={0}, AttackPower={0}");
+            Debug.Log($"Destructibleï¿½ÌƒXï¿½eï¿½[ï¿½^ï¿½Xï¿½ï¿½İ’ï¿½: HP={0}, AttackPower={0}");
         }
     }
 }
