@@ -7,6 +7,10 @@ public class Character : MonoBehaviour
     [SerializeField] private string _characterName;
     [SerializeField] private GameObject _expPrefab;
     [SerializeField] private float _hpBarShowTime = 2f;
+
+    [Header("攻撃を受けるか")]
+    [SerializeField] private bool _canHit = true;   // 攻撃を受けるかどうか
+
     private EnemyHPBar _hpBar;
 
     private int _maxHealth;
@@ -67,7 +71,7 @@ public class Character : MonoBehaviour
     /// <param name="damage">�_���[�W��</param>
     public void HitAttack(int damage)
     {
-        if (_isDead) return;
+        if (_isDead || !_canHit) return;
 
         if (CompareTag("Player"))
         {
