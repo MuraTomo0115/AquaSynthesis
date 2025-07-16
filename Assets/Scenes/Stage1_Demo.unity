@@ -4795,6 +4795,10 @@ MonoBehaviour:
   _followStartY: 4
   _minCameraBottomY: -10
   _fixedReturnY: 0
+  _shakeIntensity: 1
+  _shakeDuration: 0.5
+  _shakeVibrato: 10
+  _shakeRandomness: 90
 --- !u!1 &437880503
 GameObject:
   m_ObjectHideFlags: 0
@@ -22820,6 +22824,14 @@ PrefabInstance:
     - target: {fileID: 7911198669646467339, guid: 7f0e413689d6f5f4ca9f4524cde373a6, type: 3}
       propertyPath: m_Name
       value: Mussel
+      objectReference: {fileID: 0}
+    - target: {fileID: 7911198669646467340, guid: 7f0e413689d6f5f4ca9f4524cde373a6, type: 3}
+      propertyPath: _shakeDuration
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7911198669646467340, guid: 7f0e413689d6f5f4ca9f4524cde373a6, type: 3}
+      propertyPath: _shakeIntensity
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 7911198669646467340, guid: 7f0e413689d6f5f4ca9f4524cde373a6, type: 3}
       propertyPath: _attackMultiplier

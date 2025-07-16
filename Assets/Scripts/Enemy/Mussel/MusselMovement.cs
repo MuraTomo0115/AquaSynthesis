@@ -10,6 +10,7 @@ public class MusselMovement : MonoBehaviour
     [SerializeField] private float _fallAcceleration = 10f; // 落下加速度
     [SerializeField] private float _maxFallSpeed = 20f;     // 最大落下速度
     [SerializeField] private float _detectionWidth = 2f;    // プレイヤー検知幅
+    [SerializeField] private float _returnThreshold = 0.1f; // 元の位置に戻る際の閾値
     
     [Header("復帰設定")]
     [SerializeField] private float _returnSpeed = 5f;       // 元の位置への復帰速度
@@ -18,12 +19,18 @@ public class MusselMovement : MonoBehaviour
     [Header("攻撃倍率")]
     [SerializeField] private int _attackMultiplier = 1; // 攻撃倍率
 
-    private int _attackPower;   // 攻撃力
-    private Rigidbody2D _rigidbody2D;
-    private Transform _player;
-    private Vector3 _initialPosition;
+    [Header("カメラの振動設定")]
+    [SerializeField] private float _shakeIntensity = 1f;    // 振動の強さ
+    [SerializeField] private float _shakeDuration = 0.5f;   // 振動の持続時間
+    
+    
 
-    private Character _character;
+    private int         _attackPower;           // 攻撃力
+    private Rigidbody2D _rigidbody2D;
+    private Transform   _player;
+    private Vector3     _initialPosition;
+
+    private Character   _character;
     
     // 状態管理用enum
     private enum MusselState
@@ -139,7 +146,7 @@ public class MusselMovement : MonoBehaviour
         transform.position += direction * _returnSpeed * Time.deltaTime;
         
         // 元の位置に十分近づいたら待機状態に戻る
-        if (Vector3.Distance(transform.position, _initialPosition) < 0.1f)
+        if (Vector3.Distance(transform.position, _initialPosition) < _returnThreshold)
         {
             transform.position = _initialPosition;
             _currentState = MusselState.Idle;
@@ -177,6 +184,8 @@ public class MusselMovement : MonoBehaviour
     /// </summary>
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        int damage = _attackPower;
+
         if (_currentState == MusselState.Falling)
         {
             // プレイヤーに当たった場合の処理（落下は継続）
@@ -186,29 +195,41 @@ public class MusselMovement : MonoBehaviour
                 Character playerCharacter = collision.gameObject.GetComponent<Character>();
                 if (playerCharacter != null)
                 {
-                    int damage = _attackPower * _attackMultiplier;
+                    damage *= _attackMultiplier; // 落下攻撃中は攻撃倍率を適用
                     playerCharacter.HitAttack(damage);
                 }
-                
+
                 // プレイヤーとの物理的な衝突を無視して通り抜ける
                 Physics2D.IgnoreCollision(GetComponent<Collider2D>(), collision.collider, true);
-                
+
                 // 少し待ってから衝突を再び有効にする（プレイヤーが離れた後）
                 StartCoroutine(ReEnablePlayerCollision(collision.collider));
-                
+
                 return; // 地面判定を行わずに処理を終了
             }
-            
+
             // 地面に当たったら停止（プレイヤー以外の場合のみ）
             if (collision.gameObject.CompareTag("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
             {
                 _rigidbody2D.velocity = Vector2.zero;
                 _rigidbody2D.gravityScale = 0f;
-                
+
                 // 地面に着地したら完全に固定
                 SetRigidbodyConstraints(true);
-                
+
+                // カメラを振動させる
+                FollowCamera2D.ShakeCamera(_shakeIntensity, _shakeDuration);
+
                 StartCoroutine(WaitAndReturn());
+            }
+        }
+        else
+        {
+            // 落下中でない場合は通常の攻撃処理
+            Character playerCharacter = collision.gameObject.GetComponent<Character>();
+            if (playerCharacter != null)
+            {
+                playerCharacter.HitAttack(damage);
             }
         }
     }

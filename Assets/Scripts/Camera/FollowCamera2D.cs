@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using DG.Tweening;
 
 public class FollowCamera2D : MonoBehaviour
 {
@@ -23,12 +24,35 @@ public class FollowCamera2D : MonoBehaviour
     [Header("下回ったときに戻すY座標")]
     [SerializeField] private float _fixedReturnY = 5f; // プレイヤーがY座標を下回ったときにカメラを戻すY座標
 
+    [Header("カメラ振動設定")]
+    [SerializeField] private float _shakeIntensity = 1f;    // 振動の強さ
+    [SerializeField] private float _shakeDuration = 0.5f;   // 振動の持続時間
+    [SerializeField] private int _shakeVibrato = 10;        // 振動の細かさ
+    [SerializeField] private float _shakeRandomness = 90f;  // 振動のランダム性
+
     private Vector3 _velocity = Vector3.zero; // カメラのスムーズな移動を計算するための補間用変数
     private Camera _cam; // メインカメラを格納する変数
 
     private bool _isFollowingY = false; // Y方向の追従を始めたかどうかを判断するフラグ
 
     private float _currentYVelocity = 0f; // Y方向の補間速度
+
+    // 振動用の変数
+    public static FollowCamera2D Instance { get; private set; }
+
+    private void Awake()
+    {
+        // シングルトンのインスタンスを設定
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     /// <summary>
     /// プレイヤーを検索し、ターゲットとして設定、カメラの初期位置を設定
@@ -51,6 +75,32 @@ public class FollowCamera2D : MonoBehaviour
         {
             Debug.LogError("Main Camera が見つからない！");
         }
+    }
+    
+    /// <summary>
+    /// カメラを振動させる静的メソッド
+    /// </summary>
+    /// <param name="intensity">振動の強さ（デフォルトは設定値を使用）</param>
+    /// <param name="duration">振動の持続時間（デフォルトは設定値を使用）</param>
+    public static void ShakeCamera(float? intensity = null, float? duration = null)
+    {
+        if (Instance != null)
+        {
+            Instance.DoShake(intensity ?? Instance._shakeIntensity, duration ?? Instance._shakeDuration);
+        }
+    }
+
+    /// <summary>
+    /// カメラ振動を実行
+    /// </summary>
+    private void DoShake(float intensity, float duration)
+    {
+        // 既存の振動を停止
+        transform.DOKill();
+
+        // カメラ振動を実行
+        transform.DOShakePosition(duration, intensity, _shakeVibrato, _shakeRandomness, false, true)
+                 .SetEase(Ease.OutQuad);
     }
 
     /// <summary>
