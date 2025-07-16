@@ -3,8 +3,8 @@ using SQLite4Unity3d;
 public class EnemyStatus
 {
     [PrimaryKey, AutoIncrement]
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public int HP { get; set; }
-    public int AttackPower { get; set; }
+    public int id { get; set; }
+    public string name { get; set; }
+    public int hp { get; set; }
+    public int attack_power { get; set; }
 }
