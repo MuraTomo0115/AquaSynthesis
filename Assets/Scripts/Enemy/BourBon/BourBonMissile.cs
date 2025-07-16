@@ -25,8 +25,6 @@ public class BourBonMissile : MonoBehaviour
     [SerializeField] private float _attackMultiplier = 1.4f;      // 攻撃倍率
 
     private float _attackPower; // 攻撃力
-
-    public BourBonMissile Instance { get; private set; }          // シングルトンインスタンス
     
     private enum MissileState
     {
@@ -44,16 +42,6 @@ public class BourBonMissile : MonoBehaviour
     
     private void Awake()
     {
-        if(Instance == null)
-        {
-            Instance = this; // シングルトンインスタンスの設定
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject); // 既存のインスタンスがある場合は削除
-            return;
-        }
-
         _rb = GetComponent<Rigidbody2D>();
         if (_rb == null)
         {
@@ -76,11 +64,6 @@ public class BourBonMissile : MonoBehaviour
         StartCoroutine(MissileSequence());
     }
 
-    public void SetAttackPower(float power)
-    {
-        _attackPower = power * _attackMultiplier; // 攻撃力を設定（倍率を適用）
-    }
-    
     /// <summary>
     /// ミサイルの初期化
     /// </summary>
