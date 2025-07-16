@@ -64,6 +64,11 @@ public class BourBonMissile : MonoBehaviour
         StartCoroutine(MissileSequence());
     }
 
+    public void SetAttackPower(float power)
+    {
+        _attackPower = power * _attackMultiplier; // 攻撃力を設定（倍率を適用）
+    }
+    
     /// <summary>
     /// ミサイルの初期化
     /// </summary>
