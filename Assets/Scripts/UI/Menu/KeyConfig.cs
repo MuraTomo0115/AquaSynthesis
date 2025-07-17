@@ -692,7 +692,6 @@ public class KeyConfig : MonoBehaviour
     private IEnumerator EnableOptionActionWithDelay(float delay)
     {
         yield return new WaitForSecondsRealtime(delay);
-        InputActionHolder.Instance.optionInputActions.Option.Enable();
     }
 
     /// <summary>
