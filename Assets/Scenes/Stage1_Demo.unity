@@ -22764,6 +22764,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2897988751792032297, guid: 2c058eba0bd008842855d50ba9caee00, type: 3}
+      propertyPath: _missilePrefab
+      value: 
+      objectReference: {fileID: 9118527242073358674, guid: a342359d367de6c4b926147c013b4294, type: 3}
     - target: {fileID: 2897988751792032299, guid: 2c058eba0bd008842855d50ba9caee00, type: 3}
       propertyPath: m_Name
       value: BourBon
@@ -22837,6 +22841,10 @@ PrefabInstance:
       propertyPath: _attackMultiplier
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 7911198669646467340, guid: 7f0e413689d6f5f4ca9f4524cde373a6, type: 3}
+      propertyPath: _shockwaveEffectPrefab
+      value: 
+      objectReference: {fileID: 8199277694671392, guid: 731e8b0cec3f0d24c95bf89bf94d5ff7, type: 3}
     - target: {fileID: 7911198669646467568, guid: 7f0e413689d6f5f4ca9f4524cde373a6, type: 3}
       propertyPath: m_RootOrder
       value: 15
