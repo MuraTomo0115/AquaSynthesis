@@ -10,7 +10,6 @@ public class MusselMovement : MonoBehaviour
     [SerializeField] private float _fallAcceleration = 10f; // 落下加速度
     [SerializeField] private float _maxFallSpeed = 20f;     // 最大落下速度
     [SerializeField] private float _detectionWidth = 2f;    // プレイヤー検知幅
-    [SerializeField] private float _returnThreshold = 0.1f; // 元の位置に戻る際の閾値
     
     [Header("復帰設定")]
     [SerializeField] private float _returnDuration = 2f;    // 元の位置への復帰にかかる時間
@@ -219,9 +218,7 @@ public class MusselMovement : MonoBehaviour
 
                 return; // 地面判定を行わずに処理を終了
             }
-
-            // 地面に当たったら停止（プレイヤー以外の場合のみ）
-            if (collision.gameObject.CompareTag("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            else // プレイヤー以外のオブジェクトに当たった場合
             {
                 // 衝撃波エフェクトを生成
                 if (_shockwaveEffectPrefab != null && _shockwaveEffectPos != null)
