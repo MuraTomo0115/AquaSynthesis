@@ -65,11 +65,12 @@ public class DatabaseManager
     private static void CreateTables()
     {
         // �G�L�����̃X�e�[�^�X�e�[�u��
-        _connection.Execute(@"
-            CREATE TABLE IF NOT EXISTS EnemyStatus (
-                Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                HP INTEGER NOT NULL,
-                AttackPower INTEGER NOT NULL
+        Connection.Execute(@"
+            CREATE TABLE IF NOT EXISTS enemy_status (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                hp INTEGER NOT NULL,
+                attack_power INTEGER NOT NULL
             );
         ");
 
@@ -157,15 +158,15 @@ public class DatabaseManager
     }
 
 	/// <summary>
-	/// EnemyStatus�e�[�u���̑S���R�[�h���擾
+	/// enemy_status�e�[�u���̑S���R�[�h���擾
 	/// </summary>
 	public static List<EnemyStatus> GetAllEnemies()
 	{
-		return Connection.Query<EnemyStatus>("SELECT * FROM EnemyStatus");
+		return Connection.Query<EnemyStatus>("SELECT * FROM enemy_status");
 	}
 
 	/// <summary>
-	/// EnemyStatus�e�[�u���̑S���R�[�h���擾
+	/// enemy_status�e�[�u���̑S���R�[�h���擾
 	/// </summary>
 	public static List<DestructibleObjs> GetAllDestructibleObjs()
 	{
@@ -229,19 +230,18 @@ public class DatabaseManager
     public static void UpdateCurrentRoute(int id, string route)
     {
         Connection.Execute("UPDATE player_status SET current_route = ? WHERE id = ?", route, id);
-        Debug.Log($"�v���C���[ID {id} �̃��[�g�� '{route}' �ɍX�V���܂����B");
     }
 
     /// <summary>
-    /// EnemyStatus�e�[�u���ɐV�����G�f�[�^��}��
+    /// enemy_status�e�[�u���ɐV�����G�f�[�^��}��
     /// </summary>
-    /// <param name="enemy">�}������EnemyStatus�I�u�W�F�N�g</param>
-    public static void InsertEnemy(EnemyStatus enemy)
+    /// <param name="enemy">�}������enemy_status�I�u�W�F�N�g</param>
+    public static void InsertEnemy(string name, int hp, int attackPower)
 	{
 		// INSERT�`:�ǂ̃e�[�u���̂ǂ̃J�����Ƀf�[�^�����邩�w�� VALUES:���ۂɂǂ�Ȓl�����邩�w��(?�̓v���[�X�z���_�[)
 		Connection.Execute(
-			"INSERT INTO EnemyStatus (HP, AttackPower) VALUES (?, ?)",
-			enemy.HP, enemy.AttackPower);
+			"INSERT INTO enemy_status (name, hp, attack_power) VALUES (?, ?, ?)",
+			name, hp, attackPower);
 	}
 
     /// <summary>
@@ -361,7 +361,7 @@ public class DatabaseManager
     private static void Resetplayer_statusTable()
 	{
 		Connection.Execute("DROP TABLE IF EXISTS player_status;");
-		Connection.Execute("DROP TABLE IF EXISTS EnemyStatus;");
+		Connection.Execute("DROP TABLE IF EXISTS enemy_status;");
 
 		Connection.Execute(@"
         CREATE TABLE player_status (
@@ -376,7 +376,7 @@ public class DatabaseManager
 
     ");
 		Connection.Execute(@"
-		CREATE TABLE EnemyStatus(
+		CREATE TABLE enemy_status(
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             Name TEXT NOT NULL,
             HP INTEGER NOT NULL,
@@ -389,11 +389,11 @@ public class DatabaseManager
 			10, 3, 0, 1, null);
 
 		Connection.Execute(
-			"INSERT INTO EnemyStatus (Name, HP, AttackPower) VALUES (?, ?, ?);",
+			"INSERT INTO enemy_status (Name, HP, AttackPower) VALUES (?, ?, ?);",
 			"TestEnemy1", 10, 2);
 
 		Connection.Execute(
-			"INSERT INTO EnemyStatus (Name, HP, AttackPower) VALUES (?, ?, ?);",
+			"INSERT INTO enemy_status (Name, HP, AttackPower) VALUES (?, ?, ?);",
 			"TestEnemy2", 25, 5);
 
 		Connection.Execute("DROP TABLE IF EXISTS SupportStatus;");

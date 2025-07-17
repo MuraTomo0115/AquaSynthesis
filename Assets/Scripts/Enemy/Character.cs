@@ -7,8 +7,11 @@ public class Character : MonoBehaviour
     [SerializeField] private string _characterName;
     [SerializeField] private GameObject _expPrefab;
     [SerializeField] private float _hpBarShowTime = 2f;
-    private EnemyHPBar _hpBar;
 
+    [Header("攻撃を受けるか")]
+    [SerializeField] private bool _canHit = true;   // 攻撃を受けるかどうか
+
+    private EnemyHPBar _hpBar;
 
     private int _maxHealth;
     private int _currentHealth;
@@ -21,8 +24,10 @@ public class Character : MonoBehaviour
     private GameObject _player;
     private PlayerMovement _playerMovement;
     private bool _isDead = false; // ���S�������ǂ����̃t���O
+    private bool _isBoss = false;
     private string _seFile;
     private int _getExp = 0;
+    private string _route;
 
     public float HP { get; private set; }
     public float MaxHP { get; private set; }
@@ -55,13 +60,18 @@ public class Character : MonoBehaviour
         _playerMovement = _player.GetComponent<PlayerMovement>();
     }
 
+    private void Start()
+    {
+        _isBoss = CompareTag("Boss");
+    }
+
     /// <summary>
     /// �_���[�W���󂯂����̏���
     /// </summary>
     /// <param name="damage">�_���[�W��</param>
     public void HitAttack(int damage)
     {
-        if (_isDead) return;
+        if (_isDead || !_canHit) return;
 
         if (CompareTag("Player"))
         {
@@ -159,6 +169,14 @@ public class Character : MonoBehaviour
     {
         if (_isDead) return;
         _isDead = true;
+
+        if(_isBoss)
+        {
+            var boss = DatabaseManager.GetBossByName(_characterName);
+
+            if (boss.flag != null)
+                GoalTrigger.Instance.SetRoute(boss.flag);
+        }
 
         ExpManager.Instance.AddExp(_getExp);
 
