@@ -1,36 +1,40 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ƒvƒŒƒCƒ„[‚Ì“®‚«‚ğ‹L˜^‚µAƒS[ƒXƒg‚Æ‚µ‚ÄÄ¶‚·‚é‹@”\
+/// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‹•ãã‚’è¨˜éŒ²ã—ã€ã‚´ãƒ¼ã‚¹ãƒˆã¨ã—ã¦å†ç”Ÿã™ã‚‹æ©Ÿèƒ½
 /// </summary>
 public class RecordAbility : MonoBehaviour
 {
-    [Header("‹L˜^EÄ¶‘ÎÛ")]
-    [SerializeField] private Transform _target; // ‹L˜^‘ÎÛiƒvƒŒƒCƒ„[j
-    [SerializeField] private float _recordInterval = 0.1f; // ‹L˜^ŠÔŠui•bj
-    [SerializeField] private float _maxRecordTime = 10f;   // Å‘å‹L˜^ŠÔi•bj
-    [SerializeField] private GameObject _ghostPrefab;      // ƒS[ƒXƒg‚ÌƒvƒŒƒnƒu
+    [Header("è¨˜éŒ²ãƒ»å†ç”Ÿå¯¾è±¡")]
+    [SerializeField] private Transform _target; // è¨˜éŒ²å¯¾è±¡ï¼ˆãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ï¼‰
+    [SerializeField] private float _recordInterval = 0.1f; // è¨˜éŒ²é–“éš”ï¼ˆç§’ï¼‰
+    [SerializeField] private float _maxRecordTime = 10f;   // æœ€å¤§è¨˜éŒ²æ™‚é–“ï¼ˆç§’ï¼‰
+    [SerializeField] private GameObject _ghostPrefab;      // ã‚´ãƒ¼ã‚¹ãƒˆã®ãƒ—ãƒ¬ãƒãƒ–
+    [SerializeField] private GameObject _dummyPlayerPrefab; // ãƒ€ãƒŸãƒ¼ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒ—ãƒ¬ãƒãƒ–
     private WaterWallController[] _waterWalls;
 
-    // “à•”QÆ
+    // å†…éƒ¨å‚ç…§
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     private PlayerMovement _playerMovement;
 
+    // ãƒ€ãƒŸãƒ¼ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å‚ç…§
+    private GameObject _dummyPlayerInstance;
+
     /// <summary>
-    /// 1ƒtƒŒ[ƒ€•ª‚Ì‹L˜^ƒf[ƒ^
+    /// 1ãƒ•ãƒ¬ãƒ¼ãƒ åˆ†ã®è¨˜éŒ²ãƒ‡ãƒ¼ã‚¿
     /// </summary>
     private struct FrameData
     {
-        public Vector3 position;         // ˆÊ’u
-        public Quaternion rotation;      // ‰ñ“]
-        public string animClipName;      // ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv–¼
-        public bool isFacingLeft;        // ¶Œü‚«‚©
-        public bool didAttack;           // ‹ßÚUŒ‚ƒgƒŠƒK[
-        public bool didPistol;           // ƒsƒXƒgƒ‹ƒgƒŠƒK[
-        public Vector2 input;            // “ü—Í’l
+        public Vector3 position;
+        public Quaternion rotation;
+        public string animClipName;
+        public bool isFacingLeft;
+        public bool didAttack;
+        public bool didPistol;
+        public Vector2 input;
 
         public FrameData(Vector3 pos, Quaternion rot, string clipName, bool facingLeft, bool attack, bool pistol, Vector2 input)
         {
@@ -44,12 +48,12 @@ public class RecordAbility : MonoBehaviour
         }
     }
 
-    // ‹L˜^ƒf[ƒ^
+    // è¨˜éŒ²ãƒ‡ãƒ¼ã‚¿
     private List<FrameData> _savedRecord = new List<FrameData>();
     private Coroutine _recordCoroutine = null;
     private Coroutine _playbackCoroutine = null;
 
-    // ƒS[ƒXƒgÄ¶—p
+    // ã‚´ãƒ¼ã‚¹ãƒˆå†ç”Ÿç”¨
     private Transform _ghostInstanceTransform;
     private Animator _ghostAnimator;
     private SpriteRenderer _ghostSpriteRenderer;
@@ -57,7 +61,7 @@ public class RecordAbility : MonoBehaviour
     private bool _isPlayingBack = false;
 
     /// <summary>
-    /// ‰Šú‰»B_target‚©‚ç•K—v‚ÈƒRƒ“ƒ|[ƒlƒ“ƒg‚ğæ“¾
+    /// åˆæœŸåŒ–ã€‚_targetã‹ã‚‰å¿…è¦ãªã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’å–å¾—
     /// </summary>
     private void Awake()
     {
@@ -80,7 +84,7 @@ public class RecordAbility : MonoBehaviour
     }
 
     /// <summary>
-    /// ‹L˜^ŠJn
+    /// è¨˜éŒ²é–‹å§‹
     /// </summary>
     public void StartRecording()
     {
@@ -88,16 +92,22 @@ public class RecordAbility : MonoBehaviour
         if (_playerMovement != null)
         {
             _playerMovement.IsRecording = true;
-            _playerMovement.SetLayerByRecording(); // ’Ç‰Á
+            _playerMovement.SetLayerByRecording(); // è¿½åŠ 
         }
         _savedRecord.Clear();
         SaveCurrentFrame();
         _recordCoroutine = StartCoroutine(RecordCoroutine());
         SetFireWallTransparency(true);
+
+        // ãƒ€ãƒŸãƒ¼ç”Ÿæˆ
+        if (_dummyPlayerPrefab != null && _dummyPlayerInstance == null)
+        {
+            _dummyPlayerInstance = Instantiate(_dummyPlayerPrefab, _target.position, _target.rotation);
+        }
     }
 
     /// <summary>
-    /// Œ»İ‚Ìó‘Ô‚ğ1ƒtƒŒ[ƒ€•ª‹L˜^
+    /// ç¾åœ¨ã®çŠ¶æ…‹ã‚’1ãƒ•ãƒ¬ãƒ¼ãƒ åˆ†è¨˜éŒ²
     /// </summary>
     private void SaveCurrentFrame()
     {
@@ -117,7 +127,7 @@ public class RecordAbility : MonoBehaviour
     }
 
     /// <summary>
-    /// ‹L˜^’â~
+    /// è¨˜éŒ²åœæ­¢
     /// </summary>
     public void StopRecording()
     {
@@ -130,13 +140,20 @@ public class RecordAbility : MonoBehaviour
         if (_playerMovement != null)
         {
             _playerMovement.IsRecording = false;
-            _playerMovement.SetLayerByRecording(); // ’Ç‰Á
+            _playerMovement.SetLayerByRecording(); // è¿½åŠ 
         }
         SetFireWallTransparency(false);
+
+        // ãƒ€ãƒŸãƒ¼å‰Šé™¤
+        if (_dummyPlayerInstance != null)
+        {
+            Destroy(_dummyPlayerInstance);
+            _dummyPlayerInstance = null;
+        }
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[‚Ì“®ì‚ğˆê’èŠÔŠu‚Å‹L˜^‚·‚éƒRƒ‹[ƒ`ƒ“
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‹•ä½œã‚’ä¸€å®šé–“éš”ã§è¨˜éŒ²ã™ã‚‹ã‚³ãƒ«ãƒ¼ãƒãƒ³
     /// </summary>
     private IEnumerator RecordCoroutine()
     {
@@ -151,13 +168,13 @@ public class RecordAbility : MonoBehaviour
         {
             timer += _recordInterval;
 
-            // Œ»İ‚Ìó‘Ô‚ğæ“¾
+            // ç¾åœ¨ã®çŠ¶æ…‹ã‚’å–å¾—
             string clipName = GetCurrentAnimationClipName();
             bool isFacingLeft = _spriteRenderer != null ? _spriteRenderer.flipX : false;
             bool didAttack = _playerMovement != null && _playerMovement.DidAttack;
             bool didPistol = _playerMovement != null && _playerMovement.DidPistol;
 
-            // ƒgƒŠƒK[i—§‚¿ã‚ª‚èj‚¾‚¯‹L˜^
+            // ãƒˆãƒªã‚¬ãƒ¼ï¼ˆç«‹ã¡ä¸ŠãŒã‚Šï¼‰ã ã‘è¨˜éŒ²
             bool pistolTrigger = didPistol && !prevDidPistol;
             bool attackTrigger = didAttack && !prevDidAttack;
 
@@ -182,19 +199,19 @@ public class RecordAbility : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒS[ƒXƒgÄ¶ŠJn
+    /// ã‚´ãƒ¼ã‚¹ãƒˆå†ç”Ÿé–‹å§‹
     /// </summary>
     public void StartPlayback()
     {
         if (_isPlayingBack || _savedRecord.Count == 0 || _ghostPrefab == null) return;
 
-        // ƒS[ƒXƒg¶¬
+        // ã‚´ãƒ¼ã‚¹ãƒˆç”Ÿæˆ
         GameObject ghost = Instantiate(_ghostPrefab, _savedRecord[0].position, _savedRecord[0].rotation);
         _ghostInstanceTransform = ghost.transform;
         _ghostAnimator = ghost.GetComponent<Animator>();
         _ghostSpriteRenderer = ghost.GetComponent<SpriteRenderer>();
 
-        // ƒvƒŒƒCƒ„[‚ÌUŒ‚ƒZƒ“ƒT[E’eƒvƒŒƒnƒu‚ğæ“¾
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ”»æ’ƒã‚»ãƒ³ã‚µãƒ¼ãƒ»å¼¾ãƒ—ãƒ¬ãƒãƒ–ã‚’å–å¾—
         GameObject playerAttackSensor = null;
         GameObject bulletPrefab = null;
         if (_playerMovement != null)
@@ -203,7 +220,7 @@ public class RecordAbility : MonoBehaviour
             bulletPrefab = _playerMovement.BulletPrefab;
         }
 
-        // ƒS[ƒXƒg‚É‰Šúƒf[ƒ^‚ğ“n‚µ‚Ä‰Šú‰»
+        // ã‚´ãƒ¼ã‚¹ãƒˆã«åˆæœŸãƒ‡ãƒ¼ã‚¿ã‚’æ¸¡ã—ã¦åˆæœŸåŒ–
         var ghostMovement = ghost.GetComponent<GhostMovement>();
         if (ghostMovement != null)
         {
@@ -211,7 +228,7 @@ public class RecordAbility : MonoBehaviour
             ghostMovement.Initialize(
                 first.position,
                 first.input,
-                false, // ƒWƒƒƒ“ƒv“™‚Í•K—v‚É‰‚¶‚Ä
+                false, // ã‚¸ãƒ£ãƒ³ãƒ—ç­‰ã¯å¿…è¦ã«å¿œã˜ã¦
                 first.didAttack,
                 first.didPistol,
                 false, false, // summonA, summonB
@@ -225,7 +242,7 @@ public class RecordAbility : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒS[ƒXƒgÄ¶’â~
+    /// ã‚´ãƒ¼ã‚¹ãƒˆå†ç”Ÿåœæ­¢
     /// </summary>
     public void StopPlayback()
     {
@@ -237,7 +254,7 @@ public class RecordAbility : MonoBehaviour
 
         _isPlayingBack = false;
 
-        // ƒS[ƒXƒg‚ğ”jŠü
+        // ã‚´ãƒ¼ã‚¹ãƒˆã‚’ç ´æ£„
         if (_ghostInstanceTransform != null)
         {
             Destroy(_ghostInstanceTransform.gameObject);
@@ -248,10 +265,10 @@ public class RecordAbility : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒS[ƒXƒg‚Ì“®ì‚ğ‹L˜^ƒf[ƒ^‚É]‚Á‚ÄÄ¶‚·‚éƒRƒ‹[ƒ`ƒ“
+    /// ã‚´ãƒ¼ã‚¹ãƒˆã®å‹•ä½œã‚’è¨˜éŒ²ãƒ‡ãƒ¼ã‚¿ã«å¾“ã£ã¦å†ç”Ÿã™ã‚‹ã‚³ãƒ«ãƒ¼ãƒãƒ³
     /// </summary>
-    /// <param name="playbackTarget">Ä¶‘ÎÛ‚ÌTransform</param>
-    /// <param name="framesToPlay">Ä¶‚·‚éƒtƒŒ[ƒ€ƒf[ƒ^ƒŠƒXƒg</param>
+    /// <param name="playbackTarget">å†ç”Ÿå¯¾è±¡ã®Transform</param>
+    /// <param name="framesToPlay">å†ç”Ÿã™ã‚‹ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ‡ãƒ¼ã‚¿ãƒªã‚¹ãƒˆ</param>
     private IEnumerator PlaybackCoroutine(Transform playbackTarget, List<FrameData> framesToPlay)
     {
         _isPlayingBack = true;
@@ -264,25 +281,25 @@ public class RecordAbility : MonoBehaviour
 
             float t = 0f;
 
-            // ƒAƒjƒ[ƒVƒ‡ƒ“EŒü‚«ÄŒ»
+            // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ»å‘ãå†ç¾
             if (_ghostAnimator != null && !string.IsNullOrEmpty(current.animClipName))
                 _ghostAnimator.CrossFade(current.animClipName, 0f);
             if (_ghostSpriteRenderer != null)
                 _ghostSpriteRenderer.flipX = current.isFacingLeft;
 
-            // ƒS[ƒXƒg‚Ì“ü—Í‚ğ”½‰f
+            // ã‚´ãƒ¼ã‚¹ãƒˆã®å…¥åŠ›ã‚’åæ˜ 
             if (ghostMovement != null)
                 ghostMovement.SetRecordedInput(current.input);
 
-            // ‹ßÚUŒ‚ƒgƒŠƒK[
+            // è¿‘æ¥æ”»æ’ƒãƒˆãƒªã‚¬ãƒ¼
             if (ghostMovement != null && current.didAttack)
                 ghostMovement.StartAttack();
 
-            // ƒsƒXƒgƒ‹ƒgƒŠƒK[
+            // ãƒ”ã‚¹ãƒˆãƒ«ãƒˆãƒªã‚¬ãƒ¼
             if (ghostMovement != null && current.didPistol)
                 ghostMovement.ShootPistol();
 
-            // •âŠÔ‚Å‚È‚ß‚ç‚©‚ÉˆÚ“®E‰ñ“]
+            // è£œé–“ã§ãªã‚ã‚‰ã‹ã«ç§»å‹•ãƒ»å›è»¢
             while (t < _recordInterval)
             {
                 float lerpFactor = t / _recordInterval;
@@ -294,21 +311,21 @@ public class RecordAbility : MonoBehaviour
             }
         }
 
-        // ÅŒã‚ÌƒtƒŒ[ƒ€‚ğƒZƒbƒg
+        // æœ€å¾Œã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’ã‚»ãƒƒãƒˆ
         var last = framesToPlay[framesToPlay.Count - 1];
         playbackTarget.position = last.position;
         playbackTarget.rotation = last.rotation;
 
         _isPlayingBack = false;
 
-        // ƒS[ƒXƒg‚ğ”jŠü
+        // ã‚´ãƒ¼ã‚¹ãƒˆã‚’ç ´æ£„
         Destroy(playbackTarget.gameObject);
     }
 
     /// <summary>
-    /// Œ»İÄ¶’†‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv–¼‚ğæ“¾
+    /// ç¾åœ¨å†ç”Ÿä¸­ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—åã‚’å–å¾—
     /// </summary>
-    /// <returns>Ä¶’†‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv–¼B‚È‚¯‚ê‚Înull</returns>
+    /// <returns>å†ç”Ÿä¸­ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—åã€‚ãªã‘ã‚Œã°null</returns>
     private string GetCurrentAnimationClipName()
     {
         if (_animator == null) return null;
@@ -320,6 +337,10 @@ public class RecordAbility : MonoBehaviour
         }
         return null;
     }
+    /// <summary>
+    /// è¿‘ãã®ã‚®ãƒŸãƒƒã‚¯ã‚’ã‚¢ã‚¯ãƒ†ã‚£ãƒ–åŒ–ã§ãã‚‹ã‹ãƒã‚§ãƒƒã‚¯ã—ã€ã‚¢ã‚¯ãƒ†ã‚£ãƒ–åŒ–ã™ã‚‹
+    /// </summary>
+    /// <returns></returns>
     private bool TryActivateNearbyGimmick()
     {
         float checkRadius = 1.0f;
@@ -329,7 +350,7 @@ public class RecordAbility : MonoBehaviour
             var gimmick = hit.GetComponent<IGimmickActivatable>();
             if (gimmick != null && gimmick.IsPlayerInRange(gameObject))
             {
-                // Echo‰Â”Û‚ğ”»’è
+                // Echoå¯å¦ã‚’åˆ¤å®š
                 int echoLayer = LayerMask.NameToLayer("Echo");
                 if (gameObject.layer == echoLayer && !gimmick.CanActivateByEcho)
                     continue;
