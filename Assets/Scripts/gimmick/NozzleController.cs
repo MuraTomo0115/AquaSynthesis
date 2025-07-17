@@ -17,12 +17,23 @@ public class NozzleController : MonoBehaviour, IGimmickActivatable
     private int _echoLayer;
     private int _playerLayer;
 
+    // トリガーで範囲内のアクターを管理
+    private HashSet<GameObject> _actorsInRange = new HashSet<GameObject>();
+
     private void Start()
     {
         _animation = GetComponent<Animation>();
         _renderer = GetComponent<SpriteRenderer>();
         _echoLayer = LayerMask.NameToLayer("Echo");
         _playerLayer = LayerMask.NameToLayer("Player");
+
+        // CircleCollider2Dがあれば自動で設定
+        var col = GetComponent<CircleCollider2D>();
+        if (col != null)
+        {
+            col.isTrigger = true;
+            col.radius = activationRadius;
+        }
     }
 
     /// <summary>
@@ -32,9 +43,7 @@ public class NozzleController : MonoBehaviour, IGimmickActivatable
     /// <returns></returns>
     public bool IsPlayerInRange(GameObject actor)
     {
-        int layer = actor.layer;
-        return (layer == _echoLayer || layer == _playerLayer)
-            && Vector2.Distance(transform.position, actor.transform.position) < activationRadius;
+        return _actorsInRange.Contains(actor);
     }
 
     /// <summary>
@@ -82,6 +91,7 @@ public class NozzleController : MonoBehaviour, IGimmickActivatable
             waterWall.FadeOutAndDisable(1.0f);
         }
     }
+
     private void Update()
     {
         if (isActivated)
@@ -91,8 +101,18 @@ public class NozzleController : MonoBehaviour, IGimmickActivatable
             return;
         }
 
-        GameObject player = FindPlayerOrEcho();
-        if (player != null && IsPlayerInRange(player))
+        // 範囲内のアクターを探す
+        GameObject actor = null;
+        foreach (var obj in _actorsInRange)
+        {
+            if (obj != null)
+            {
+                actor = obj;
+                break;
+            }
+        }
+
+        if (actor != null)
         {
             if (actionPromptText != null)
             {
@@ -108,18 +128,26 @@ public class NozzleController : MonoBehaviour, IGimmickActivatable
     }
 
     /// <summary>
-    /// プレイヤーまたはEchoを探す
+    /// トリガーに入ったアクターを管理
     /// </summary>
-    /// <returns></returns>
-    private GameObject FindPlayerOrEcho()
+    /// <param name="other"></param>
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        foreach (var obj in GameObject.FindObjectsOfType<GameObject>())
+        if (other.gameObject.layer == _echoLayer || other.gameObject.layer == _playerLayer)
         {
-            if (obj.layer == _echoLayer)
-                return obj;
-            if (obj.layer == _playerLayer)
-                return obj;
+            _actorsInRange.Add(other.gameObject);
         }
-        return null;
+    }
+
+    /// <summary>
+    /// トリガーから出たアクターを管理
+    /// </summary>
+    /// <param name="other"></param>
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (_actorsInRange.Contains(other.gameObject))
+        {
+            _actorsInRange.Remove(other.gameObject);
+        }
     }
 }
