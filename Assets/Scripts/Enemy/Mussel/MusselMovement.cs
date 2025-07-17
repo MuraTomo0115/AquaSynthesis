@@ -10,11 +10,11 @@ public class MusselMovement : MonoBehaviour
     [SerializeField] private float _fallAcceleration = 10f; // 落下加速度
     [SerializeField] private float _maxFallSpeed = 20f;     // 最大落下速度
     [SerializeField] private float _detectionWidth = 2f;    // プレイヤー検知幅
-    [SerializeField] private float _returnThreshold = 0.1f; // 元の位置に戻る際の閾値
     
     [Header("復帰設定")]
-    [SerializeField] private float _returnSpeed = 5f;       // 元の位置への復帰速度
+    [SerializeField] private float _returnDuration = 2f;    // 元の位置への復帰にかかる時間
     [SerializeField] private float _waitTimeAfterFall = 2f; // 落下後の待機時間
+    [SerializeField] private AnimationCurve _returnEasingCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f); // 復帰時のイージングカーブ
 
     [Header("攻撃倍率")]
     [SerializeField] private int _attackMultiplier = 1; // 攻撃倍率
@@ -22,15 +22,19 @@ public class MusselMovement : MonoBehaviour
     [Header("カメラの振動設定")]
     [SerializeField] private float _shakeIntensity = 1f;    // 振動の強さ
     [SerializeField] private float _shakeDuration = 0.5f;   // 振動の持続時間
-    
-    
 
-    private int         _attackPower;           // 攻撃力
+    [Header("衝撃波エフェクト設定")]
+    [SerializeField] private Transform _shockwaveEffectPos; // 衝撃波エフェクトのプレハブ
+    [SerializeField] private GameObject _shockwaveEffectPrefab; // 衝撃波エフェクトのプレハブ
+
+    private int _attackPower;           // 攻撃力
     private Rigidbody2D _rigidbody2D;
     private Transform   _player;
     private Vector3     _initialPosition;
 
     private Character   _character;
+    private Vector3     _startReturnPosition;  // 復帰開始時の位置
+    private float       _returnTimer;          // 復帰の進行時間
     
     // 状態管理用enum
     private enum MusselState
@@ -138,15 +142,22 @@ public class MusselMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// 元の位置に戻る
+    /// 元の位置に戻る（イージング付き）
     /// </summary>
     private void ReturnToInitialPosition()
     {
-        Vector3 direction = (_initialPosition - transform.position).normalized;
-        transform.position += direction * _returnSpeed * Time.deltaTime;
+        _returnTimer += Time.deltaTime;
+        float normalizedTime = _returnTimer / _returnDuration;
         
-        // 元の位置に十分近づいたら待機状態に戻る
-        if (Vector3.Distance(transform.position, _initialPosition) < _returnThreshold)
+        // AnimationCurveを使ってイージングを適用
+        float easedTime = _returnEasingCurve.Evaluate(normalizedTime);
+        
+        // 開始位置から初期位置への補間
+        Vector3 currentPosition = Vector3.Lerp(_startReturnPosition, _initialPosition, easedTime);
+        transform.position = currentPosition;
+        
+        // 復帰完了チェック
+        if (normalizedTime >= 1f)
         {
             transform.position = _initialPosition;
             _currentState = MusselState.Idle;
@@ -207,10 +218,31 @@ public class MusselMovement : MonoBehaviour
 
                 return; // 地面判定を行わずに処理を終了
             }
-
-            // 地面に当たったら停止（プレイヤー以外の場合のみ）
-            if (collision.gameObject.CompareTag("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            else // プレイヤー以外のオブジェクトに当たった場合
             {
+                // 衝撃波エフェクトを生成
+                if (_shockwaveEffectPrefab != null && _shockwaveEffectPos != null)
+                {
+                    GameObject shockwaveEffect = Instantiate(_shockwaveEffectPrefab, _shockwaveEffectPos.position, Quaternion.identity);
+                    
+                    // エフェクトを前面に表示するためにSorting Orderを設定
+                    SpriteRenderer effectRenderer = shockwaveEffect.GetComponent<SpriteRenderer>();
+                    if (effectRenderer != null)
+                    {
+                        // このオブジェクトのSpriteRendererのSorting Orderより前面に表示
+                        SpriteRenderer musselRenderer = GetComponent<SpriteRenderer>();
+                        if (musselRenderer != null)
+                        {
+                            effectRenderer.sortingOrder = musselRenderer.sortingOrder + 1;
+                        }
+                        else
+                        {
+                            // デフォルトで前面に表示
+                            effectRenderer.sortingOrder = 10;
+                        }
+                    }
+                }
+
                 _rigidbody2D.velocity = Vector2.zero;
                 _rigidbody2D.gravityScale = 0f;
 
@@ -255,6 +287,10 @@ public class MusselMovement : MonoBehaviour
     {
         _currentState = MusselState.Waiting;
         yield return new WaitForSeconds(_waitTimeAfterFall);
+        
+        // 復帰開始時の設定
+        _startReturnPosition = transform.position;
+        _returnTimer = 0f;
         _currentState = MusselState.Returning;
     }
 
