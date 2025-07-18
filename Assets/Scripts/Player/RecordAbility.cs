@@ -343,8 +343,7 @@ public class RecordAbility : MonoBehaviour
     /// <returns></returns>
     private bool TryActivateNearbyGimmick()
     {
-        float checkRadius = 1.0f;
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, checkRadius);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, NozzleController.activationRadius);
         foreach (var hit in hits)
         {
             var gimmick = hit.GetComponent<IGimmickActivatable>();

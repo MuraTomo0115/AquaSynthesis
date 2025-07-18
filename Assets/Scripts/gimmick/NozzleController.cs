@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using TMPro;
 
 public class NozzleController : MonoBehaviour, IGimmickActivatable
 {
     [SerializeField] private WaterWallController waterWall;
-    [SerializeField] private float activationRadius = 1.0f;
+    [SerializeField] public static float activationRadius = 1.0f;
     private Animation _animation;
     private SpriteRenderer _renderer;
     private bool isActivated = false;
-    [SerializeField] private UnityEngine.UI.Text actionPromptText;
+    [SerializeField] private TextMeshProUGUI actionPromptText;
 
     public bool CanActivateByEcho => true;
 
