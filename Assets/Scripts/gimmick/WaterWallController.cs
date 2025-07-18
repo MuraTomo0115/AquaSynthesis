@@ -1,15 +1,15 @@
-using UnityEngine;
-
+ï»¿using UnityEngine;
+using DG.Tweening;
 public class WaterWallController : MonoBehaviour
 {
-    [SerializeField] private SpriteRenderer _renderer;      // •Ç‚ÌŒ©‚½–Ú—pSpriteRenderer
-    [SerializeField] private float _normalAlpha = 0.8f;     // ’Êí‚Ì•s“§–¾“x
-    [SerializeField] private float _transparentAlpha = 0.2f;// ‹L˜^’†‚ÌÅ¬“§–¾“x
-    [SerializeField] private float _flickerSpeed = 1.5f;    // “_–Åi“§–¾“x•Ï‰»j‚Ì‘¬‚³
+    [SerializeField] private SpriteRenderer _renderer;      // å£ã®è¦‹ãŸç›®ç”¨SpriteRenderer
+    [SerializeField] private float _normalAlpha = 0.8f;     // é€šå¸¸æ™‚ã®ä¸é€æ˜åº¦
+    [SerializeField] private float _transparentAlpha = 0.2f;// è¨˜éŒ²ä¸­ã®æœ€å°é€æ˜åº¦
+    [SerializeField] private float _flickerSpeed = 1.5f;    // ç‚¹æ»…ï¼ˆé€æ˜åº¦å¤‰åŒ–ï¼‰ã®é€Ÿã•
 
-    private bool _isFlicker = false;    // ‹L˜^’†‚Ì“_–Å‰‰oƒtƒ‰ƒO
-    private bool _isDisabled = false;   // •Ç‚ª–³Œø‰»‚³‚ê‚½‚©‚Ç‚¤‚©
-    private Collider2D _collider;       // •Ç‚ÌƒRƒŠƒWƒ‡ƒ“
+    private bool _isFlicker = false;    // è¨˜éŒ²ä¸­ã®ç‚¹æ»…æ¼”å‡ºãƒ•ãƒ©ã‚°
+    private bool _isDisabled = false;   // å£ãŒç„¡åŠ¹åŒ–ã•ã‚ŒãŸã‹ã©ã†ã‹
+    private Collider2D _collider;       // å£ã®ã‚³ãƒªã‚¸ãƒ§ãƒ³
 
     private void Awake()
     {
@@ -17,7 +17,7 @@ public class WaterWallController : MonoBehaviour
     }
 
     /// <summary>
-    /// Inspector‚ÅuResetv‚µ‚½‚ÉSpriteRenderer‚ğ©“®æ“¾
+    /// Inspectorã§ã€ŒResetã€ã—ãŸæ™‚ã«SpriteRendererã‚’è‡ªå‹•å–å¾—
     /// </summary>
     private void Reset()
     {
@@ -25,57 +25,81 @@ public class WaterWallController : MonoBehaviour
     }
 
     /// <summary>
-    /// ‹L˜^’†‚È‚Ç‚Å•Ç‚ğ“_–Åi“§–¾“x•Ï‰»j‚³‚¹‚é‚©Ø‚è‘Ö‚¦
+    /// è¨˜éŒ²ä¸­ãªã©ã§å£ã‚’ç‚¹æ»…ï¼ˆé€æ˜åº¦å¤‰åŒ–ï¼‰ã•ã›ã‚‹ã‹åˆ‡ã‚Šæ›¿ãˆ
     /// </summary>
-    /// <param name="isTransparent">true‚Å“_–ÅŠJnAfalse‚Å’Êí•\¦</param>
+    /// <param name="isTransparent">trueã§ç‚¹æ»…é–‹å§‹ã€falseã§é€šå¸¸è¡¨ç¤º</param>
     public void SetTransparent(bool isTransparent)
     {
         _isFlicker = isTransparent;
         if (!isTransparent && _renderer != null)
         {
-            // ’Êí‚Í•s“§–¾“x‚ğ–ß‚·
-            var color = _renderer.color;
-            color.a = _normalAlpha;
-            _renderer.color = color;
+            SetAlpha(_normalAlpha);
         }
     }
 
     /// <summary>
-    /// ‹L˜^’†‚Í“§–¾“x‚ğüŠú“I‚É•Ï‰»‚³‚¹‚Ä“_–Å‰‰o
+    /// è¨˜éŒ²ä¸­ã¯é€æ˜åº¦ã‚’å‘¨æœŸçš„ã«å¤‰åŒ–ã•ã›ã¦ç‚¹æ»…æ¼”å‡º
     /// </summary>
     private void Update()
     {
-        // –³Œø‰»‚³‚ê‚Ä‚¢‚È‚¢•“_–Å’†‚Ì‚İ“§–¾“x‚ğ•Ï‰»
+        // ç„¡åŠ¹åŒ–ã•ã‚Œã¦ã„ãªã„ï¼†ç‚¹æ»…ä¸­ã®ã¿é€æ˜åº¦ã‚’å¤‰åŒ–
         if (_isFlicker && _renderer != null && !_isDisabled)
         {
-            // sin”g‚Å0.2`0.8‚ÌŠÔ‚ğ‰•œ
             float t = (Mathf.Sin(Time.time * _flickerSpeed) + 1f) / 2f;
             float alpha = Mathf.Lerp(_transparentAlpha, _normalAlpha, t);
-            var color = _renderer.color;
-            color.a = alpha;
-            _renderer.color = color;
+            SetAlpha(alpha);
         }
     }
 
     /// <summary>
-    /// ƒmƒYƒ‹“™‚©‚çŒÄ‚Î‚ê‚é‚Æ•Ç‚ğ–³Œø‰»i“§–¾•ƒRƒŠƒWƒ‡ƒ“–³Œøj
+    /// ãƒã‚ºãƒ«ç­‰ã‹ã‚‰å‘¼ã°ã‚Œã‚‹ã¨å£ã‚’ç„¡åŠ¹åŒ–ï¼ˆé€æ˜ï¼†ã‚³ãƒªã‚¸ãƒ§ãƒ³ç„¡åŠ¹ï¼‰
     /// </summary>
     public void DisableWall()
     {
         _isDisabled = true;
         if (_renderer != null)
         {
-            // Š®‘S‚É“§–¾‚É
-            var color = _renderer.color;
-            color.a = 0f;
-            _renderer.color = color;
+            SetAlpha(0f);
         }
-        if (_collider != null)
+        DisableCollider();
+    }
+
+    /// <summary>
+    /// å£ã‚’ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆã—ã¦ç„¡åŠ¹åŒ–ï¼ˆã‚³ãƒªã‚¸ãƒ§ãƒ³ã‚‚ç„¡åŠ¹åŒ–ï¼‰
+    /// </summary>
+    /// <param name="duration"></param>
+    public void FadeOutAndDisable(float duration = 1.0f)
+    {
+        if (_renderer == null)
         {
-            // ƒRƒŠƒWƒ‡ƒ“‚à–³Œø‰»
-            _collider.enabled = false;
+            DisableCollider();
+            gameObject.SetActive(false);
+            return;
         }
-        // •K—v‚È‚çƒQ[ƒ€ƒIƒuƒWƒFƒNƒg©‘Ì‚ğ”ñƒAƒNƒeƒBƒu‚É‚µ‚Ä‚àOK
-        // gameObject.SetActive(false);
+        _renderer.DOFade(0f, duration)
+            .OnComplete(() =>
+            {
+                DisableCollider();
+                gameObject.SetActive(false);
+            });
+    }
+
+    /// <summary>
+    /// ã‚¢ãƒ«ãƒ•ã‚¡å€¤ã‚’è¨­å®š
+    /// </summary>
+    private void SetAlpha(float alpha)
+    {
+        var color = _renderer.color;
+        color.a = alpha;
+        _renderer.color = color;
+    }
+
+    /// <summary>
+    /// ã‚³ãƒªã‚¸ãƒ§ãƒ³ã‚’ç„¡åŠ¹åŒ–
+    /// </summary>
+    private void DisableCollider()
+    {
+        if (_collider != null)
+            _collider.enabled = false;
     }
 }
