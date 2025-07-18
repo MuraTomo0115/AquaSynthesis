@@ -341,7 +341,7 @@ public class RecordAbility : MonoBehaviour
     /// 近くのギミックをアクティブ化できるかチェックし、アクティブ化する
     /// </summary>
     /// <returns></returns>
-    private bool TryActivateNearbyGimmick()
+    private bool TryActivateNearbyGimmickRecorder()
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, NozzleController.activationRadius);
         foreach (var hit in hits)
