@@ -261,6 +261,8 @@ public class Menu : MonoBehaviour
 
         if(_isInCarousel)
         {
+            InputActionHolder.Instance.menuInputActions.Disable();
+            Debug.Log($"MenuInputActions.Menu.Enabled: {InputActionHolder.Instance.menuInputActions.Menu.enabled}");
             switch (_currentIndex)
             {
                 case 0:
@@ -307,7 +309,6 @@ public class Menu : MonoBehaviour
     {
         InputActionHolder.Instance.menuInputActions.Menu.Disable();
         yield return StartCoroutine(PlayAnimationUnscaled(anim, animName));
-        InputActionHolder.Instance.menuInputActions.Menu.Enable();
     }
 
     /// <summary>

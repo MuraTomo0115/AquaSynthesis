@@ -4,8 +4,6 @@ using SQLite4Unity3d;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using UnityEditor.MemoryProfiler;
-using UnityEditor.SceneManagement;
 
 // �吻��ҁF���c�q��
 
@@ -35,18 +33,49 @@ public class DatabaseManager
 		{
 			if (_connection == null)
 			{
-				// StreamingAssets��DB�t�@�C�����쐬
-				string dbPath = Path.Combine(Application.streamingAssetsPath, "game.db");
+				// ビルド後でも書き込み可能なpersistentDataPathを使用
+				string dbPath = GetDatabasePath();
 
-				// SQLite �ڑ��i�ǂݏ����E�V�K�쐬���[�h�j
+				// SQLite接続（読み書き・新規作成モード）
 				_connection = new SQLiteConnection(dbPath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create);
 
-				// �e�[�u����������΍쐬
+				// テーブルが存在しなければ作成
 				CreateTables();
 			}
 
 			return _connection;
 		}
+	}
+
+	/// <summary>
+	/// ビルド後のexeでも書き込み可能なデータベースパスを取得
+	/// StreamingAssetsからpersistentDataPathにコピーして使用
+	/// </summary>
+	/// <returns>データベースファイルのパス</returns>
+	private static string GetDatabasePath()
+	{
+		string fileName = "game.db";
+		string persistentPath = Path.Combine(Application.persistentDataPath, fileName);
+		
+		// persistentDataPathにデータベースが存在しない場合
+		if (!File.Exists(persistentPath))
+		{
+			string streamingPath = Path.Combine(Application.streamingAssetsPath, fileName);
+			
+			// StreamingAssetsにデータベースが存在する場合はコピー
+			if (File.Exists(streamingPath))
+			{
+				File.Copy(streamingPath, persistentPath);
+				Debug.Log($"Database copied from StreamingAssets to: {persistentPath}");
+			}
+			else
+			{
+				// StreamingAssetsにもない場合は新規作成される
+				Debug.Log($"New database will be created at: {persistentPath}");
+			}
+		}
+		
+		return persistentPath;
 	}
 
 	public static void Initialize()
@@ -398,5 +427,18 @@ public class DatabaseManager
 
 		Connection.Execute("DROP TABLE IF EXISTS SupportStatus;");
 		UnityEngine.Debug.Log("player_status�e�[�u�������Z�b�g���܂����B�����f�[�^��}�����܂����B");
+	}
+
+	/// <summary>
+	/// データベース接続を適切に閉じる
+	/// </summary>
+	public static void CloseConnection()
+	{
+		if (_connection != null)
+		{
+			_connection.Close();
+			_connection = null;
+			Debug.Log("Database connection closed successfully.");
+		}
 	}
 }

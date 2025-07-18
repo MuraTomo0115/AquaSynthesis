@@ -114,10 +114,10 @@ public class KeyConfig : MonoBehaviour
     /// </summary>
     private static readonly Dictionary<string, string> GamepadLabelMap = new Dictionary<string, string>
     {
-        { "Button South", "A�{�^��" },
-        { "Button West",  "X�{�^��" },
-        { "Button North","Y�{�^��" },
-        { "Button East", "B�{�^��" },
+        { "Button South", "Aボタン" },
+        { "Button West",  "Xボタン" },
+        { "Button North","Yボタン" },
+        { "Button East", "Bボタン" },
         { "Left Shoulder", "L1" },
         { "Right Shoulder", "R1" },
         { "leftTriggerButton", "L2" },
@@ -638,7 +638,7 @@ public class KeyConfig : MonoBehaviour
 
             if (!isValid)
             {
-                ShowErrorMessage($"{(_activeDeviceType == KeyDeviceType.Keyboard ? "キーボード" : "ゲームパッド")}の入力が無効です");
+                ShowErrorMessage($"{(_activeDeviceType == KeyDeviceType.Keyboard ? "キーボード" : "ゲームパッド")}のキーを入力してください");
                 operation.Cancel();
                 operation.Dispose();
                 config.keyButton.interactable = true;
@@ -661,7 +661,7 @@ public class KeyConfig : MonoBehaviour
             {
                 // ���s���Ă��I�v�V�������͂��ēx�L����
                 StartCoroutine(EnableOptionActionWithDelay(0.1f));
-                ShowErrorMessage("�I�����ꂽ�L�[�́A���ɑ��̍��ڂŎg�p����Ă��܂�");
+                ShowErrorMessage("このキーはすでに使用されています");
                 action.RemoveBindingOverride(bindingIndex);
                 _overridePathDict.Remove((config.saveKey, _activeDeviceType));
                 LoadAllKeyConfigsFromJson();
