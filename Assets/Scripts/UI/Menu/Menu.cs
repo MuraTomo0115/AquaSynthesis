@@ -261,8 +261,6 @@ public class Menu : MonoBehaviour
 
         if(_isInCarousel)
         {
-            InputActionHolder.Instance.menuInputActions.Disable();
-            Debug.Log($"MenuInputActions.Menu.Enabled: {InputActionHolder.Instance.menuInputActions.Menu.enabled}");
             switch (_currentIndex)
             {
                 case 0:
@@ -288,10 +286,6 @@ public class Menu : MonoBehaviour
                     Debug.Log("����`�̃��j���[����");
                     break;
             }
-        }
-        else
-        {
-            Debug.Log("�Q�[���֖߂�{�^������");
         }
     }
 

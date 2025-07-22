@@ -66,12 +66,6 @@ public class DatabaseManager
 			if (File.Exists(streamingPath))
 			{
 				File.Copy(streamingPath, persistentPath);
-				Debug.Log($"Database copied from StreamingAssets to: {persistentPath}");
-			}
-			else
-			{
-				// StreamingAssetsにもない場合は新規作成される
-				Debug.Log($"New database will be created at: {persistentPath}");
 			}
 		}
 		
