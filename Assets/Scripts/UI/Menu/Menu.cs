@@ -287,10 +287,6 @@ public class Menu : MonoBehaviour
                     break;
             }
         }
-        else
-        {
-            Debug.Log("�Q�[���֖߂�{�^������");
-        }
     }
 
     /// <summary>
@@ -307,7 +303,6 @@ public class Menu : MonoBehaviour
     {
         InputActionHolder.Instance.menuInputActions.Menu.Disable();
         yield return StartCoroutine(PlayAnimationUnscaled(anim, animName));
-        InputActionHolder.Instance.menuInputActions.Menu.Enable();
     }
 
     /// <summary>
