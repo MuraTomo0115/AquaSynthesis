@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Character : MonoBehaviour
 {
@@ -211,6 +212,10 @@ public class Character : MonoBehaviour
         {
             InputActionHolder.Instance.playerInputActions.Player.Disable();
 
+            // 現在のシーン名をPlayerPrefsに保存（ゲームオーバー時のリトライ用）
+            PlayerPrefs.SetString("LastPlayedScene", SceneManager.GetActiveScene().name);
+            PlayerPrefs.Save();
+
             var rb = GetComponent<Rigidbody2D>();
             if (rb != null)
             {
@@ -224,7 +229,8 @@ public class Character : MonoBehaviour
                 collider.enabled = false;
             }
 
-            Destroy(gameObject, 10.0f);
+            // ゲームオーバーシーンへの遷移を開始
+            StartCoroutine(TransitionToGameOver());
             return;
         }
 
@@ -315,5 +321,55 @@ public class Character : MonoBehaviour
         }
         _animator?.SetTrigger("Destroy");
         Destroy(gameObject, 1.0f);
+    }
+
+    /// <summary>
+    /// ゲームオーバーシーンへの遷移処理（フェードアウト→シーン遷移）
+    /// </summary>
+    private IEnumerator TransitionToGameOver()
+    {
+        // 死亡してから3秒待つ
+        yield return new WaitForSeconds(3.0f);
+
+        // フェード用のCanvasとImageを作成
+        var fadeCanvas = new GameObject("FadeCanvas");
+        var canvas = fadeCanvas.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 1000; // 最前面に表示
+
+        var canvasScaler = fadeCanvas.AddComponent<UnityEngine.UI.CanvasScaler>();
+        canvasScaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
+
+        var fadeImageObj = new GameObject("FadeImage");
+        fadeImageObj.transform.SetParent(fadeCanvas.transform);
+        
+        var fadeImage = fadeImageObj.AddComponent<UnityEngine.UI.Image>();
+        fadeImage.color = new Color(0, 0, 0, 0); // 透明な黒
+        
+        var rectTransform = fadeImage.GetComponent<RectTransform>();
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.one;
+        rectTransform.sizeDelta = Vector2.zero;
+        rectTransform.anchoredPosition = Vector2.zero;
+
+        // フェードアウト（黒くする）
+        float fadeDuration = 1.0f;
+        float elapsed = 0f;
+        
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float alpha = Mathf.Clamp01(elapsed / fadeDuration);
+            fadeImage.color = new Color(0, 0, 0, alpha);
+            yield return null;
+        }
+        
+        fadeImage.color = new Color(0, 0, 0, 1); // 完全に黒
+
+        // 少し待つ
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        // ゲームオーバーシーンをロード
+        SceneManager.LoadScene("GameOver");
     }
 }

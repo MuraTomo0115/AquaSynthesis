@@ -6,7 +6,7 @@ public class ExpManager : MonoBehaviour
 {
     public static ExpManager Instance;
 
-    [SerializeField] private TextMeshProUGUI _expText; // ŒoŒ±’l•\¦—p‚ÌUIƒeƒLƒXƒg
+    [SerializeField] private TextMeshProUGUI _expText; // ï¿½oï¿½ï¿½ï¿½lï¿½\ï¿½ï¿½ï¿½pï¿½ï¿½UIï¿½eï¿½Lï¿½Xï¿½g
     private int _currentExp = 0;
 
     public int CurrentExp => _currentExp;
@@ -16,7 +16,6 @@ public class ExpManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -24,23 +23,23 @@ public class ExpManager : MonoBehaviour
             return;
         }
 
-        _currentExp = 0; // ‰Šú‰»
+        _currentExp = 0; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         UpdateExpText();
     }
 
     /// <summary>
-    /// ŒoŒ±’l‚ğ’Ç‰Á‚·‚éƒƒ\ƒbƒh
+    /// ï¿½oï¿½ï¿½ï¿½lï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½éƒï¿½\ï¿½bï¿½h
     /// </summary>
-    /// <param name="exp">’Ç‰Á‚·‚é’l</param>
+    /// <param name="exp">ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½l</param>
     public void AddExp(int exp)
     {
         _currentExp += exp;
         UpdateExpText();
-        Debug.Log($"ŒoŒ±’l‚ğ’Ç‰Á: {exp} (Œ»İ‚ÌŒoŒ±’l: {_currentExp})");
+        Debug.Log($"ï¿½oï¿½ï¿½ï¿½lï¿½ï¿½Ç‰ï¿½: {exp} (ï¿½ï¿½ï¿½İ‚ÌŒoï¿½ï¿½ï¿½l: {_currentExp})");
     }
 
     /// <summary>
-    /// Œ»İ‚ÌŒoŒ±’l‚ğæ“¾‚·‚éƒƒ\ƒbƒh
+    /// ï¿½ï¿½ï¿½İ‚ÌŒoï¿½ï¿½ï¿½lï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½éƒï¿½\ï¿½bï¿½h
     /// </summary>
     /// <returns></returns>
     public int GetCurrentExp()
@@ -49,7 +48,7 @@ public class ExpManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ŒoŒ±’l•\¦UI‚ğXV
+    /// ï¿½oï¿½ï¿½ï¿½lï¿½\ï¿½ï¿½UIï¿½ï¿½ï¿½Xï¿½V
     /// </summary>
     private void UpdateExpText()
     {
