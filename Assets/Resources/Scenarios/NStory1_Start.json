@@ -1,0 +1,146 @@
+﻿[
+    { "type": "fadeout" },
+    {
+        "type": "text",
+        "speaker": "",
+        "text": "町はずれにある無人の館\nそこにはお化けが出るという噂があった"
+    },
+    { "type": "fadein" },
+    {
+        "type": "show",
+        "target": "takuro",
+        "sprite": "takuro/takuro_normal",
+        "side": "right",
+        "transition": "fade"
+    },
+    {
+        "type": "text",
+        "speaker": "キタミ",
+        "text": "こんなところまでヤツらがあがってくるとはな"
+    },
+    {
+        "type": "text",
+        "speaker": "シズク",
+        "text": "「……」"
+    },
+    {
+        "type": "text",
+        "speaker": "キタミ",
+        "text": "なんだ、緊張しているのか？"
+    },
+    {
+        "type": "text",
+        "speaker": "キタミ",
+        "text": "安心しろよ。\n今日は俺がついてる"
+    },
+    {
+        "type": "text",
+        "speaker": "キタミ",
+        "text": "なんたって、俺はエースだぜ？"
+    },
+    {
+        "type": "text",
+        "speaker": "ミスズ",
+        "text": "せんぱーい、頼りにしてますよ"
+    },
+    {
+        "type": "text",
+        "speaker": "カスミ",
+        "text": "もう、真面目にやってください！\nまだ民間人が居るんですよ！"
+    },
+    {
+        "type": "text",
+        "speaker": "シズク",
+        "text": "（そうだ、民間人……）"
+    },
+    {
+        "type": "text",
+        "speaker": "シズク",
+        "text": "（私が、守らないと……！）"
+    },
+    {
+        "type": "text",
+        "speaker": "キタミ",
+        "text": "これでも大まじめだぞ。\nけどな、お前らは肩の力を抜いていけ"
+    },
+    {
+        "type": "text",
+        "speaker": "ハヤト",
+        "text": "先輩の言うとおりだ。\n先ほどの射撃、射線が乱れていた"
+    },
+    {
+        "type": "text",
+        "speaker": "ハヤト",
+        "text": "初めての実戦だが、訓練通りに行動するんだ"
+    },
+    {
+        "type": "text",
+        "speaker": "ミスズ",
+        "text": "大丈夫だって。\n緊張はしているけど、何とか倒せたし"
+    },
+    {
+        "type": "text",
+        "speaker": "ハヤト",
+        "text": "ミスズ。\n一番射線がブレていたのは、お前だぞ"
+    },
+    {
+        "type": "text",
+        "speaker": "ミスズ",
+        "text": "……そうだよね。\n訓練通りにしないといけないですよね"
+    },
+    {
+        "type": "text",
+        "speaker": "キタミ",
+        "text": "それだよ、それ。\n肩の力を抜けって"
+    },
+    {
+        "type": "text",
+        "speaker": "キタミ",
+        "text": "俺達の仕事は敵の排除だ。\nやり方はいつも通り。\n訓練通りってヤツだ"
+    },
+    {
+        "type": "text",
+        "speaker": "キタミ",
+        "text": "焦らず、力まず、確実に——　殺せ"
+    },
+    {
+        "type": "text",
+        "speaker": "シズク",
+        "text": "……"
+    },
+    {
+        "type": "text",
+        "speaker": "カスミ",
+        "text": "雫、大丈夫？"
+    },
+    {
+        "type": "text",
+        "speaker": "シズク",
+        "text": "……問題無い。\n敵は、一匹残らず排除する"
+    },
+    {
+        "type": "text",
+        "speaker": "シズク",
+        "text": "そうでしょ？"
+    },
+    {
+        "type": "text",
+        "speaker": "キタミ",
+        "text": "良いね、その意気だ"
+    },
+    {
+        "type": "text",
+        "speaker": "キタミ",
+        "text": "それじゃ第三デルタ小隊の初仕事だ"
+    },
+    {
+        "type": "se",
+        "clip": "glass_break",
+        "wait": true
+    },
+    {
+        "type": "se",
+        "clip": "horror",
+        "wait": false
+    }
+]
