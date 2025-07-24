@@ -878,7 +878,7 @@ MonoBehaviour:
   _nStages:
   - stageName: n1
     sceneName: n1
-    stageImage: {fileID: 21300000, guid: 98fe9bde48b424a49b67f5164eea87be, type: 3}
+    stageImage: {fileID: 21300000, guid: 931d38c3b05a25a4ca090d3803c7e1e5, type: 3}
     stagePoint: {fileID: 964534780}
     pathObject: {fileID: 1138653669}
     animationTriggerName: Stage_n2
@@ -888,18 +888,6 @@ MonoBehaviour:
     stagePoint: {fileID: 1588876854}
     pathObject: {fileID: 187366701}
     animationTriggerName: Stage_n3
-  - stageName: n3
-    sceneName: n3
-    stageImage: {fileID: 21300000, guid: 67f85fceeddda7344bd459bf673be3ec, type: 3}
-    stagePoint: {fileID: 1855848917}
-    pathObject: {fileID: 1816245142}
-    animationTriggerName: Stage_n3
-  - stageName: n4
-    sceneName: n4
-    stageImage: {fileID: 21300000, guid: 03052b5cd36772344969b183828a37ea, type: 3}
-    stagePoint: {fileID: 897169410}
-    pathObject: {fileID: 0}
-    animationTriggerName: 
   _aStages:
   - stageName: A2
     sceneName: SampleScene
@@ -1137,7 +1125,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1855848917
 RectTransform:
   m_ObjectHideFlags: 0
