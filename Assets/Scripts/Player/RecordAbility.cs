@@ -92,12 +92,18 @@ public class RecordAbility : MonoBehaviour
         if (_playerMovement != null)
         {
             _playerMovement.IsRecording = true;
-            _playerMovement.SetLayerByRecording(); // 追加
+            _playerMovement.SetLayerByRecording(); // LayerをEchoに
         }
         _savedRecord.Clear();
         SaveCurrentFrame();
         _recordCoroutine = StartCoroutine(RecordCoroutine());
         SetFireWallTransparency(true);
+
+        // TagをEchoに変更
+        if (_target != null)
+        {
+            _target.gameObject.tag = "Echo";
+        }
 
         // ダミー生成
         if (_dummyPlayerPrefab != null && _dummyPlayerInstance == null)
@@ -140,9 +146,15 @@ public class RecordAbility : MonoBehaviour
         if (_playerMovement != null)
         {
             _playerMovement.IsRecording = false;
-            _playerMovement.SetLayerByRecording(); // 追加
+            _playerMovement.SetLayerByRecording(); // Layerを元に戻す
         }
         SetFireWallTransparency(false);
+
+        // TagをPlayerに戻す
+        if (_target != null)
+        {
+            _target.gameObject.tag = "Player";
+        }
 
         // ダミー削除
         if (_dummyPlayerInstance != null)

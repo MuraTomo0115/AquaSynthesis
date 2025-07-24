@@ -37,13 +37,14 @@ public class BossBattle : MonoBehaviour
             if (bossObject != null)
                 bossObject.SetActive(true);
 
-            if (wallObject != null)
-                wallObject.SetActive(true);
-
-            // ボスのステータスを再設定
-            var manager = FindObjectOfType<CharacterManager>();
-            if (manager != null)
-                manager.LoadPlayerStatus();
+            if (bossObject != null)
+            {
+                bossObject.SetActive(true);
+                var manager = FindObjectOfType<CharacterManager>();
+                if (manager != null)
+                    manager.LoadBossStatus(bossObject); // ←ボスのみ初期化
+            }
+            wallObject.SetActive(true);
 
             bossActivated = true;
         }
