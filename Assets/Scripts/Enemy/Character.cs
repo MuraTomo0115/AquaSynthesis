@@ -213,7 +213,7 @@ public class Character : MonoBehaviour
             InputActionHolder.Instance.playerInputActions.Player.Disable();
 
             // 現在のシーン名をPlayerPrefsに保存（ゲームオーバー時のリトライ用）
-            PlayerPrefs.SetString("LastPlayedScene", UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+            PlayerPrefs.SetString("LastPlayedScene", SceneManager.GetActiveScene().name);
             PlayerPrefs.Save();
 
             var rb = GetComponent<Rigidbody2D>();
@@ -370,6 +370,6 @@ public class Character : MonoBehaviour
         yield return new WaitForSecondsRealtime(0.5f);
 
         // ゲームオーバーシーンをロード
-        UnityEngine.SceneManagement.SceneManager.LoadScene("GameOver");
+        SceneManager.LoadScene("GameOver");
     }
 }
