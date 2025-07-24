@@ -1,18 +1,6 @@
 ﻿[
     { "type": "fadeout" },
-    {
-        "type": "text",
-        "speaker": "",
-        "text": "町はずれにある無人の館\nそこにはお化けが出るという噂があった"
-    },
     { "type": "fadein" },
-    {
-        "type": "show",
-        "target": "takuro",
-        "sprite": "takuro/takuro_normal",
-        "side": "right",
-        "transition": "fade"
-    },
     {
         "type": "text",
         "speaker": "キタミ",

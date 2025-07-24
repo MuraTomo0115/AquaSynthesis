@@ -19,6 +19,7 @@ public class RecordAbility : MonoBehaviour
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     private PlayerMovement _playerMovement;
+    private bool _isCanRecord = true;
 
     // ダミーインスタンス参照
     private GameObject _dummyPlayerInstance;
@@ -88,7 +89,7 @@ public class RecordAbility : MonoBehaviour
     /// </summary>
     public void StartRecording()
     {
-        if (_isRecording || _recordCoroutine != null) return;
+        if (_isRecording || _recordCoroutine != null || !_isCanRecord) return;
         if (_playerMovement != null)
         {
             _playerMovement.IsRecording = true;
@@ -117,6 +118,8 @@ public class RecordAbility : MonoBehaviour
     /// </summary>
     private void SaveCurrentFrame()
     {
+        if(!_isCanRecord || _target == null || _spriteRenderer == null || _playerMovement == null) return;
+
         string clipName = GetCurrentAnimationClipName();
         bool isFacingLeft = _spriteRenderer != null ? _spriteRenderer.flipX : false;
         bool didAttack = _playerMovement != null && _playerMovement.DidAttack;
@@ -169,6 +172,8 @@ public class RecordAbility : MonoBehaviour
     /// </summary>
     private IEnumerator RecordCoroutine()
     {
+        if (_isRecording || _recordCoroutine != null || !_isCanRecord) yield break;
+
         _isRecording = true;
         _savedRecord.Clear();
 
@@ -215,7 +220,7 @@ public class RecordAbility : MonoBehaviour
     /// </summary>
     public void StartPlayback()
     {
-        if (_isPlayingBack || _savedRecord.Count == 0 || _ghostPrefab == null) return;
+        if (_isPlayingBack || _savedRecord.Count == 0 || _ghostPrefab == null || !_isCanRecord) return;
 
         // ゴースト生成
         GameObject ghost = Instantiate(_ghostPrefab, _savedRecord[0].position, _savedRecord[0].rotation);
@@ -283,6 +288,8 @@ public class RecordAbility : MonoBehaviour
     /// <param name="framesToPlay">再生するフレームデータリスト</param>
     private IEnumerator PlaybackCoroutine(Transform playbackTarget, List<FrameData> framesToPlay)
     {
+        if (_isPlayingBack || framesToPlay.Count == 0 || playbackTarget == null || !_isCanRecord) yield break;
+
         _isPlayingBack = true;
         var ghostMovement = playbackTarget.GetComponent<GhostMovement>();
 
@@ -371,5 +378,14 @@ public class RecordAbility : MonoBehaviour
             }
         }
         return false;
+    }
+
+    /// <summary>
+    /// ゴーストの記録が可能かどうかを設定
+    /// </summary>
+    /// <param name="canRecord">ゴーストの記録が可能かどうか</param>
+    public void SetCanRecord(bool canRecord)
+    {
+        _isCanRecord = canRecord;
     }
 }

@@ -59,20 +59,14 @@ public class CharacterManager : MonoBehaviour
             if (enemy != null)
             {
                 characterName = enemy.CharacterName;
-                Debug.Log($"�擾�����G�L�����N�^�[��: {characterName}");
 
                 if (string.IsNullOrEmpty(characterName))
                 {
-                    Debug.LogError("�L�����N�^�[������ł��I");
                     continue;
                 }
 
                 // �e�[�u������f�[�^��ǂݍ���
                 LoadCharacterDataFromTable(characterName, enemy);
-            }
-            else
-            {
-                Debug.LogError("Enemy�R���|�[�l���g��������܂���I");
             }
         }
 
@@ -84,11 +78,9 @@ public class CharacterManager : MonoBehaviour
             if (obj != null)
             {
                 characterName = obj.CharacterName;
-                Debug.Log($"�擾�����G�L�����N�^�[��: {characterName}");
 
                 if (string.IsNullOrEmpty(characterName))
                 {
-                    Debug.LogError("�L�����N�^�[������ł��I");
                     continue;
                 }
 
@@ -120,10 +112,6 @@ public class CharacterManager : MonoBehaviour
                 // �e�[�u������f�[�^��ǂݍ���
                 LoadCharacterDataFromTable(characterName, bossCharacter, false, true);
             }
-            else
-            {
-                Debug.LogError("Boss��Character�R���|�[�l���g��������܂���I");
-            }
         }
 
         // Player�I�u�W�F�N�g�ɑ΂��ď���
@@ -132,7 +120,6 @@ public class CharacterManager : MonoBehaviour
         if (playerCharacter != null)
         {
             characterName = playerCharacter.CharacterName;
-            Debug.Log($"�擾�����v���C���[�L�����N�^�[��: {characterName}");
 
             if (string.IsNullOrEmpty(characterName))
             {
@@ -143,10 +130,6 @@ public class CharacterManager : MonoBehaviour
                 // �e�[�u������f�[�^��ǂݍ���
                 LoadCharacterDataFromTable(characterName, playerCharacter, true);
             }
-        }
-        else
-        {
-            Debug.LogError("Player��Character�R���|�[�l���g��������܂���I");
         }
     }
 
@@ -162,12 +145,6 @@ public class CharacterManager : MonoBehaviour
             if (playerData != null)
             {
                 character.SetStats(playerData.hp, playerData.attack_power, pistolData.AttackPower);
-                Debug.Log($"�v���C���[�̃X�e�[�^�X��ݒ�: HP={playerData.hp}, AttackPower={playerData.attack_power}, Level={playerData.level}");
-                Debug.Log($"�s�X�g���̍U���͂�ݒ�: PistolPower={pistolData.AttackPower}");
-            }
-            else
-            {
-                Debug.LogError($"player_status�e�[�u����Name '{name}' �̃f�[�^������܂���");
             }
         }
         else if (isBoss)
@@ -177,7 +154,6 @@ public class CharacterManager : MonoBehaviour
             if (bossData != null)
             {
                 character.SetStats(bossData.hp, bossData.attack_power);
-                Debug.Log($"Boss Character Stats Set: HP={bossData.hp}, AttackPower={bossData.attack_power}");
             }
             else
             {
@@ -191,7 +167,6 @@ public class CharacterManager : MonoBehaviour
             if (enemyData != null)
             {
                 character.SetStats(enemyData.hp, enemyData.attack_power);
-                Debug.Log($"敵のステータスを取得: 名前={enemyData.name}, HP={enemyData.hp}, AttackPower={enemyData.attack_power}");
             }
             else
             {
@@ -203,7 +178,6 @@ public class CharacterManager : MonoBehaviour
             var destructibleList = DatabaseManager.GetAllDestructibleObjs();
             var destructibleData = destructibleList.Find(e => e.Name == name);
             character.SetSE(destructibleData.DestroySE);
-            Debug.Log($"Destructible�̃X�e�[�^�X��ݒ�: HP={0}, AttackPower={0}");
         }
     }
 

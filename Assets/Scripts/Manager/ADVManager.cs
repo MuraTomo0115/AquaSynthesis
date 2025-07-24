@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using UnityEngine.InputSystem;
-using System.Diagnostics;
 
 public class ADVManager : MonoBehaviour
 {
@@ -24,6 +23,8 @@ public class ADVManager : MonoBehaviour
 	[SerializeField] private GameObject _advContents;
 
 	private Queue<ScenarioStep> _steps = new Queue<ScenarioStep>();
+	private PlayerMovement _playerMovement;
+	private CoolTimeInput _coolTimeInput;
 	private bool _isMessageShowing = false;
 	private bool _isSkipping = false;
 	private CanvasGroup _canvasGroup;
@@ -34,55 +35,59 @@ public class ADVManager : MonoBehaviour
 	private float _advanceCooldown = 1f;
 	private bool _isPlay = false;
 	private bool _isFading = false;
-	private bool _isWaitingSE = false; // SEÄ¶‘Ò‹@’†ƒtƒ‰ƒO‚ğ’Ç‰Á
+	private bool _isWaitingSE = false; // SEï¿½Äï¿½ï¿½Ò‹@ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½Oï¿½ï¿½Ç‰ï¿½
 	private Dictionary<string, string> _targetToSideMap = new Dictionary<string, string>();
 
-	public bool IsPlaying => _isPlay; // ƒVƒiƒŠƒI‚ªÄ¶’†‚©‚Ç‚¤‚©‚ğæ“¾‚·‚éƒvƒƒpƒeƒB
+	public bool IsPlaying => _isPlay; // ï¿½Vï¿½iï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½pï¿½eï¿½B
 
     public static ADVManager Instance { get; private set; }
 
-    private void Awake()
+	private void Awake()
 	{
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+		if (Instance == null)
+		{
+			Instance = this;
+		}
+		else
+		{
+			Destroy(gameObject);
+		}
 
-        _inputActions = new PlayerInputActions();  // PlayerInputActions‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬
-		_inputActions.ADV.Enable();  // ADVƒ}ƒbƒv‚ğ—LŒø‚É‚·‚é
+		_inputActions = new PlayerInputActions();  // PlayerInputActionsï¿½ÌƒCï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ì¬
+		_inputActions.ADV.Enable();  // ADVï¿½}ï¿½bï¿½vï¿½ï¿½Lï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
 		_canvasGroup = _advContents.GetComponent<CanvasGroup>();
-	}
-
-	void OnEnable() => _inputActions.ADV.Enable();  // ƒAƒNƒVƒ‡ƒ“ƒ}ƒbƒv‚ğ—LŒø‚É‚·‚é
-	void OnDisable() => _inputActions.ADV.Disable();  // ƒAƒNƒVƒ‡ƒ“ƒ}ƒbƒv‚ğ–³Œø‚É‚·‚é
-
-	private void Start()
-	{
 		_seAudioSource = GetComponent<AudioSource>();
 		_advContents.gameObject.SetActive(false);
 		// StartScenario(_scenarioFileName);
 		_inputActions.ADV.StartDemo.performed += ctx => StartScenario(_scenarioFileName);
 	}
 
+	private void Start()
+	{
+		_playerMovement = FindObjectOfType<PlayerMovement>();
+		_coolTimeInput = FindObjectOfType<CoolTimeInput>();
+	}
+
+	void OnEnable() => _inputActions.ADV.Enable();  // ï¿½Aï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½}ï¿½bï¿½vï¿½ï¿½Lï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
+	void OnDisable() => _inputActions.ADV.Disable();  // ï¿½Aï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½}ï¿½bï¿½vï¿½ğ–³Œï¿½ï¿½É‚ï¿½ï¿½ï¿½
+
 	/// <summary>
-	/// ƒVƒiƒŠƒIÄ¶ŠJn
+	/// ï¿½Vï¿½iï¿½ï¿½ï¿½Iï¿½Äï¿½ï¿½Jï¿½n
 	/// </summary>
-	/// <param name="scenarioName">Ä¶‚·‚éJSONƒtƒ@ƒCƒ‹–¼</param>
+	/// <param name="scenarioName">ï¿½Äï¿½ï¿½ï¿½ï¿½ï¿½JSONï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½</param>
 	public void StartScenario(string scenarioName)
 	{
 		if (_isPlay) return;
 
-		InputActionHolder.Instance.playerInputActions.Disable();
+		_playerMovement.isCanAction = false;
+		_coolTimeInput.SetCanRecord(false); // ã‚´ãƒ¼ã‚¹ãƒˆã®è¨˜éŒ²ã‚’ç„¡åŠ¹åŒ–
+		InputActionHolder.Instance.menuInputActions.Disable(); // ADVé–‹å§‹æ™‚ã«ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ“ä½œã‚’ç„¡åŠ¹åŒ–
 
-        AudioManager.Instance.StopAllSE(); // ‚·‚×‚Ä‚ÌSE‚ğ’â~
+        AudioManager.Instance.StopAllSE(); // ï¿½ï¿½ï¿½×‚Ä‚ï¿½SEï¿½ï¿½ï¿½~
 
         _isPlay = true;
 		Time.timeScale = 0f;
-                              // UI‰Šú‰»•‰ß‹‚Ìc‚è‚ğƒNƒŠƒA
+                              // UIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‹ï¿½ï¿½Ìcï¿½ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½A
         _messageText.text = "";
 		_speakerText.text = "";
 		_imageLeft.sprite = null;
@@ -91,16 +96,16 @@ public class ADVManager : MonoBehaviour
 		_imageLeft.color = new Color(1, 1, 1, 0);
 		_imageCenter.color = new Color(1, 1, 1, 0);
 		_imageRight.color = new Color(1, 1, 1, 0);
-		_fadeOverlay.color = new Color(0, 0, 0, 0); // Š®‘S‚É“§–¾‚È•
-		_fadeOverlay.gameObject.SetActive(false);   // ”ñ•\¦‚É‚µ‚Ä‚¨‚­
+		_fadeOverlay.color = new Color(0, 0, 0, 0); // ï¿½ï¿½ï¿½Sï¿½É“ï¿½ï¿½ï¿½ï¿½Èï¿½
+		_fadeOverlay.gameObject.SetActive(false);   // ï¿½ï¿½\ï¿½ï¿½ï¿½É‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 
-		_steps.Clear(); // ƒVƒiƒŠƒIƒLƒ…[‚ğƒNƒŠƒA
+		_steps.Clear(); // ï¿½Vï¿½iï¿½ï¿½ï¿½Iï¿½Lï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½A
 		_isSkipping = false;
 		_isMessageShowing = false;
 
 		_nextIcon.gameObject.SetActive(false);
 		_canvasGroup.alpha = 1f;
-		_advContents.SetActive(true); // UI‚ğ•\¦
+		_advContents.SetActive(true); // UIï¿½ï¿½\ï¿½ï¿½
 
 		_scenarioFileName = scenarioName;
 		LoadScenario(_scenarioFileName);
@@ -108,11 +113,11 @@ public class ADVManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ƒtƒF[ƒhAƒeƒLƒXƒg•\¦
+	/// ï¿½tï¿½Fï¿½[ï¿½hï¿½Aï¿½eï¿½Lï¿½Xï¿½gï¿½\ï¿½ï¿½
 	/// </summary>
 	private void Update()
 	{
-		if (_isCooldown || _isFading || !_isPlay || _isWaitingSE) return; // © ’Ç‰Á
+		if (_isCooldown || _isFading || !_isPlay || _isWaitingSE) return; // ï¿½ï¿½ ï¿½Ç‰ï¿½
 
 		bool isAdvancePressed = _inputActions.ADV.Advance.triggered;
 		bool isHoldSpeedUp = _inputActions.ADV.Advance.ReadValue<float>() > 0.5f;
@@ -130,27 +135,27 @@ public class ADVManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ƒVƒiƒŠƒIis‚ÌƒN[ƒ‹ƒ^ƒCƒ€ˆ—
+	/// ï¿½Vï¿½iï¿½ï¿½ï¿½Iï¿½iï¿½sï¿½ÌƒNï¿½[ï¿½ï¿½ï¿½^ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	/// </summary>
 	/// <returns></returns>
 	private IEnumerator AdvanceCooldown()
 	{
-		_isCooldown = true;  // ƒN[ƒ‹ƒ_ƒEƒ“‚ğŠJn
+		_isCooldown = true;  // ï¿½Nï¿½[ï¿½ï¿½ï¿½_ï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½n
         yield return new WaitForSecondsRealtime(_advanceCooldown);
-        // w’è‚µ‚½ŠÔ‘Ò‹@
-        _isCooldown = false; // ƒN[ƒ‹ƒ_ƒEƒ“I—¹
+        // ï¿½wï¿½è‚µï¿½ï¿½ï¿½ï¿½ï¿½Ô‘Ò‹@
+        _isCooldown = false; // ï¿½Nï¿½[ï¿½ï¿½ï¿½_ï¿½Eï¿½ï¿½ï¿½Iï¿½ï¿½
 	}
 
 	/// <summary>
-	/// ƒVƒiƒŠƒIƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	/// ï¿½Vï¿½iï¿½ï¿½ï¿½Iï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
 	/// </summary>
-	/// <param name="fileName">“Ç‚İ‚Şƒtƒ@ƒCƒ‹–¼</param>
+	/// <param name="fileName">ï¿½Ç‚İï¿½ï¿½Şƒtï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½</param>
 	private void LoadScenario(string fileName)
 	{
 		TextAsset json = Resources.Load<TextAsset>("Scenarios/" + fileName);
 		if (json == null)
 		{
-			UnityEngine.Debug.LogError("ƒVƒiƒŠƒIƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ: " + fileName);
+			UnityEngine.Debug.LogError("ï¿½Vï¿½iï¿½ï¿½ï¿½Iï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½: " + fileName);
 			return;
 		}
 
@@ -162,16 +167,20 @@ public class ADVManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Ÿ‚Ì‰ï˜bAƒCƒxƒ“ƒg‚ğÄ¶
+	/// ï¿½ï¿½ï¿½Ì‰ï¿½bï¿½Aï¿½Cï¿½xï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Äï¿½
 	/// </summary>
 	private void ShowNextStep()
 	{
 		if (_steps.Count == 0)
 		{
-			UnityEngine.Debug.Log("ƒVƒiƒŠƒII—¹");
 			_isPlay = false;
-			Time.timeScale = 1f; // ƒQ[ƒ€‚ÌŠÔ‚ğŒ³‚É–ß‚·
+			Time.timeScale = 1f; // ï¿½Qï¿½[ï¿½ï¿½ï¿½Ìï¿½ï¿½Ô‚ï¿½ï¿½ï¿½ï¿½É–ß‚ï¿½
             InputActionHolder.Instance.playerInputActions.Enable();
+			InputActionHolder.Instance.menuInputActions.Enable(); // ADVçµ‚äº†å¾Œã«ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ“ä½œã‚’æœ‰åŠ¹åŒ–
+
+
+			_playerMovement.isCanAction = true;
+			_coolTimeInput.SetCanRecord(true); // ã‚´ãƒ¼ã‚¹ãƒˆã®è¨˜éŒ²ã‚’å†åº¦æœ‰åŠ¹åŒ–
 
             _canvasGroup.DOFade(0f, 0.2f).OnComplete(() =>
 			{
@@ -201,11 +210,11 @@ public class ADVManager : MonoBehaviour
 				break;
 
 			case "fadeout":
-				StartCoroutine(FadeOverlay(1f, 0.5f)); // •‚ÉƒtƒF[ƒh
+				StartCoroutine(FadeOverlay(1f, 0.5f)); // ï¿½ï¿½ï¿½Éƒtï¿½Fï¿½[ï¿½h
 				break;
 
 			case "fadein":
-				StartCoroutine(FadeOverlay(0f, 0.5f)); // •‚ğÁ‚·
+				StartCoroutine(FadeOverlay(0f, 0.5f)); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				break;
 
 			case "se":
@@ -218,17 +227,17 @@ public class ADVManager : MonoBehaviour
 				break;
 
 			default:
-				UnityEngine.Debug.LogWarning("•s–¾‚ÈƒXƒeƒbƒvƒ^ƒCƒv: " + step.type);
+				UnityEngine.Debug.LogWarning("ï¿½sï¿½ï¿½ï¿½ÈƒXï¿½eï¿½bï¿½vï¿½^ï¿½Cï¿½v: " + step.type);
 				ShowNextStep();
 				break;
 		}
 	}
 
 	/// <summary>
-	/// ƒtƒF[ƒhƒI[ƒo[ƒŒƒCˆ—
+	/// ï¿½tï¿½Fï¿½[ï¿½hï¿½Iï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½
 	/// </summary>
-	/// <param name="targetAlpha">‘ÎÛ‚Ìƒ¿</param>
-	/// <param name="duration">ƒtƒF[ƒhŠÔŠu</param>
+	/// <param name="targetAlpha">ï¿½ÎÛ‚Ìƒï¿½</param>
+	/// <param name="duration">ï¿½tï¿½Fï¿½[ï¿½hï¿½ÔŠu</param>
 	/// <returns></returns>
 	private IEnumerator FadeOverlay(float targetAlpha, float duration)
 	{
@@ -247,19 +256,19 @@ public class ADVManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// SEÄ¶
+	/// SEï¿½Äï¿½
 	/// </summary>
-	/// <param name="clipName">SEƒtƒ@ƒCƒ‹–¼</param>
-	/// <param name="wait">trueFŒø‰Ê‰¹Ä¶Œã‚ÉƒeƒLƒXƒg•\¦ falseFƒeƒLƒXƒg‚Æˆê‚ÉÄ¶</param>
+	/// <param name="clipName">SEï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½</param>
+	/// <param name="wait">trueï¿½Fï¿½ï¿½ï¿½Ê‰ï¿½ï¿½Äï¿½ï¿½ï¿½Éƒeï¿½Lï¿½Xï¿½gï¿½\ï¿½ï¿½ falseï¿½Fï¿½eï¿½Lï¿½Xï¿½gï¿½Æˆêï¿½ÉÄï¿½</param>
 	/// <returns></returns>
 	private IEnumerator PlaySEAndWait(string clipName, bool wait)
 	{
-		_isWaitingSE = true; // © ’Ç‰Á
+		_isWaitingSE = true; // ï¿½ï¿½ ï¿½Ç‰ï¿½
 		AudioClip clip = Resources.Load<AudioClip>("Audio/SE/" + clipName);
 		if (clip == null)
 		{
-			UnityEngine.Debug.LogWarning("SE‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ: " + clipName);
-			_isWaitingSE = false; // © ’Ç‰Á
+			UnityEngine.Debug.LogWarning("SEï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½: " + clipName);
+			_isWaitingSE = false; // ï¿½ï¿½ ï¿½Ç‰ï¿½
 			ShowNextStep();
 			yield break;
 		}
@@ -270,15 +279,15 @@ public class ADVManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(clip.length);
     }
 
-    _isWaitingSE = false; // © ’Ç‰Á
+    _isWaitingSE = false; // ï¿½ï¿½ ï¿½Ç‰ï¿½
     ShowNextStep();
 	}
 
 	/// <summary>
-	/// ƒeƒLƒXƒg•\¦
+	/// ï¿½eï¿½Lï¿½Xï¿½gï¿½\ï¿½ï¿½
 	/// </summary>
-	/// <param name="speaker">—£‚µ‚Ä‚¢‚él•¨</param>
-	/// <param name="message">“à—e</param>
+	/// <param name="speaker">ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½lï¿½ï¿½</param>
+	/// <param name="message">ï¿½ï¿½ï¿½e</param>
 	/// <returns></returns>
 	private IEnumerator ShowMessage(string speaker, string message)
 	{
@@ -288,12 +297,12 @@ public class ADVManager : MonoBehaviour
 
 		for (int i = 0; i < message.Length; i++)
 		{
-			// “Áêƒ^ƒO <wait> ‚ğŒŸo‚µ‚½‚çA“ü—Í‘Ò‚¿‚·‚é
+			// ï¿½ï¿½ï¿½ï¿½^ï¿½O <wait> ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Í‘Ò‚ï¿½ï¿½ï¿½ï¿½ï¿½
 			if (message.Substring(i).StartsWith("<wait>"))
 			{
-				i += "<wait>".Length - 1; // ƒ^ƒO•ªƒXƒLƒbƒv
+				i += "<wait>".Length - 1; // ï¿½^ï¿½Oï¿½ï¿½ï¿½Xï¿½Lï¿½bï¿½v
 
-				// “ü—Í‚ª‚ ‚é‚Ü‚Å‘Ò‹@
+				// ï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚Å‘Ò‹@
 				yield return new WaitUntil(() => _inputActions.ADV.Advance.triggered);
 			}
 			else
@@ -307,61 +316,61 @@ public class ADVManager : MonoBehaviour
 		_isMessageShowing = false;
 		_isSkipping = false;
 
-		// ‘S•¶•\¦Œã‚É¥ƒ}[ƒN‚ğ•\¦
+		// ï¿½Sï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½Éï¿½ï¿½}ï¿½[ï¿½Nï¿½ï¿½\ï¿½ï¿½
 		_nextIcon.gameObject.SetActive(true);
 	}
 
 	/// <summary>
-	/// ƒLƒƒƒ‰ƒNƒ^[—§‚¿ŠG‚ğ•\¦
+	/// ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½Gï¿½ï¿½\ï¿½ï¿½
 	/// </summary>
-	/// <param name="target">’N‚Ì</param>
-	/// <param name="spriteName">‰æ‘œƒtƒ@ƒCƒ‹–¼</param>
-	/// <param name="side">•\¦‚·‚éˆÊ’u</param>
-	/// <param name="transition">ƒgƒ‰ƒ“ƒWƒVƒ‡ƒ“‚µ‚Ä•\¦‚·‚é</param>
+	/// <param name="target">ï¿½Nï¿½ï¿½</param>
+	/// <param name="spriteName">ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½</param>
+	/// <param name="side">ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê’u</param>
+	/// <param name="transition">ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä•\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</param>
 	private void ShowCharacter(string target, string spriteName, string side, string transition)
 	{
-		// ˆÚ“®‘O‚ÌˆÊ’ui‘O‚Ì sidej‚ğ”ñ•\¦‚É‚·‚é
+		// ï¿½Ú“ï¿½ï¿½Oï¿½ÌˆÊ’uï¿½iï¿½Oï¿½ï¿½ sideï¿½jï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
 		HideCharacterAtPreviousPosition(target);
 
-		// V‚µ‚¢ˆÊ’u‚ÉƒLƒƒƒ‰ƒNƒ^[‰æ‘œ‚ğ•\¦
+		// ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Ê’uï¿½ÉƒLï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½æ‘œï¿½ï¿½\ï¿½ï¿½
 		Sprite newSprite = Resources.Load<Sprite>("Sprites/" + spriteName);
 		Image targetImage = FindImageByTarget(target, side);
 
 		_targetToSideMap[target] = side;
-		ChangeCharacterImage(targetImage, newSprite, transition); // ‰æ‘œØ‚è‘Ö‚¦ˆ—‚ğŒÄ‚Ño‚·
+		ChangeCharacterImage(targetImage, newSprite, transition); // ï¿½æ‘œï¿½Ø‚ï¿½Ö‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚Ñoï¿½ï¿½
 	}
 
 	/// <summary>
-	/// ˆÈ‘O‚ÌˆÊ’u‚ÌƒLƒƒƒ‰ƒNƒ^[‰æ‘œ‚ğ”ñ•\¦‚É‚·‚éƒƒ\ƒbƒh
+	/// ï¿½È‘Oï¿½ÌˆÊ’uï¿½ÌƒLï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½æ‘œï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½É‚ï¿½ï¿½éƒï¿½\ï¿½bï¿½h
 	/// </summary>
-	/// <param name="target">”ñ•\¦‚É‚·‚él•¨</param>
+	/// <param name="target">ï¿½ï¿½\ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½lï¿½ï¿½</param>
 	private void HideCharacterAtPreviousPosition(string target)
 	{
-		// Œ»İ•\¦‚³‚ê‚Ä‚¢‚éƒLƒƒƒ‰ƒNƒ^[‚ÌˆÊ’u‚ğ’²‚×‚é
+		// ï¿½ï¿½ï¿½İ•\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½ÌˆÊ’uï¿½ğ’²‚×‚ï¿½
 		if (_imageLeft.sprite != null && _imageLeft.sprite.name.Contains(target))
 		{
-			_imageLeft.color = new Color(1, 1, 1, 0); // ¶‘¤‚ÌƒLƒƒƒ‰ƒNƒ^[‚ğ”ñ•\¦‚É‚·‚é
+			_imageLeft.color = new Color(1, 1, 1, 0); // ï¿½ï¿½ï¿½ï¿½ï¿½ÌƒLï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
 		}
 		if (_imageCenter.sprite != null && _imageCenter.sprite.name.Contains(target))
 		{
-			_imageCenter.color = new Color(1, 1, 1, 0); // ’†‰›‚ÌƒLƒƒƒ‰ƒNƒ^[‚ğ”ñ•\¦‚É‚·‚é
+			_imageCenter.color = new Color(1, 1, 1, 0); // ï¿½ï¿½ï¿½ï¿½ï¿½ÌƒLï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
 		}
 		if (_imageRight.sprite != null && _imageRight.sprite.name.Contains(target))
 		{
-			_imageRight.color = new Color(1, 1, 1, 0); // ‰E‘¤‚ÌƒLƒƒƒ‰ƒNƒ^[‚ğ”ñ•\¦‚É‚·‚é
+			_imageRight.color = new Color(1, 1, 1, 0); // ï¿½Eï¿½ï¿½ï¿½ÌƒLï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
 		}
 	}
 
 	/// <summary>
-	/// •\¦‚µ‚Ä‚¢‚éƒLƒƒƒ‰—§‚¿ŠG‰æ‘œ‚ğ’u‚«Š·‚¦
+	/// ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Gï¿½æ‘œï¿½ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	/// </summary>
-	/// <param name="target">’N‚Ì</param>
-	/// <param name="spriteName">‰æ‘œƒtƒ@ƒCƒ‹–¼</param>
-	/// <param name="side">ˆÊ’u</param>
-	/// <param name="transition">ƒgƒ‰ƒ“ƒWƒVƒ‡ƒ“‚µ‚Ä•\¦‚·‚é</param>
+	/// <param name="target">ï¿½Nï¿½ï¿½</param>
+	/// <param name="spriteName">ï¿½æ‘œï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½</param>
+	/// <param name="side">ï¿½Ê’u</param>
+	/// <param name="transition">ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä•\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</param>
 	private void ChangeCharacterExpression(string target, string spriteName, string side, string transition)
 	{
-		// side‚ªw’è‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍA‘O‰ñ‚Ì•\¦ˆÊ’u‚ğg—p
+		// sideï¿½ï¿½ï¿½wï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍAï¿½Oï¿½ï¿½Ì•\ï¿½ï¿½ï¿½Ê’uï¿½ï¿½ï¿½gï¿½p
 		if (string.IsNullOrEmpty(side))
 		{
 			if (_targetToSideMap.ContainsKey(target))
@@ -370,7 +379,6 @@ public class ADVManager : MonoBehaviour
 			}
 			else
 			{
-				UnityEngine.Debug.LogWarning($"side‚ªw’è‚³‚ê‚Ä‚¨‚ç‚¸A{target} ‚É‘O‰ñ‚Ì•\¦ˆÊ’u‚àŒ©‚Â‚©‚è‚Ü‚¹‚ñB");
 				return;
 			}
 		}
@@ -378,14 +386,14 @@ public class ADVManager : MonoBehaviour
 		Sprite newSprite = Resources.Load<Sprite>("Sprites/" + spriteName);
 		if (newSprite == null)
 		{
-			UnityEngine.Debug.LogError($"ƒXƒvƒ‰ƒCƒg‚ª“Ç‚İ‚ß‚Ü‚¹‚ñ‚Å‚µ‚½: Sprites/{spriteName}");
+			UnityEngine.Debug.LogError($"ï¿½Xï¿½vï¿½ï¿½ï¿½Cï¿½gï¿½ï¿½ï¿½Ç‚İï¿½ï¿½ß‚Ü‚ï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½: Sprites/{spriteName}");
 			return;
 		}
 
 		Image targetImage = FindImageByTarget(target, side);
 		if (targetImage == null)
 		{
-			UnityEngine.Debug.LogError($"targetImage‚ªnull‚Å‚· (target: {target}, side: {side})");
+			UnityEngine.Debug.LogError($"targetImageï¿½ï¿½nullï¿½Å‚ï¿½ (target: {target}, side: {side})");
 			return;
 		}
 
@@ -393,23 +401,23 @@ public class ADVManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ‰æ‘œ‚ÌØ‚è‘Ö‚¦ˆ—‚ğ‚Ü‚Æ‚ß‚½ƒƒ\ƒbƒh
+	/// ï¿½æ‘œï¿½ÌØ‚ï¿½Ö‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚Æ‚ß‚ï¿½ï¿½ï¿½ï¿½\ï¿½bï¿½h
 	/// </summary>
-	/// <param name="targetImage">‘ÎÛ‰æ‘œ</param>
-	/// <param name="newSprite">’u‚«Š·‚¦‚é‰æ‘œ</param>
-	/// <param name="transition">ƒgƒ‰ƒ“ƒWƒVƒ‡ƒ“‚µ‚Ä•\¦</param>
+	/// <param name="targetImage">ï¿½ÎÛ‰æ‘œ</param>
+	/// <param name="newSprite">ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ‘œ</param>
+	/// <param name="transition">ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä•\ï¿½ï¿½</param>
 	private void ChangeCharacterImage(Image targetImage, Sprite newSprite, string transition)
 	{
 		if (targetImage == null)
 		{
-			UnityEngine.Debug.LogError("ƒ^[ƒQƒbƒg‰æ‘œ‚ªnull‚Å‚·Bside: " + targetImage.name);
-			return; // ‰æ‘œ‚ªnull‚Ìê‡‚Íˆ—‚ğ’†~
+			UnityEngine.Debug.LogError("ï¿½^ï¿½[ï¿½Qï¿½bï¿½gï¿½æ‘œï¿½ï¿½nullï¿½Å‚ï¿½ï¿½Bside: " + targetImage.name);
+			return; // ï¿½æ‘œï¿½ï¿½nullï¿½Ìê‡ï¿½Íï¿½ï¿½ï¿½ï¿½ğ’†~
 		}
 
 		if (newSprite == null)
 		{
-			UnityEngine.Debug.LogError("ƒXƒvƒ‰ƒCƒg‚ªnull‚Å‚·BspriteName: " + newSprite.name);
-			return; // ƒXƒvƒ‰ƒCƒg‚ªnull‚Ìê‡‚Íˆ—‚ğ’†~
+			UnityEngine.Debug.LogError("ï¿½Xï¿½vï¿½ï¿½ï¿½Cï¿½gï¿½ï¿½nullï¿½Å‚ï¿½ï¿½BspriteName: " + newSprite.name);
+			return; // ï¿½Xï¿½vï¿½ï¿½ï¿½Cï¿½gï¿½ï¿½nullï¿½Ìê‡ï¿½Íï¿½ï¿½ï¿½ï¿½ğ’†~
 		}
 
 		if (transition == "fade")
@@ -423,14 +431,14 @@ public class ADVManager : MonoBehaviour
         else
 		{
 			targetImage.sprite = newSprite;
-			targetImage.color = new Color(1, 1, 1, 1); // F‚ğŒ³‚É–ß‚·
+			targetImage.color = new Color(1, 1, 1, 1); // ï¿½Fï¿½ï¿½ï¿½ï¿½ï¿½É–ß‚ï¿½
 		}
 	}
 
 	/// <summary>
-	/// ’u‚«Š·‚¦‚éÛ‚É‘O‚Ì‰æ‘œ‚ğ”ñ•\¦‚É‚·‚é
+	/// ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û‚É‘Oï¿½Ì‰æ‘œï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
 	/// </summary>
-	/// <param name="target">‘ÎÛ‚Ìl•¨</param>
+	/// <param name="target">ï¿½ÎÛ‚Ìlï¿½ï¿½</param>
 	private void HideCharacter(string target)
 	{
 		if (!_targetToSideMap.ContainsKey(target)) return;
@@ -440,15 +448,15 @@ public class ADVManager : MonoBehaviour
 
 		if (image != null)
 		{
-            image.DOFade(0f, 0.3f).SetUpdate(true); // ƒtƒF[ƒhƒAƒEƒg‚Å”ñ•\¦‚É‚·‚é
+            image.DOFade(0f, 0.3f).SetUpdate(true); // ï¿½tï¿½Fï¿½[ï¿½hï¿½Aï¿½Eï¿½gï¿½Å”ï¿½\ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
         }
     }
 
 	/// <summary>
-	/// side‚©‚çƒXƒƒbƒg‚ğæ“¾
+	/// sideï¿½ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½bï¿½gï¿½ï¿½ï¿½æ“¾
 	/// </summary>
-	/// <param name="target">‘ÎÛl•¨</param>
-	/// <param name="side">ˆÊ’u</param>
+	/// <param name="target">ï¿½ÎÛlï¿½ï¿½</param>
+	/// <param name="side">ï¿½Ê’u</param>
 	/// <returns></returns>
 	Image FindImageByTarget(string target, string side)
 	{
