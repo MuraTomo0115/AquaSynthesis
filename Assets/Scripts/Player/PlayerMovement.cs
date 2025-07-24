@@ -44,6 +44,7 @@ public class PlayerMovement : MonoBehaviour
     private bool _canPistolAttack = true;
     private bool _isInvincible = false;
     private bool _isOnSpike = false;
+    public bool isCanSE = true;
     private AudioSource _audioSource;
     private bool _wasMoving = false;
 
@@ -198,7 +199,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
-        if (!_is_CanJump) return;
+        if (!_is_CanJump || !isCanSE) return;
 
         PlaySE(PlayerSE.Jump);
         _animator.SetTrigger("Jump");
@@ -208,7 +209,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Attack()
     {
-        if (!_canAdjacentAttack) return;
+        if (!_canAdjacentAttack || !isCanSE) return;
 
         _animator.SetTrigger("AttackSword");
         DidAttack = true;
@@ -216,7 +217,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Pistol()
     {
-        if (!_canPistolAttack) return;
+        if (!_canPistolAttack || !isCanSE) return;
 
         _animator.SetTrigger("AttackPistol");
         ShootPistol();
