@@ -24,6 +24,13 @@
         "speaker": "ハヤト",
         "text": "反応の消失確認"
     },
+    { "type": "fadeout" },
+    {
+        "type": "se",
+        "clip": "noise",
+        "wait": true
+    },
+    { "type": "fadein" },
     {
         "type": "text",
         "speaker": "ハヤト",
@@ -44,9 +51,6 @@
         "speaker": "カスミ",
         "text": "いきなりどうしたんですか？"
     },
-
-    //画面をシェイクさせる
-
     {
         "type": "text",
         "speaker": "シズク",
@@ -147,9 +151,6 @@
         "speaker": "ミスズ",
         "text": "…………デルタ３、了解"
     },
-
-    //画面シェイク
-
     {
         "type": "text",
         "speaker": "キタミ",
@@ -213,9 +214,6 @@
         "speaker": "ミスズ",
         "text": "シズクは力があるのに、自分達さえ良ければ良いって言うの！？　信じられない！！"
     },
-
-    //ミスズをフェードアウト
-
     {
         "type": "text",
         "speaker": "シズク",

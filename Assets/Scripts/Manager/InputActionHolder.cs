@@ -15,7 +15,6 @@ public class InputActionHolder : MonoBehaviour
     {
         if (Instance == null)
         {
-            Debug.Log("InputActionHolder Awake");
             Instance = this;
             playerInputActions = new PlayerInputActions();
             menuInputActions = new MenuInputActions();

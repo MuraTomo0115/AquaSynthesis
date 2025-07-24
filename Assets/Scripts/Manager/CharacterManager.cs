@@ -208,7 +208,6 @@ public class CharacterManager : MonoBehaviour
         if (bossData != null)
         {
             bossCharacter.SetStats(bossData.hp, bossData.attack_power);
-            Debug.Log($"Boss初期化: HP={bossData.hp}, AttackPower={bossData.attack_power}");
         }
         else
         {

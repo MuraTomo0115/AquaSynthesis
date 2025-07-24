@@ -52,41 +52,6 @@ public class GameManager : MonoBehaviour
         _gameState = GameState.Stage;
     }
 
-    private void Update()
-    {
-        // InputSystem��J�L�[���������m
-        if (Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame)
-        {
-            Debug.Log("J�L�[��������܂����i�f�o�b�O�p���x���A�b�v�j");
-            LevelUpPlayer();
-        }
-    }
-
-    private void LevelUpPlayer()
-    {
-        // �v���C���[�̌��݃f�[�^�擾
-        var player = DatabaseManager.GetAllCharacters().Find(c => c.name == "Shizuku"); // ��: ���O�Ō���
-        if (player != null)
-        {
-            // �X�e�[�^�X�㏸��iHP+10, �U����+2, ���x��+1�j
-            int newHP = player.hp + 10;
-            int newAtk = player.attack_power + 2;
-            int newLevel = player.level + 1;
-
-            // DB���X�V
-            //DatabaseManager.UpdatePlayerStatus(player.id, newHP, newAtk, newLevel);
-
-            Debug.Log($"���x���A�b�v�I �VHP:{newHP}, �V�U����:{newAtk}, �V���x��:{newLevel}");
-
-            // ��ʏ�̃L�����N�^�[�ɂ����f�������ꍇ�́A�ēǍ���SetStats�Ăяo����ǉ�
-            _characterManager.LoadPlayerStatus();
-        }
-        else
-        {
-            Debug.LogWarning("�v���C���[�f�[�^��������܂���");
-        }
-    }
-
     /// <summary>
     /// �Q�[���̃X�e�[�^�X��ύX����
     /// </summary>

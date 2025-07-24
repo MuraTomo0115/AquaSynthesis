@@ -40,7 +40,7 @@ public class ADVManager : MonoBehaviour
 
 	public bool IsPlaying => _isPlay; // �V�i���I���Đ������ǂ������擾����v���p�e�B
 
-    public static ADVManager Instance { get; private set; }
+	public static ADVManager Instance { get; private set; }
 
 	private void Awake()
 	{
@@ -83,12 +83,12 @@ public class ADVManager : MonoBehaviour
 		_coolTimeInput.SetCanRecord(false); // ゴーストの記録を無効化
 		InputActionHolder.Instance.menuInputActions.Disable(); // ADV開始時にメニュー操作を無効化
 
-        AudioManager.Instance.StopAllSE(); // ���ׂĂ�SE���~
+		AudioManager.Instance.StopAllSE(); // ���ׂĂ�SE���~
 
-        _isPlay = true;
+		_isPlay = true;
 		Time.timeScale = 0f;
-                              // UI���������ߋ��̎c����N���A
-        _messageText.text = "";
+		// UI���������ߋ��̎c����N���A
+		_messageText.text = "";
 		_speakerText.text = "";
 		_imageLeft.sprite = null;
 		_imageCenter.sprite = null;
@@ -141,9 +141,9 @@ public class ADVManager : MonoBehaviour
 	private IEnumerator AdvanceCooldown()
 	{
 		_isCooldown = true;  // �N�[���_�E�����J�n
-        yield return new WaitForSecondsRealtime(_advanceCooldown);
-        // �w�肵�����ԑҋ@
-        _isCooldown = false; // �N�[���_�E���I��
+		yield return new WaitForSecondsRealtime(_advanceCooldown);
+		// �w�肵�����ԑҋ@
+		_isCooldown = false; // �N�[���_�E���I��
 	}
 
 	/// <summary>
@@ -175,14 +175,14 @@ public class ADVManager : MonoBehaviour
 		{
 			_isPlay = false;
 			Time.timeScale = 1f; // �Q�[���̎��Ԃ����ɖ߂�
-            InputActionHolder.Instance.playerInputActions.Enable();
+			InputActionHolder.Instance.playerInputActions.Enable();
 			InputActionHolder.Instance.menuInputActions.Enable(); // ADV終了後にメニュー操作を有効化
 
 
 			_playerMovement.isCanAction = true;
 			_coolTimeInput.SetCanRecord(true); // ゴーストの記録を再度有効化
 
-            _canvasGroup.DOFade(0f, 0.2f).OnComplete(() =>
+			_canvasGroup.DOFade(0f, 0.2f).OnComplete(() =>
 			{
 				_advContents.SetActive(false);
 				_canvasGroup.alpha = 1f;
@@ -244,9 +244,9 @@ public class ADVManager : MonoBehaviour
 		_isFading = true;
 		_fadeOverlay.gameObject.SetActive(true);
 
-        yield return _fadeOverlay.DOFade(targetAlpha, duration).SetUpdate(true).WaitForCompletion();
+		yield return _fadeOverlay.DOFade(targetAlpha, duration).SetUpdate(true).WaitForCompletion();
 
-        if (targetAlpha == 0f)
+		if (targetAlpha == 0f)
 		{
 			_fadeOverlay.gameObject.SetActive(false);
 		}
@@ -274,13 +274,13 @@ public class ADVManager : MonoBehaviour
 		}
 		_seAudioSource.PlayOneShot(clip);
 
-    if (wait)
-    {
-        yield return new WaitForSecondsRealtime(clip.length);
-    }
+		if (wait)
+		{
+			yield return new WaitForSecondsRealtime(clip.length);
+		}
 
-    _isWaitingSE = false; // �� �ǉ�
-    ShowNextStep();
+		_isWaitingSE = false; // �� �ǉ�
+		ShowNextStep();
 	}
 
 	/// <summary>
@@ -308,9 +308,9 @@ public class ADVManager : MonoBehaviour
 			else
 			{
 				_messageText.text += message[i];
-                float wait = _isSkipping ? 0.005f : 0.05f;
-                yield return new WaitForSecondsRealtime(wait);
-            }
+				float wait = _isSkipping ? 0.005f : 0.05f;
+				yield return new WaitForSecondsRealtime(wait);
+			}
 		}
 
 		_isMessageShowing = false;
@@ -422,13 +422,13 @@ public class ADVManager : MonoBehaviour
 
 		if (transition == "fade")
 		{
-            targetImage.DOFade(0f, 0.3f).SetUpdate(true).OnComplete(() =>
-            {
-                targetImage.sprite = newSprite;
-                targetImage.DOFade(1f, 0.3f).SetUpdate(true);
-            });
-        }
-        else
+			targetImage.DOFade(0f, 0.3f).SetUpdate(true).OnComplete(() =>
+			{
+				targetImage.sprite = newSprite;
+				targetImage.DOFade(1f, 0.3f).SetUpdate(true);
+			});
+		}
+		else
 		{
 			targetImage.sprite = newSprite;
 			targetImage.color = new Color(1, 1, 1, 1); // �F�����ɖ߂�
@@ -448,9 +448,9 @@ public class ADVManager : MonoBehaviour
 
 		if (image != null)
 		{
-            image.DOFade(0f, 0.3f).SetUpdate(true); // �t�F�[�h�A�E�g�Ŕ�\���ɂ���
-        }
-    }
+			image.DOFade(0f, 0.3f).SetUpdate(true); // �t�F�[�h�A�E�g�Ŕ�\���ɂ���
+		}
+	}
 
 	/// <summary>
 	/// side����X���b�g���擾
@@ -488,5 +488,27 @@ public class ADVManager : MonoBehaviour
 	public class ScenarioWrapper
 	{
 		public ScenarioStep[] steps;
+	}
+
+	private string _pendingScenarioName;    // 次のボスシナリオを開始するための名前
+
+	/// <summary>
+	/// ボスシナリオを開始するためのメソッド
+	/// 5秒後に指定されたシナリオを開始します。
+	/// </summary>
+	/// <param name="scenarioName"></param>
+	public void BossScenario(string scenarioName)
+	{
+		_pendingScenarioName = scenarioName;
+		Invoke(nameof(InvokeStartScenario), 5.0f);
+	}
+
+	/// <summary>
+	/// 5秒後に指定されたシナリオを開始するためのメソッド
+	/// </summary>
+	/// <param name="scenarioName">開始するシナリオの名前</param>
+	private void InvokeStartScenario()
+	{
+		StartScenario(_pendingScenarioName);
 	}
 }
