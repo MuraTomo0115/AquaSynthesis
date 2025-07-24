@@ -180,4 +180,38 @@ public class CharacterManager : MonoBehaviour
             character.SetSE(destructibleData.DestroySE);
         }
     }
+
+    public void LoadBossStatus(GameObject bossObject)
+    {
+        if (bossObject == null)
+        {
+            Debug.LogError("Bossオブジェクトがnullです");
+            return;
+        }
+
+        Character bossCharacter = bossObject.GetComponent<Character>();
+        if (bossCharacter == null)
+        {
+            Debug.LogError("BossオブジェクトにCharacterコンポーネントがありません");
+            return;
+        }
+
+        string bossName = bossCharacter.CharacterName;
+        if (string.IsNullOrEmpty(bossName))
+        {
+            Debug.LogError("BossのCharacterNameが空です");
+            return;
+        }
+
+        var bossList = DatabaseManager.GetAllBosses();
+        var bossData = bossList.Find(b => b.name == bossName);
+        if (bossData != null)
+        {
+            bossCharacter.SetStats(bossData.hp, bossData.attack_power);
+        }
+        else
+        {
+            Debug.LogError($"Boss data not found for Name '{bossName}' in bosses table");
+        }
+    }
 }

@@ -35,7 +35,6 @@ public class ExpManager : MonoBehaviour
     {
         _currentExp += exp;
         UpdateExpText();
-        Debug.Log($"�o���l��ǉ�: {exp} (���݂̌o���l: {_currentExp})");
     }
 
     /// <summary>

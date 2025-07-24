@@ -120,15 +120,5 @@
         "type": "text",
         "speaker": "キタミ",
         "text": "それじゃ第三デルタ小隊の初仕事だ"
-    },
-    {
-        "type": "se",
-        "clip": "glass_break",
-        "wait": true
-    },
-    {
-        "type": "se",
-        "clip": "horror",
-        "wait": false
     }
 ]

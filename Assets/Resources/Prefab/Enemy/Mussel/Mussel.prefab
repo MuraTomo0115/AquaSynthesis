@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5768905358227544675}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: EffectPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 7911198669646467341}
   - component: {fileID: 7911198669646467340}
   - component: {fileID: 2511129863430894196}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Mussel
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -180,7 +180,7 @@ MonoBehaviour:
   _attackRange: 7.94
   _fallAcceleration: 2
   _maxFallSpeed: 20
-  _detectionWidth: 0.7
+  _detectionWidth: 1.35
   _returnDuration: 2
   _waitTimeAfterFall: 2
   _returnEasingCurve:
@@ -207,7 +207,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _attackMultiplier: 1
+  _attackMultiplier: 5
   _shakeIntensity: 1
   _shakeDuration: 0.5
   _shockwaveEffectPos: {fileID: 5768905358227544675}

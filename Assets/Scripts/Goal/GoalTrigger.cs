@@ -66,15 +66,15 @@ public class GoalTrigger : MonoBehaviour
     /// <summary>
     /// ゲームクリア時の処理
     /// </summary>
-    private void StageClear()
+    public void StageClear()
     {
         _addExp = ExpManager.Instance.CurrentExp;
 
         _getExpName.text = _addExp.ToString();
         _addExp = 0;
-        DatabaseManager.GetExp(1,ExpManager.Instance.GetCurrentExp());
+        DatabaseManager.GetExp(1, ExpManager.Instance.GetCurrentExp());
 
-        if(_route != null)
+        if (_route != null)
         {
             DatabaseManager.UpdateCurrentRoute(1, _route);
             _route = null;
@@ -228,5 +228,13 @@ public class GoalTrigger : MonoBehaviour
     public void SetRoute(string routeFlag)
     {
         _route = routeFlag;
+    }
+
+    /// <summary>
+    /// N2ボスのクリア処理
+    /// </summary>
+    public void N2Boss()
+    {
+        Invoke("StageClear", 6.0f);
     }
 }

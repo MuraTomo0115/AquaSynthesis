@@ -171,10 +171,10 @@ public class Character : MonoBehaviour
 
         if(_isBoss)
         {
-            var boss = DatabaseManager.GetBossByName(_characterName);
+            // var boss = DatabaseManager.GetBossByName(_characterName);
 
-            if (boss.flag != null)
-                GoalTrigger.Instance.SetRoute(boss.flag);
+            // if (boss.flag != null)
+                //GoalTrigger.Instance.SetRoute(boss.flag);
         }
 
         ExpManager.Instance.AddExp(_getExp);
@@ -194,6 +194,9 @@ public class Character : MonoBehaviour
             {
                 bossHpBar.AppearHPBar(false);
             }
+
+            ADVManager.Instance.BossScenario("NStory1_NextBoss");
+            GoalTrigger.Instance.N2Boss();
         }
 
         // �j��\�I�u�W�F�N�g�̏ꍇ�����𕪂���
@@ -238,7 +241,7 @@ public class Character : MonoBehaviour
                 comp.enabled = false;
         }
 
-        Destroy(gameObject, 1.0f);
+        StartCoroutine(FadeOutAndDestroy());
     }
 
     public void Heal(float amount)
@@ -318,7 +321,7 @@ public class Character : MonoBehaviour
             ExpManager.Instance.AddExp(expCount);
         }
         _animator?.SetTrigger("Destroy");
-        Destroy(gameObject, 1.0f);
+        StartCoroutine(FadeOutAndDestroy());
     }
 
     /// <summary>
@@ -369,5 +372,52 @@ public class Character : MonoBehaviour
 
         // ゲームオーバーシーンをロード
         SceneManager.LoadScene("GameOver");
+    }
+
+    /// <summary>
+    /// フェードアウトしてオブジェクトを削除するコルーチン
+    /// </summary>
+    private IEnumerator FadeOutAndDestroy()
+    {
+        float fadeDuration = 1.0f;
+        float elapsed = 0f;
+
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            float alpha = 1f - (elapsed / fadeDuration); // 1から0に向かって減少
+
+            // すべてのSpriteRendererの透明度を変更
+            if (_spriteRenderers != null)
+            {
+                for (int i = 0; i < _spriteRenderers.Length; i++)
+                {
+                    if (_spriteRenderers[i] != null)
+                    {
+                        Color color = _spriteRenderers[i].color;
+                        color.a = alpha;
+                        _spriteRenderers[i].color = color;
+                    }
+                }
+            }
+
+            yield return null;
+        }
+
+        // 完全に透明にしてからオブジェクトを削除
+        if (_spriteRenderers != null)
+        {
+            for (int i = 0; i < _spriteRenderers.Length; i++)
+            {
+                if (_spriteRenderers[i] != null)
+                {
+                    Color color = _spriteRenderers[i].color;
+                    color.a = 0f;
+                    _spriteRenderers[i].color = color;
+                }
+            }
+        }
+
+        Destroy(gameObject);
     }
 }
