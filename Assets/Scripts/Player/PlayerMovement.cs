@@ -44,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
     private bool _canPistolAttack = true;
     private bool _isInvincible = false;
     private bool _isOnSpike = false;
-    public bool isCanSE = true;
+    public bool isCanAction = true;
     private AudioSource _audioSource;
     private bool _wasMoving = false;
 
@@ -67,9 +67,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void SummonSupport(int num)
     {
-        if (_supportManager == null)
+        if (_supportManager == null || !isCanAction)
         {
-            Debug.LogError("SupportManager is not assigned in PlayerMovement.");
             return;
         }
         switch (num)
@@ -199,7 +198,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
-        if (!_is_CanJump || !isCanSE) return;
+        if (!_is_CanJump || !isCanAction) return;
 
         PlaySE(PlayerSE.Jump);
         _animator.SetTrigger("Jump");
@@ -209,7 +208,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Attack()
     {
-        if (!_canAdjacentAttack || !isCanSE) return;
+        if (!_canAdjacentAttack || !isCanAction) return;
 
         _animator.SetTrigger("AttackSword");
         DidAttack = true;
@@ -217,7 +216,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Pistol()
     {
-        if (!_canPistolAttack || !isCanSE) return;
+        if (!_canPistolAttack || !isCanAction) return;
 
         _animator.SetTrigger("AttackPistol");
         ShootPistol();

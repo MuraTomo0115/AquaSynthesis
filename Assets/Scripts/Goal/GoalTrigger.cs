@@ -181,14 +181,41 @@ public class GoalTrigger : MonoBehaviour
         // 「Press Any Key」待ち
         if (_waitForAnyKey)
         {
-            if (Keyboard.current == null) return;
-
-            foreach (KeyControl key in Keyboard.current.allKeys)
+            // キーボード入力チェック
+            if (Keyboard.current != null)
             {
-                if (key.wasPressedThisFrame)
+                foreach (KeyControl key in Keyboard.current.allKeys)
+                {
+                    if (key.wasPressedThisFrame)
+                    {
+                        _waitForAnyKey = false;
+                        break;
+                    }
+                }
+            }
+
+            // ゲームパッド入力チェック
+            if (_waitForAnyKey && Gamepad.current != null)
+            {
+                var gamepad = Gamepad.current;
+                if (gamepad.buttonSouth.wasPressedThisFrame ||
+                    gamepad.buttonNorth.wasPressedThisFrame ||
+                    gamepad.buttonEast.wasPressedThisFrame ||
+                    gamepad.buttonWest.wasPressedThisFrame ||
+                    gamepad.leftShoulder.wasPressedThisFrame ||
+                    gamepad.rightShoulder.wasPressedThisFrame ||
+                    gamepad.leftTrigger.wasPressedThisFrame ||
+                    gamepad.rightTrigger.wasPressedThisFrame ||
+                    gamepad.startButton.wasPressedThisFrame ||
+                    gamepad.selectButton.wasPressedThisFrame ||
+                    gamepad.leftStickButton.wasPressedThisFrame ||
+                    gamepad.rightStickButton.wasPressedThisFrame ||
+                    gamepad.dpad.up.wasPressedThisFrame ||
+                    gamepad.dpad.down.wasPressedThisFrame ||
+                    gamepad.dpad.left.wasPressedThisFrame ||
+                    gamepad.dpad.right.wasPressedThisFrame)
                 {
                     _waitForAnyKey = false;
-                    break;
                 }
             }
         }

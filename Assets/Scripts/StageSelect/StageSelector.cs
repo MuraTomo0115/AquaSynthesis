@@ -8,56 +8,56 @@ using System.Collections;
 [System.Serializable]
 public class StageData
 {
-    public string stageName;            // •\¦–¼
-    public string sceneName;            // ƒV[ƒ“–¼
-    public Sprite stageImage;           // ”wŒi‰æ‘œ
-    public Transform stagePoint;        // ƒXƒe[ƒWˆÊ’u
-    public GameObject pathObject;       // Inspector‚ÅƒAƒ^ƒbƒ`
-    public string animationTriggerName; // ƒgƒŠƒK[–¼iTrigger‚ğg‚¤ê‡‚Ì‚İj
+    public string stageName;            // ï¿½\ï¿½ï¿½ï¿½ï¿½
+    public string sceneName;            // ï¿½Vï¿½[ï¿½ï¿½ï¿½ï¿½
+    public Sprite stageImage;           // ï¿½wï¿½iï¿½æ‘œ
+    public Transform stagePoint;        // ï¿½Xï¿½eï¿½[ï¿½Wï¿½Ê’u
+    public GameObject pathObject;       // Inspectorï¿½ÅƒAï¿½^ï¿½bï¿½`
+    public string animationTriggerName; // ï¿½gï¿½ï¿½ï¿½Kï¿½[ï¿½ï¿½ï¿½iTriggerï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ê‡ï¿½Ì‚İj
 }
 
 public class StageSelector : MonoBehaviour
 {
-    [Header("ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg")]
-    [SerializeField] private GameObject _playerObject;  // ƒvƒŒƒCƒ„[‚ÌGameObject
+    [Header("ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½g")]
+    [SerializeField] private GameObject _playerObject;  // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½GameObject
 
-    [Header("”wŒi‰æ‘œUI")]
-    [SerializeField] private Image _backgroundImage;    // ”wŒi‰æ‘œ‚ğ•\¦‚·‚éUI
+    [Header("ï¿½wï¿½iï¿½æ‘œUI")]
+    [SerializeField] private Image _backgroundImage;    // ï¿½wï¿½iï¿½æ‘œï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½UI
 
-    [Header("ˆÚ“®‘¬“x")]
-    [SerializeField] private float _moveSpeed;          // ƒXƒe[ƒWŠÔ‚ÌˆÚ“®‚É‚©‚©‚é•b”
+    [Header("ï¿½Ú“ï¿½ï¿½ï¿½ï¿½x")]
+    [SerializeField] private float _moveSpeed;          // ï¿½Xï¿½eï¿½[ï¿½Wï¿½Ô‚ÌˆÚ“ï¿½ï¿½É‚ï¿½ï¿½ï¿½ï¿½ï¿½bï¿½ï¿½
 
-    [SerializeField] private float _playerYOffset;      // ƒvƒŒƒCƒ„[‚ÌY²ƒIƒtƒZƒbƒg
+    [SerializeField] private float _playerYOffset;      // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½Yï¿½ï¿½ï¿½Iï¿½tï¿½Zï¿½bï¿½g
 
-    private List<StageData> _allStages;                 // is‡‚Å‘SƒXƒe[ƒW‚ğ“o˜^
+    private List<StageData> _allStages;                 // ï¿½iï¿½sï¿½ï¿½ï¿½Å‘Sï¿½Xï¿½eï¿½[ï¿½Wï¿½ï¿½oï¿½^
 
-    // N/A/Gƒ‹[ƒg‚Ì‘SŒó•â
-    [Header("Nƒ‹[ƒgƒXƒe[ƒWƒŠƒXƒg (N1~N8)")]
+    // N/A/Gï¿½ï¿½ï¿½[ï¿½gï¿½Ì‘Sï¿½ï¿½ï¿½
+    [Header("Nï¿½ï¿½ï¿½[ï¿½gï¿½Xï¿½eï¿½[ï¿½Wï¿½ï¿½ï¿½Xï¿½g (N1~N8)")]
     [SerializeField] private List<StageData> _nStages;
-    [Header("Aƒ‹[ƒgƒXƒe[ƒWƒŠƒXƒg (A2~A8)")]
+    [Header("Aï¿½ï¿½ï¿½[ï¿½gï¿½Xï¿½eï¿½[ï¿½Wï¿½ï¿½ï¿½Xï¿½g (A2~A8)")]
     [SerializeField] private List<StageData> _aStages;
-    [Header("Gƒ‹[ƒgƒXƒe[ƒWƒŠƒXƒg (G4~G8)")]
+    [Header("Gï¿½ï¿½ï¿½[ï¿½gï¿½Xï¿½eï¿½[ï¿½Wï¿½ï¿½ï¿½Xï¿½g (G4~G8)")]
     [SerializeField] private List<StageData> _gStages;
 
-    private int _currentIndex = 0;      // Œ»İ‘I‘ğ’†‚ÌƒXƒe[ƒW”Ô†
-    private bool _isMoving = false;     // ƒvƒŒƒCƒ„[‚ªˆÚ“®’†‚©‚Ç‚¤‚©
-    private int _moveDirection = 1;     // -1:¶, 1:‰EiˆÚ“®•ûŒüj
+    private int _currentIndex = 0;      // ï¿½ï¿½ï¿½İ‘Iï¿½ğ’†‚ÌƒXï¿½eï¿½[ï¿½Wï¿½Ôï¿½
+    private bool _isMoving = false;     // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ú“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½
+    private int _moveDirection = 1;     // -1:ï¿½ï¿½, 1:ï¿½Eï¿½iï¿½Ú“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½j
 
-    // ƒ‹[ƒg•ªŠòƒtƒ‰ƒO
+    // ï¿½ï¿½ï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O
     private bool _isARoute = false;
     private bool _isGRoute = false;
     private string _currentRoute;
 
-    private Transform _player; // ƒvƒŒƒCƒ„[‚ÌTransform
-    private Animator _playerAnimator; // ƒvƒŒƒCƒ„[‚ÌAnimator
+    private Transform _player; // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½Transform
+    private Animator _playerAnimator; // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½Animator
 
-    // === ’Ç‰Á: “¹ƒIƒuƒWƒFƒNƒg‚ÌQÆ ===
-    [Header("“¹ƒIƒuƒWƒFƒNƒgiƒXƒe[ƒWŠÔ‚²‚Æ‚ÉƒZƒbƒgj")]
+    // === ï¿½Ç‰ï¿½: ï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ÌQï¿½ï¿½ ===
+    [Header("ï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½iï¿½Xï¿½eï¿½[ï¿½Wï¿½Ô‚ï¿½ï¿½Æ‚ÉƒZï¿½bï¿½gï¿½j")]
     [SerializeField] private List<GameObject> _pathObjects;
 
     private void Awake()
     {
-        // InputActions‰Šú‰»
+        // InputActionsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         var inputActions = InputActionHolder.Instance.stageSelectInputActions;
         inputActions.StageSelect.Move.performed += OnMove;
         inputActions.StageSelect.Submit.performed += OnSubmit;
@@ -76,7 +76,7 @@ public class StageSelector : MonoBehaviour
     private void Start()
     {
         _currentRoute = DatabaseManager.GetCurrentRouteById(1);
-        Debug.Log("Œ»İ‚Ìƒ‹[ƒg: " + _currentRoute);
+        Debug.Log("ï¿½ï¿½ï¿½İ‚Ìƒï¿½ï¿½[ï¿½g: " + _currentRoute);
 
         switch (_currentRoute)
         {
@@ -106,7 +106,7 @@ public class StageSelector : MonoBehaviour
         _currentIndex = 0;
 
 
-        // ƒNƒŠƒA‚µ‚½ƒV[ƒ“–¼‚ğæ“¾‚µA_currentIndex‚ğXV
+        // ï¿½Nï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½Vï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½A_currentIndexï¿½ï¿½ï¿½Xï¿½V
         string lastClearedStage = PlayerPrefs.GetString("LastClearedStage", "");
         Debug.Log($"[StageSelector] lastClearedStage: {lastClearedStage}");
 
@@ -120,7 +120,7 @@ public class StageSelector : MonoBehaviour
                 _currentIndex = stageIndex;
             }
 
-            // ’¼‘OƒNƒŠƒAƒXƒe[ƒW‚Ì‰ƒNƒŠƒA”»’è‚Æ‰‰o
+            // ï¿½ï¿½ï¿½Oï¿½Nï¿½ï¿½ï¿½Aï¿½Xï¿½eï¿½[ï¿½Wï¿½Ìï¿½ï¿½Nï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½Æ‰ï¿½ï¿½o
             var status = DatabaseManager.GetStageStatus(lastClearedStage);
             Debug.Log($"[StageSelector] status: {(status != null ? $"is_clear={status.is_clear}" : "null")}");
 
@@ -137,12 +137,12 @@ public class StageSelector : MonoBehaviour
             }
             else
             {
-                Debug.Log("[StageSelector] PlayPathAnimation‚ÌğŒ‚ğ–‚½‚µ‚Ä‚¢‚Ü‚¹‚ñ");
+                Debug.Log("[StageSelector] PlayPathAnimationï¿½Ìï¿½ï¿½ï¿½ï¿½ğ–‚ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½");
             }
         }
         else
         {
-            Debug.Log("[StageSelector] lastClearedStage‚ª‹ó‚Å‚·");
+            Debug.Log("[StageSelector] lastClearedStageï¿½ï¿½ï¿½ï¿½Å‚ï¿½");
         }
         if (_playerObject != null)
         {
@@ -154,26 +154,26 @@ public class StageSelector : MonoBehaviour
 
 
         int pathCount = _pathObjects.Count;
-        int stageCount = _allStages.Count - 1; // i+1‚ÅƒAƒNƒZƒX‚·‚é‚½‚ß-1
+        int stageCount = _allStages.Count - 1; // i+1ï¿½ÅƒAï¿½Nï¿½Zï¿½Xï¿½ï¿½ï¿½é‚½ï¿½ï¿½-1
         int loopCount = Mathf.Min(pathCount, stageCount);
 
-        // === ’Ç‰Á: ‚·‚Å‚É‰ğ•úÏ‚İ‚Ì“¹‚Íí•\¦ ===
+        // === ï¿½Ç‰ï¿½: ï¿½ï¿½ï¿½Å‚É‰ï¿½ï¿½ï¿½Ï‚İ‚Ì“ï¿½ï¿½Ííï¿½\ï¿½ï¿½ ===
         for (int i = 0; i < loopCount; i++)
         {
-            // i”Ô–Ú‚Ì“¹‚ÍAi+1”Ô–Ú‚ÌƒXƒe[ƒW‚ªƒNƒŠƒAÏ‚İ‚È‚çí•\¦
+            // iï¿½Ô–Ú‚Ì“ï¿½ï¿½ÍAi+1ï¿½Ô–Ú‚ÌƒXï¿½eï¿½[ï¿½Wï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Aï¿½Ï‚İ‚È‚ï¿½íï¿½\ï¿½ï¿½
             var status = DatabaseManager.GetStageStatus(_allStages[i + 1].sceneName);
             if (status != null && status.is_clear == 1)
             {
                 if (_pathObjects[i] != null)
                 {
-                    _pathObjects[i].SetActive(true);
-                    // Animator‚Å‰‰oÏ‚İ‚È‚çƒXƒP[ƒ‹‚ÍƒAƒjƒ[ƒVƒ‡ƒ“‚É”C‚¹‚é
+                    //_pathObjects[i].SetActive(true);
+                    // Animatorï¿½Å‰ï¿½ï¿½oï¿½Ï‚İ‚È‚ï¿½Xï¿½Pï¿½[ï¿½ï¿½ï¿½ÍƒAï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½É”Cï¿½ï¿½ï¿½ï¿½
                 }
             }
         }
     }
 
-    // “ü—ÍƒCƒxƒ“ƒg: ˆÚ“®
+    // ï¿½ï¿½ï¿½ÍƒCï¿½xï¿½ï¿½ï¿½g: ï¿½Ú“ï¿½
     private void OnMove(InputAction.CallbackContext ctx)
     {
         if (_isMoving) return;
@@ -188,7 +188,7 @@ public class StageSelector : MonoBehaviour
         }
     }
 
-    // “ü—ÍƒCƒxƒ“ƒg: Œˆ’è
+    // ï¿½ï¿½ï¿½ÍƒCï¿½xï¿½ï¿½ï¿½g: ï¿½ï¿½ï¿½ï¿½
     private void OnSubmit(InputAction.CallbackContext ctx)
     {
         if (_isMoving) return;
@@ -196,23 +196,23 @@ public class StageSelector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒXƒe[ƒW‚ğˆÚ“®‚·‚éˆ—
+    /// ï¿½Xï¿½eï¿½[ï¿½Wï¿½ï¿½ï¿½Ú“ï¿½ï¿½ï¿½ï¿½éˆï¿½ï¿½
     /// </summary>
-    /// <param name="newIndex">ˆÚ“®æ‚ÌƒXƒe[ƒW”Ô†</param>
-    /// <param name="direction">ˆÚ“®•ûŒüi-1:¶, 1:‰Ej</param>
+    /// <param name="newIndex">ï¿½Ú“ï¿½ï¿½ï¿½ÌƒXï¿½eï¿½[ï¿½Wï¿½Ôï¿½</param>
+    /// <param name="direction">ï¿½Ú“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½i-1:ï¿½ï¿½, 1:ï¿½Eï¿½j</param>
     private void MoveToStage(int newIndex, int direction)
     {
-        // 0”Ô–ÚiÅ‰‚ÌƒXƒe[ƒWj‚Íí‚É‘I‘ğ‰Â”\
+        // 0ï¿½Ô–Úiï¿½Åï¿½ï¿½ÌƒXï¿½eï¿½[ï¿½Wï¿½jï¿½Íï¿½É‘Iï¿½ï¿½ï¿½Â”\
         if (newIndex < 0 || newIndex >= _allStages.Count) return;
         if (newIndex > 0)
         {
-            // ’¼‘O‚ÌƒXƒe[ƒW–¼‚ğæ“¾
+            // ï¿½ï¿½ï¿½Oï¿½ÌƒXï¿½eï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½æ“¾
             string prevStageName = _allStages[newIndex - 1].stageName;
             var prevStatus = DatabaseManager.GetStageStatus(prevStageName);
-            // ’¼‘O‚ÌƒXƒe[ƒW‚ª–¢ƒNƒŠƒA‚È‚çi‚ß‚È‚¢
+            // ï¿½ï¿½ï¿½Oï¿½ÌƒXï¿½eï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Aï¿½È‚ï¿½iï¿½ß‚È‚ï¿½
             if (prevStatus == null || prevStatus.is_clear == 0)
             {
-                Debug.Log("‘O‚ÌƒXƒe[ƒW‚ğƒNƒŠƒA‚µ‚Ä‚¢‚Ü‚¹‚ñB");
+                Debug.Log("ï¿½Oï¿½ÌƒXï¿½eï¿½[ï¿½Wï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½B");
                 return;
             }
         }
@@ -224,7 +224,7 @@ public class StageSelector : MonoBehaviour
     }
 
     /// <summary>
-    /// ”wŒi‰æ‘œ‚ğŒ»İ‚ÌƒXƒe[ƒW‚Ì‚à‚Ì‚ÉXV
+    /// ï¿½wï¿½iï¿½æ‘œï¿½ï¿½ï¿½ï¿½ï¿½İ‚ÌƒXï¿½eï¿½[ï¿½Wï¿½Ì‚ï¿½ï¿½Ì‚ÉXï¿½V
     /// </summary>
     private void UpdateStageView()
     {
@@ -233,7 +233,7 @@ public class StageSelector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[‚ğ‘¦À‚ÉŒ»İ‚ÌƒXƒe[ƒWˆÊ’u‚ÉˆÚ“®
+    /// ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ğ‘¦ï¿½ï¿½ÉŒï¿½ï¿½İ‚ÌƒXï¿½eï¿½[ï¿½Wï¿½Ê’uï¿½ÉˆÚ“ï¿½
     /// </summary>
     private void MovePlayerInstant()
     {
@@ -246,7 +246,7 @@ public class StageSelector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[‚ÌŒü‚«‚ğİ’èidirection: 1=‰E, -1=¶j
+    /// ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ÌŒï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½idirection: 1=ï¿½E, -1=ï¿½ï¿½ï¿½j
     /// </summary>
     private void SetPlayerFacing(int direction)
     {
@@ -257,48 +257,48 @@ public class StageSelector : MonoBehaviour
     }
 
     /// <summary>
-    /// “¹‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ğÄ¶
+    /// ï¿½ï¿½ï¿½ÌƒAï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½
     /// </summary>
     private void PlayPathAnimation(GameObject pathObject, string triggerName)
     {
-        Debug.Log($"[PlayPathAnimation] ŒÄ‚Ño‚µ: pathObject={(pathObject != null ? pathObject.name : "null")}, triggerName={triggerName}");
+        Debug.Log($"[PlayPathAnimation] ï¿½Ä‚Ñoï¿½ï¿½: pathObject={(pathObject != null ? pathObject.name : "null")}, triggerName={triggerName}");
 
         if (pathObject == null)
         {
-            Debug.LogWarning("[PlayPathAnimation] pathObject‚ªnull‚Å‚·");
+            Debug.LogWarning("[PlayPathAnimation] pathObjectï¿½ï¿½nullï¿½Å‚ï¿½");
             return;
         }
         var animator = pathObject.GetComponent<Animator>();
         if (animator == null)
         {
-            Debug.LogWarning($"[PlayPathAnimation] {pathObject.name} ‚ÉAnimator‚ªƒAƒ^ƒbƒ`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ");
+            Debug.LogWarning($"[PlayPathAnimation] {pathObject.name} ï¿½ï¿½Animatorï¿½ï¿½ï¿½Aï¿½^ï¿½bï¿½`ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½");
             return;
         }
-        Debug.Log($"[PlayPathAnimation] Animatoræ“¾¬Œ÷BTrigger–¼: {triggerName}");
+        Debug.Log($"[PlayPathAnimation] Animatorï¿½æ“¾ï¿½ï¿½ï¿½ï¿½ï¿½BTriggerï¿½ï¿½: {triggerName}");
 
         pathObject.SetActive(true);
-        animator.ResetTrigger(triggerName); // ”O‚Ì‚½‚ßƒŠƒZƒbƒg
+        animator.ResetTrigger(triggerName); // ï¿½Oï¿½Ì‚ï¿½ï¿½ßƒï¿½ï¿½Zï¿½bï¿½g
         animator.SetTrigger(triggerName);
-        Debug.Log($"[PlayPathAnimation] Trigger {triggerName} ‚ğƒZƒbƒg‚µ‚Ü‚µ‚½");
+        Debug.Log($"[PlayPathAnimation] Trigger {triggerName} ï¿½ï¿½ï¿½Zï¿½bï¿½gï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½");
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[‚ğƒXƒ‰ƒCƒhˆÚ“®‚³‚¹‚éƒRƒ‹[ƒ`ƒ“
+    /// ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½Cï¿½hï¿½Ú“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½ï¿½ï¿½[ï¿½`ï¿½ï¿½
     /// </summary>
     private IEnumerator MovePlayerCoroutine()
     {
         _isMoving = true;
         Vector3 start = _player.position;
         Vector3 end = _allStages[_currentIndex].stagePoint.position;
-        end.y += _playerYOffset; // Y²ƒIƒtƒZƒbƒg‚ğ‰Á‚¦‚é
-        float duration = _moveSpeed; // ˆÚ“®‚É‚©‚©‚é•b”
+        end.y += _playerYOffset; // Yï¿½ï¿½ï¿½Iï¿½tï¿½Zï¿½bï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        float duration = _moveSpeed; // ï¿½Ú“ï¿½ï¿½É‚ï¿½ï¿½ï¿½ï¿½ï¿½bï¿½ï¿½
         float elapsed = 0f;
 
-        // RunƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+        // Runï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½
         if (_playerAnimator != null)
             _playerAnimator.SetBool("isRunning", true);
 
-        // w’èŠÔ‚©‚¯‚ÄƒXƒ‰ƒCƒhˆÚ“®
+        // ï¿½wï¿½èï¿½Ô‚ï¿½ï¿½ï¿½ï¿½ÄƒXï¿½ï¿½ï¿½Cï¿½hï¿½Ú“ï¿½
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
@@ -308,34 +308,34 @@ public class StageSelector : MonoBehaviour
         }
         _player.position = end;
 
-        SetPlayerFacing(1); // “’…‚Í‰EŒü‚«‚É‚·‚é
+        SetPlayerFacing(1); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‰Eï¿½ï¿½ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
 
-        // IdleƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+        // Idleï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½
         if (_playerAnimator != null)
             _playerAnimator.SetBool("isRunning", false);
 
         _isMoving = false;
     }
 
-    // ƒXƒe[ƒWƒNƒŠƒA‚â•ªŠòƒtƒ‰ƒO‚ğ“¥‚ñ‚¾‚ÉŒÄ‚Ô
+    // ï¿½Xï¿½eï¿½[ï¿½Wï¿½Nï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½â•ªï¿½ï¿½tï¿½ï¿½ï¿½Oï¿½ğ“¥‚ñ‚¾ï¿½ï¿½ÉŒÄ‚ï¿½
     public void OnStageFlagTriggered(string flag)
     {
         if (flag == "A" && !_isARoute && _currentIndex == 0)
         {
-            // N1‚ÅAƒ‹[ƒg•ªŠò
+            // N1ï¿½ï¿½Aï¿½ï¿½ï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½
             _isARoute = true;
             // N1 + A2~A8
             var newStages = new List<StageData>();
             if (_nStages.Count > 0) newStages.Add(_nStages[0]); // N1
             newStages.AddRange(_aStages); // A2~A8
             _allStages = newStages;
-            _currentIndex = 1; // A2‚ÉˆÚ“®
+            _currentIndex = 1; // A2ï¿½ÉˆÚ“ï¿½
             UpdateStageView();
             MovePlayerInstant();
         }
         else if (flag == "G" && _isARoute && !_isGRoute && _currentIndex == 3)
         {
-            // A3‚ÅGƒ‹[ƒg•ªŠò
+            // A3ï¿½ï¿½Gï¿½ï¿½ï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½
             _isGRoute = true;
             // N1 + A2~A3 + G4~G8
             var newStages = new List<StageData>();
@@ -344,7 +344,7 @@ public class StageSelector : MonoBehaviour
             if (_aStages.Count > 1) newStages.Add(_aStages[1]); // A3
             newStages.AddRange(_gStages); // G4~G8
             _allStages = newStages;
-            _currentIndex = 4; // G4‚ÉˆÚ“®
+            _currentIndex = 4; // G4ï¿½ÉˆÚ“ï¿½
             UpdateStageView();
             MovePlayerInstant();
         }

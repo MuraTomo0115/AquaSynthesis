@@ -24,6 +24,7 @@ public class ADVManager : MonoBehaviour
 
 	private Queue<ScenarioStep> _steps = new Queue<ScenarioStep>();
 	private PlayerMovement _playerMovement;
+	private CoolTimeInput _coolTimeInput;
 	private bool _isMessageShowing = false;
 	private bool _isSkipping = false;
 	private CanvasGroup _canvasGroup;
@@ -64,6 +65,7 @@ public class ADVManager : MonoBehaviour
 	private void Start()
 	{
 		_playerMovement = FindObjectOfType<PlayerMovement>();
+		_coolTimeInput = FindObjectOfType<CoolTimeInput>();
 	}
 
 	void OnEnable() => _inputActions.ADV.Enable();  // �A�N�V�����}�b�v��L���ɂ���
@@ -77,7 +79,9 @@ public class ADVManager : MonoBehaviour
 	{
 		if (_isPlay) return;
 
-		_playerMovement.isCanSE = false;
+		_playerMovement.isCanAction = false;
+		_coolTimeInput.SetCanRecord(false); // ゴーストの記録を無効化
+		InputActionHolder.Instance.menuInputActions.Disable(); // ADV開始時にメニュー操作を無効化
 
         AudioManager.Instance.StopAllSE(); // ���ׂĂ�SE���~
 
@@ -172,8 +176,11 @@ public class ADVManager : MonoBehaviour
 			_isPlay = false;
 			Time.timeScale = 1f; // �Q�[���̎��Ԃ����ɖ߂�
             InputActionHolder.Instance.playerInputActions.Enable();
+			InputActionHolder.Instance.menuInputActions.Enable(); // ADV終了後にメニュー操作を有効化
 
-			_playerMovement.isCanSE = true;
+
+			_playerMovement.isCanAction = true;
+			_coolTimeInput.SetCanRecord(true); // ゴーストの記録を再度有効化
 
             _canvasGroup.DOFade(0f, 0.2f).OnComplete(() =>
 			{
