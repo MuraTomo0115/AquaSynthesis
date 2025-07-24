@@ -278,10 +278,10 @@ public class Menu : MonoBehaviour
                     break;
                 case 2:
                     // 4�ڂ̃��j���[���ڂ̏���
-                    Debug.Log("���j���[4�̏���");
+                    Time.timeScale = 1f; // TimeScaleを元に戻す
+                    SceneManager.LoadScene("StageSelect");
                     break;
                 default:
-                    Debug.Log("����`�̃��j���[����");
                     break;
             }
         }

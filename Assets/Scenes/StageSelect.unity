@@ -165,11 +165,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &187366701 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 254216352297717722, guid: 55c11c53702696c49b640f62d963bb95, type: 3}
-  m_PrefabInstance: {fileID: 497981146}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &435039722
 GameObject:
   m_ObjectHideFlags: 0
@@ -801,11 +796,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &1138653669 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 254216352297717722, guid: 55c11c53702696c49b640f62d963bb95, type: 3}
-  m_PrefabInstance: {fileID: 254216351195035199}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1138653670 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 254216352297717721, guid: 55c11c53702696c49b640f62d963bb95, type: 3}
@@ -880,68 +870,44 @@ MonoBehaviour:
     sceneName: n1
     stageImage: {fileID: 21300000, guid: 931d38c3b05a25a4ca090d3803c7e1e5, type: 3}
     stagePoint: {fileID: 964534780}
-    pathObject: {fileID: 1138653669}
-    animationTriggerName: Stage_n2
   - stageName: n2
     sceneName: n2
-    stageImage: {fileID: 21300000, guid: d0669f4921d2c1f4ebcccae3305d1622, type: 3}
+    stageImage: {fileID: 21300000, guid: f3dec46217283c24e901c72a6e8c6249, type: 3}
     stagePoint: {fileID: 1588876854}
-    pathObject: {fileID: 187366701}
-    animationTriggerName: Stage_n3
   _aStages:
   - stageName: A2
     sceneName: SampleScene
     stageImage: {fileID: 21300000, guid: ece92d83f66cc3b4790676f45e8d5c85, type: 3}
     stagePoint: {fileID: 1588876854}
-    pathObject: {fileID: 0}
-    animationTriggerName: 
   - stageName: A3
     sceneName: Stage_A3
     stageImage: {fileID: 21300000, guid: fe6ea8292572d3e46b35015cd1a7f0fb, type: 3}
     stagePoint: {fileID: 1855848917}
-    pathObject: {fileID: 0}
-    animationTriggerName: 
   - stageName: A4
     sceneName: Stage_A4
     stageImage: {fileID: 21300000, guid: 8e3d8c1285369c343a6bec86ca83085d, type: 3}
     stagePoint: {fileID: 897169410}
-    pathObject: {fileID: 0}
-    animationTriggerName: 
   _gStages:
   - stageName: G4
     sceneName: Stage_G4
     stageImage: {fileID: 21300000, guid: 9d3898a3d4d0edb47a99fd9c6e3b0e82, type: 3}
     stagePoint: {fileID: 897169410}
-    pathObject: {fileID: 0}
-    animationTriggerName: 
   - stageName: G5
     sceneName: Stage_G5
     stageImage: {fileID: 0}
     stagePoint: {fileID: 0}
-    pathObject: {fileID: 0}
-    animationTriggerName: 
   - stageName: G6
     sceneName: Stage_G6
     stageImage: {fileID: 0}
     stagePoint: {fileID: 0}
-    pathObject: {fileID: 0}
-    animationTriggerName: 
   - stageName: G7
     sceneName: Stage_G7
     stageImage: {fileID: 0}
     stagePoint: {fileID: 0}
-    pathObject: {fileID: 0}
-    animationTriggerName: 
   - stageName: G8
     sceneName: Stage_G8
     stageImage: {fileID: 0}
     stagePoint: {fileID: 0}
-    pathObject: {fileID: 0}
-    animationTriggerName: 
-  _pathObjects:
-  - {fileID: 1138653669}
-  - {fileID: 187366701}
-  - {fileID: 1816245142}
 --- !u!1001 &1532442725
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1104,11 +1070,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &1816245142 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 254216352297717722, guid: 55c11c53702696c49b640f62d963bb95, type: 3}
-  m_PrefabInstance: {fileID: 1532442725}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1855848916
 GameObject:
   m_ObjectHideFlags: 0

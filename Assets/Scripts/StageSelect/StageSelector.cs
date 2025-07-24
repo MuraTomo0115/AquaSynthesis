@@ -8,28 +8,26 @@ using System.Collections;
 [System.Serializable]
 public class StageData
 {
-    public string stageName;            // �\����
-    public string sceneName;            // �V�[����
-    public Sprite stageImage;           // �w�i�摜
-    public Transform stagePoint;        // �X�e�[�W�ʒu
-    public GameObject pathObject;       // Inspector�ŃA�^�b�`
-    public string animationTriggerName; // �g���K�[���iTrigger���g���ꍇ�̂݁j
+    public string stageName;      // �\����
+    public string sceneName;      // �V�[����
+    public Sprite stageImage;     // �w�i�摜
+    public Transform stagePoint;  // �X�e�[�W�ʒu
 }
 
 public class StageSelector : MonoBehaviour
 {
     [Header("�v���C���[�I�u�W�F�N�g")]
-    [SerializeField] private GameObject _playerObject;  // �v���C���[��GameObject
+    [SerializeField] private GameObject _playerObject; // �v���C���[��GameObject
 
     [Header("�w�i�摜UI")]
-    [SerializeField] private Image _backgroundImage;    // �w�i�摜��\������UI
+    [SerializeField] private Image _backgroundImage; // �w�i�摜��\������UI
 
     [Header("�ړ����x")]
-    [SerializeField] private float _moveSpeed;          // �X�e�[�W�Ԃ̈ړ��ɂ�����b��
+    [SerializeField] private float _moveSpeed; // �X�e�[�W�Ԃ̈ړ��ɂ�����b��
 
-    [SerializeField] private float _playerYOffset;      // �v���C���[��Y���I�t�Z�b�g
+    [SerializeField] private float _playerYOffset; // �v���C���[��Y���I�t�Z�b�g
 
-    private List<StageData> _allStages;                 // �i�s���őS�X�e�[�W��o�^
+    private List<StageData> _allStages; // �i�s���őS�X�e�[�W��o�^
 
     // N/A/G���[�g�̑S���
     [Header("N���[�g�X�e�[�W���X�g (N1~N8)")]
@@ -39,9 +37,9 @@ public class StageSelector : MonoBehaviour
     [Header("G���[�g�X�e�[�W���X�g (G4~G8)")]
     [SerializeField] private List<StageData> _gStages;
 
-    private int _currentIndex = 0;      // ���ݑI�𒆂̃X�e�[�W�ԍ�
-    private bool _isMoving = false;     // �v���C���[���ړ������ǂ���
-    private int _moveDirection = 1;     // -1:��, 1:�E�i�ړ������j
+    private int _currentIndex = 0; // ���ݑI�𒆂̃X�e�[�W�ԍ�
+    private bool _isMoving = false; // �v���C���[���ړ������ǂ���
+    private int _moveDirection = 1; // -1:��, 1:�E�i�ړ������j
 
     // ���[�g����t���O
     private bool _isARoute = false;
@@ -50,10 +48,6 @@ public class StageSelector : MonoBehaviour
 
     private Transform _player; // �v���C���[��Transform
     private Animator _playerAnimator; // �v���C���[��Animator
-
-    // === �ǉ�: ���I�u�W�F�N�g�̎Q�� ===
-    [Header("���I�u�W�F�N�g�i�X�e�[�W�Ԃ��ƂɃZ�b�g�j")]
-    [SerializeField] private List<GameObject> _pathObjects;
 
     private void Awake()
     {
@@ -76,7 +70,6 @@ public class StageSelector : MonoBehaviour
     private void Start()
     {
         _currentRoute = DatabaseManager.GetCurrentRouteById(1);
-        Debug.Log("���݂̃��[�g: " + _currentRoute);
 
         switch (_currentRoute)
         {
@@ -105,45 +98,6 @@ public class StageSelector : MonoBehaviour
 
         _currentIndex = 0;
 
-
-        // �N���A�����V�[�������擾���A_currentIndex���X�V
-        string lastClearedStage = PlayerPrefs.GetString("LastClearedStage", "");
-        Debug.Log($"[StageSelector] lastClearedStage: {lastClearedStage}");
-
-        if (!string.IsNullOrEmpty(lastClearedStage))
-        {
-            int stageIndex = _allStages.FindIndex(s => s.sceneName == lastClearedStage);
-            Debug.Log($"[StageSelector] stageIndex: {stageIndex}");
-
-            if (stageIndex >= 0)
-            {
-                _currentIndex = stageIndex;
-            }
-
-            // ���O�N���A�X�e�[�W�̏��N���A����Ɖ��o
-            var status = DatabaseManager.GetStageStatus(lastClearedStage);
-            Debug.Log($"[StageSelector] status: {(status != null ? $"is_clear={status.is_clear}" : "null")}");
-
-            if (status != null && status.is_clear == 1 && !PlayerPrefs.HasKey("PathAnimationPlayed_" + lastClearedStage))
-            {
-                var stageData = _allStages[stageIndex];
-                Debug.Log($"[StageSelector] pathObject: {(stageData.pathObject != null ? stageData.pathObject.name : "null")}, trigger: {stageData.animationTriggerName}");
-                if (stageData.pathObject != null)
-                {
-                    PlayPathAnimation(stageData.pathObject, stageData.animationTriggerName);
-                }
-                PlayerPrefs.SetInt("PathAnimationPlayed_" + lastClearedStage, 1);
-                PlayerPrefs.Save();
-            }
-            else
-            {
-                Debug.Log("[StageSelector] PlayPathAnimation�̏����𖞂����Ă��܂���");
-            }
-        }
-        else
-        {
-            Debug.Log("[StageSelector] lastClearedStage����ł�");
-        }
         if (_playerObject != null)
         {
             _player = _playerObject.transform;
@@ -151,26 +105,6 @@ public class StageSelector : MonoBehaviour
         }
         UpdateStageView();
         MovePlayerInstant();
-
-
-        int pathCount = _pathObjects.Count;
-        int stageCount = _allStages.Count - 1; // i+1�ŃA�N�Z�X���邽��-1
-        int loopCount = Mathf.Min(pathCount, stageCount);
-
-        // === �ǉ�: ���łɉ���ς݂̓��͏펞�\�� ===
-        for (int i = 0; i < loopCount; i++)
-        {
-            // i�Ԗڂ̓��́Ai+1�Ԗڂ̃X�e�[�W���N���A�ς݂Ȃ�펞�\��
-            var status = DatabaseManager.GetStageStatus(_allStages[i + 1].sceneName);
-            if (status != null && status.is_clear == 1)
-            {
-                if (_pathObjects[i] != null)
-                {
-                    //_pathObjects[i].SetActive(true);
-                    // Animator�ŉ��o�ς݂Ȃ�X�P�[���̓A�j���[�V�����ɔC����
-                }
-            }
-        }
     }
 
     // ���̓C�x���g: �ړ�
@@ -202,20 +136,7 @@ public class StageSelector : MonoBehaviour
     /// <param name="direction">�ړ������i-1:��, 1:�E�j</param>
     private void MoveToStage(int newIndex, int direction)
     {
-        // 0�Ԗځi�ŏ��̃X�e�[�W�j�͏�ɑI���\
         if (newIndex < 0 || newIndex >= _allStages.Count) return;
-        if (newIndex > 0)
-        {
-            // ���O�̃X�e�[�W�����擾
-            string prevStageName = _allStages[newIndex - 1].stageName;
-            var prevStatus = DatabaseManager.GetStageStatus(prevStageName);
-            // ���O�̃X�e�[�W�����N���A�Ȃ�i�߂Ȃ�
-            if (prevStatus == null || prevStatus.is_clear == 0)
-            {
-                Debug.Log("�O�̃X�e�[�W���N���A���Ă��܂���B");
-                return;
-            }
-        }
         _currentIndex = newIndex;
         _moveDirection = direction;
         UpdateStageView();
@@ -254,32 +175,6 @@ public class StageSelector : MonoBehaviour
         Vector3 scale = _player.localScale;
         scale.x = Mathf.Abs(scale.x) * direction;
         _player.localScale = scale;
-    }
-
-    /// <summary>
-    /// ���̃A�j���[�V�������Đ�
-    /// </summary>
-    private void PlayPathAnimation(GameObject pathObject, string triggerName)
-    {
-        Debug.Log($"[PlayPathAnimation] �Ăяo��: pathObject={(pathObject != null ? pathObject.name : "null")}, triggerName={triggerName}");
-
-        if (pathObject == null)
-        {
-            Debug.LogWarning("[PlayPathAnimation] pathObject��null�ł�");
-            return;
-        }
-        var animator = pathObject.GetComponent<Animator>();
-        if (animator == null)
-        {
-            Debug.LogWarning($"[PlayPathAnimation] {pathObject.name} ��Animator���A�^�b�`����Ă��܂���");
-            return;
-        }
-        Debug.Log($"[PlayPathAnimation] Animator�擾�����BTrigger��: {triggerName}");
-
-        pathObject.SetActive(true);
-        animator.ResetTrigger(triggerName); // �O�̂��߃��Z�b�g
-        animator.SetTrigger(triggerName);
-        Debug.Log($"[PlayPathAnimation] Trigger {triggerName} ���Z�b�g���܂���");
     }
 
     /// <summary>
@@ -349,5 +244,4 @@ public class StageSelector : MonoBehaviour
             MovePlayerInstant();
         }
     }
-
 }
