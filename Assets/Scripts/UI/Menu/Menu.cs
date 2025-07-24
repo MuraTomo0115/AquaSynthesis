@@ -263,22 +263,20 @@ public class Menu : MonoBehaviour
         {
             switch (_currentIndex)
             {
-                case 0:
+                // case 0:
                     // 1�ڂ̃��j���[���ڂ̏���
-                    Debug.Log("���j���[1�̏���");
-                    break;
-                case 1:
+                    // break;
+                case 0:
                     // 2�ڂ̃��j���[���ڂ̏���
-                    Debug.Log("���j���[2�̏���");
                     OnDisable();
                     SelectItem(_optionAnim, "Option");
                     InputActionHolder.Instance.optionInputActions.Option.Enable();
                     break;
-                case 2:
+                case 1:
                     // 3�ڂ̃��j���[���ڂ̏���
                     StartCoroutine(RetryStageWithFade());
                     break;
-                case 3:
+                case 2:
                     // 4�ڂ̃��j���[���ڂ̏���
                     Debug.Log("���j���[4�̏���");
                     break;
@@ -286,6 +284,11 @@ public class Menu : MonoBehaviour
                     Debug.Log("����`�̃��j���[����");
                     break;
             }
+        }
+        else
+        {
+            // BackButton����I�����Ă���ꍇ�A���j���[���~����
+            CloseMenu();
         }
     }
 
@@ -370,6 +373,7 @@ public class Menu : MonoBehaviour
         }
         anim.Stop();
     }
+
     private IEnumerator RetryStageWithFade()
     {
         // �t�F�[�h�A�E�g

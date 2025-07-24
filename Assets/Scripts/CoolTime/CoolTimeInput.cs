@@ -61,6 +61,7 @@ public class CoolTimeInput : MonoBehaviour
     private bool _isPlaying = false; // 再生中フラグ
     private bool _isPlayCoolingDown = false; // 再生クールタイム中フラグ
     private bool _hasRecorded = false; // 記録済みフラグ
+    private bool _isCanRecord = true; // 記録可能フラグ
 
     private Coroutine _recordCoroutine = null; // 記録コルーチン
     private Coroutine _playCoroutine = null; // 再生コルーチン
@@ -120,6 +121,8 @@ public class CoolTimeInput : MonoBehaviour
     /// </summary>
     private void OnRecordPerformed(InputAction.CallbackContext context)
     {
+        if(!_isCanRecord) return;
+
         // 記録中なら記録を停止
         if (_isRecording)
         {
@@ -170,7 +173,7 @@ public class CoolTimeInput : MonoBehaviour
     private void OnPlayPerformed(InputAction.CallbackContext context)
     {
         // 記録中は再生不可
-        if (_isRecording) return;
+        if (_isRecording || !_isCanRecord) return;
 
         // 再生中なら中断、そうでなければ再生開始
         if (_isPlaying)
@@ -294,6 +297,8 @@ public class CoolTimeInput : MonoBehaviour
     /// </summary>
     private IEnumerator _StartRecordCoolDown()
     {
+        if(!_isCanRecord) yield break;
+
         _isRecordCoolingDown = true;
 
         _coolDownImage.gameObject.SetActive(true);
@@ -324,6 +329,8 @@ public class CoolTimeInput : MonoBehaviour
     /// </summary>
     private IEnumerator _StartPlay()
     {
+        if(!_isCanRecord) yield break;
+
         _isPlaying = true;
 
         // 再生開始
@@ -363,6 +370,8 @@ public class CoolTimeInput : MonoBehaviour
     /// </summary>
     private IEnumerator _StartPlayCoolDown()
     {
+        if(!_isCanRecord) yield break;
+
         _isPlayCoolingDown = true;
 
         float coolTimer = _playCoolTimeCurrent;
@@ -394,5 +403,14 @@ public class CoolTimeInput : MonoBehaviour
         Color c = _darkOverlay.color;
         c.a = alpha;
         _darkOverlay.color = c;
+    }
+
+    /// <summary>
+    /// 記録可能フラグを設定
+    /// </summary>
+    /// <param name="canRecord">記録可能かどうか</param>
+    public void SetCanRecord(bool canRecord)
+    {
+        _isCanRecord = canRecord;
     }
 }

@@ -256,6 +256,7 @@ public class BourBonMissile : MonoBehaviour
         // 爆発エフェクト生成
         if (_explosionPrefab != null)
         {
+            AudioManager.Instance.PlaySE("Enemy", "missileexplosion");
             GameObject explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         }
         

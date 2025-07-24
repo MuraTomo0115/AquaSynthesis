@@ -127,8 +127,6 @@ public class Character : MonoBehaviour
             }
         }
 
-        UnityEngine.Debug.Log($"{_characterName} �̓_���[�W�� {damage} �H�炢�܂����B�c��HP: {_currentHealth}");
-
         if (_spriteRenderers != null && _spriteRenderers.Length > 0 && _currentHealth > 0)
             StartCoroutine(FlashRed());
         else if (_spriteRenderers != null && _spriteRenderers.Length > 0 && _currentHealth <= 0)

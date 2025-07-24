@@ -298,12 +298,12 @@
                 },
                 {
                     "name": "",
-                    "id": "a7bdfed7-7bde-4b63-b74c-84eda7d95516",
-                    "path": "<Keyboard>/u",
+                    "id": "45d287c8-8d68-466b-8658-ca9495b48c3e",
+                    "path": "<DualShockGamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "StartDemo",
+                    "action": "Advance",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

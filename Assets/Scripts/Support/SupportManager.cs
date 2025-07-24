@@ -7,7 +7,7 @@ public class SupportManager : MonoBehaviour
 
     private Dictionary<string, SupportStatus> statusTable;
 
-    // ‘I‘ğ‚³‚ê‚½ƒTƒ|[ƒgƒLƒƒƒ‰‚ÌIDiŠO•”UI‚È‚Ç‚©‚çƒZƒbƒgj
+    // ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½Tï¿½|ï¿½[ï¿½gï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½IDï¿½iï¿½Oï¿½ï¿½UIï¿½È‚Ç‚ï¿½ï¿½ï¿½Zï¿½bï¿½gï¿½j
     private string supportId1;
     private string supportId2;
 
@@ -18,25 +18,24 @@ public class SupportManager : MonoBehaviour
 
     private void LoadSupportData()
     {
-        // DB‚©‚ç‘SƒTƒ|[ƒgƒf[ƒ^‚ğæ“¾
+        // DBï¿½ï¿½ï¿½ï¿½Sï¿½Tï¿½|ï¿½[ï¿½gï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½æ“¾
         var supportList = DatabaseManager.GetAllSupportStatuses();
         statusTable = new Dictionary<string, SupportStatus>();
         foreach (var data in supportList)
         {
             if (string.IsNullOrEmpty(data.Name))
             {
-                Debug.LogWarning("SupportStatus‚Éname‚ªİ’è‚³‚ê‚Ä‚¢‚È‚¢ƒf[ƒ^‚ª‚ ‚è‚Ü‚·BƒXƒLƒbƒv‚µ‚Ü‚·B");
+                Debug.LogWarning("SupportStatusï¿½ï¿½nameï¿½ï¿½ï¿½İ’è‚³ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½Bï¿½Xï¿½Lï¿½bï¿½vï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B");
                 continue;
             }
             statusTable[data.Name] = data;
         }
-        // ƒfƒtƒHƒ‹ƒg‚ÌƒTƒ|[ƒgƒLƒƒƒ‰‚ğİ’èi—á: "Kasumi", "Drone" ‚È‚ÇDB‚Ìname‚Æˆê’v‚·‚é’lj
+        // ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½ÌƒTï¿½|ï¿½[ï¿½gï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½iï¿½ï¿½: "Kasumi", "Drone" ï¿½È‚ï¿½DBï¿½ï¿½nameï¿½Æˆï¿½vï¿½ï¿½ï¿½ï¿½lï¿½j
         SetSelectedSupports("Kasumi", "Kasumi");
-        Debug.Log("“o˜^ƒTƒ|[ƒg–¼: " + string.Join(", ", statusTable.Keys));
     }
 
     /// <summary>
-    /// ŠO•”‚©‚ç‘I‘ğ‚³‚ê‚½ƒTƒ|[ƒgƒLƒƒƒ‰‚Ì–¼‘O‚ğİ’è‚·‚é
+    /// ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½Tï¿½|ï¿½[ï¿½gï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Ì–ï¿½ï¿½Oï¿½ï¿½İ’è‚·ï¿½ï¿½
     /// </summary>
     public void SetSelectedSupports(string name1, string name2)
     {
@@ -45,7 +44,7 @@ public class SupportManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒTƒ|[ƒg1‘Ì–Ú‚ğ¢Š«
+    /// ï¿½Tï¿½|ï¿½[ï¿½g1ï¿½Ì–Ú‚ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public void Summon1()
     {
@@ -53,7 +52,7 @@ public class SupportManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒTƒ|[ƒg2‘Ì–Ú‚ğ¢Š«
+    /// ï¿½Tï¿½|ï¿½[ï¿½g2ï¿½Ì–Ú‚ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public void Summon2()
     {
@@ -61,13 +60,13 @@ public class SupportManager : MonoBehaviour
     }
 
     /// <summary>
-    /// w’è–¼‚ÌƒTƒ|[ƒgƒLƒƒƒ‰‚ğ¢Š«
+    /// ï¿½wï¿½è–¼ï¿½ÌƒTï¿½|ï¿½[ï¿½gï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     private void SummonSupport(string supportName)
     {
         if (string.IsNullOrEmpty(supportName))
         {
-            Debug.LogWarning("¢Š«–¼‚ªİ’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ");
+            Debug.LogWarning("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ’è‚³ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½");
             return;
         }
 
@@ -90,7 +89,7 @@ public class SupportManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"SupportBase‚ªŒ©‚Â‚©‚ç‚È‚¢A‚Ü‚½‚ÍƒXƒe[ƒ^ƒX‚ª•s–¾: {supportName}");
+            Debug.LogWarning($"SupportBaseï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½È‚ï¿½ï¿½Aï¿½Ü‚ï¿½ï¿½ÍƒXï¿½eï¿½[ï¿½^ï¿½Xï¿½ï¿½ï¿½sï¿½ï¿½: {supportName}");
         }
     }
 }
